@@ -1885,6 +1885,101 @@ class MutabaahApp {
 
     this._cachedNarrative = narrative;
 
+    // Generate 7-Day Achievement Table HTML & Text Summary
+    const dayNames = ['Ahad', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+
+    let tableRowsHtml = '';
+    const tableTextLines = ['\n--- TABEL PENCAPAIAN 7 HARI ---'];
+
+    days.forEach(dateObj => {
+      const dateKey = this.formatDate(dateObj);
+      const list = this.state.history[dateKey] || [];
+      const progress = this.calculateDailyProgress(dateKey);
+      const isToday = dateKey === this.formatDate(today);
+
+      const dName = dayNames[dateObj.getDay()];
+      const dNum = dateObj.getDate();
+      const mName = monthNames[dateObj.getMonth()];
+
+      // Shalat breakdown
+      let shalatTW = 0;
+      let shalatJ = 0;
+      let shalatS = 0;
+      ['subuh', 'zuhur', 'ashar', 'maghrib', 'isya'].forEach(pId => {
+        const mode = this.getPrayerMode(pId, dateKey);
+        if (mode === 'tepat-waktu') shalatTW++;
+        else if (mode === 'jamaah') shalatJ++;
+        else if (mode === 'sendiri') shalatS++;
+      });
+      const shalatDone = shalatTW + shalatJ + shalatS;
+
+      // Sunnah & Rawatib count
+      const sunnahRawatib = list.filter(id => id.startsWith('rawatib-') || id.startsWith('sunnah-')).length;
+
+      // Tilawah
+      const tilawahItems = list.filter(id => id.startsWith('tilawah-'));
+      const tilawahText = tilawahItems.map(id => {
+        const item = TILAWAH_LEMBAR_CONFIG.find(c => c.id === id) || TILAWAH_JUZ_CONFIG.find(c => c.id === id);
+        return item ? item.label : id.replace('tilawah-', '');
+      }).join(', ');
+
+      // Dzikir
+      const dzikirCount = list.filter(id => {
+        const t = this.state.tasks.find(tk => tk.id === id);
+        return t && t.category === 'Dzikir';
+      }).length;
+
+      // Badge Pct class
+      let pctClass = 'pct-zero';
+      if (progress.percent >= 75) pctClass = 'pct-high';
+      else if (progress.percent >= 50) pctClass = 'pct-mid';
+      else if (progress.percent > 0) pctClass = 'pct-low';
+
+      // Ruhiyah badges
+      const ruhiyahBadges = [];
+      if (sunnahRawatib > 0) ruhiyahBadges.push(`${sunnahRawatib} Sunnah`);
+      if (tilawahText) ruhiyahBadges.push(`📖 ${this.escapeHtml(tilawahText)}`);
+      if (dzikirCount > 0) ruhiyahBadges.push(`📿 ${dzikirCount} Dzikir`);
+      const ruhiyahHtml = ruhiyahBadges.length > 0
+        ? `<div class="review-tags-list">${ruhiyahBadges.map(b => `<span>${b}</span>`).join('')}</div>`
+        : `<span class="text-muted">-</span>`;
+
+      // Shalat detail HTML
+      let shalatDetailHtml = `<span class="text-muted">0/5</span>`;
+      if (shalatDone > 0) {
+        const parts = [];
+        if (shalatTW + shalatJ > 0) parts.push(`${shalatTW + shalatJ} Jama'ah`);
+        if (shalatS > 0) parts.push(`${shalatS} Sendiri`);
+        shalatDetailHtml = `
+          <strong>${shalatDone}/5</strong>
+          <span class="review-sub-info">${parts.join(', ')}</span>
+        `;
+      }
+
+      tableRowsHtml += `
+        <tr class="${isToday ? 'is-today-row' : ''}">
+          <td>
+            <strong>${dName}</strong>
+            <span class="review-sub-info">${dNum} ${mName}</span>
+            ${isToday ? '<span class="review-today-pill">Hari ini</span>' : ''}
+          </td>
+          <td>${shalatDetailHtml}</td>
+          <td>${ruhiyahHtml}</td>
+          <td style="text-align: right;">
+            <span class="review-badge-pct ${pctClass}">${progress.percent}%</span>
+          </td>
+        </tr>
+      `;
+
+      // Text row for clipboard
+      const ruhiyahTxt = ruhiyahBadges.length > 0 ? ruhiyahBadges.join(' | ') : '-';
+      tableTextLines.push(`- ${dName} (${dNum} ${mName}): Shalat ${shalatDone}/5, ${ruhiyahTxt}, Capaian ${progress.percent}%`);
+    });
+
+    tableTextLines.push(`Rata-rata 7 Hari: ${avgPercent}% (Total ${totalAmalanDone} amalan)`);
+    this._cachedTableText = tableTextLines.join('\n');
+
     const bodyEl = document.getElementById('reviewJujurBody');
     if (bodyEl) {
       bodyEl.innerHTML = `
@@ -1916,7 +2011,38 @@ class MutabaahApp {
             <span>Catatan Muhasabah Diri</span>
           </div>
           <div class="review-narrative-text" id="reviewNarrativeText">
-            ${narrative.split('\n\n').map(p => `<p>${this.escapeHtml(p)}</p>`).join('')}
+            ${narrative.split('\n\n').map(p => {
+              const safe = this.escapeHtml(p);
+              const withBold = safe.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+              return `<p>${withBold}</p>`;
+            }).join('')}
+          </div>
+        </div>
+
+        <!-- Tabel Pencapaian Selama 7 Hari -->
+        <div class="review-table-container">
+          <div class="review-table-header">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+              <line x1="3" y1="9" x2="21" y2="9"></line>
+              <line x1="9" y1="21" x2="9" y2="9"></line>
+            </svg>
+            <span>Tabel Pencapaian Selama 7 Hari</span>
+          </div>
+          <div class="review-table-scroll">
+            <table class="review-table">
+              <thead>
+                <tr>
+                  <th>Hari / Tgl</th>
+                  <th>Shalat Fardhu</th>
+                  <th>Sunnah & Ruhiyah</th>
+                  <th style="text-align: right;">Capaian</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${tableRowsHtml}
+              </tbody>
+            </table>
           </div>
         </div>
       `;
@@ -1942,49 +2068,51 @@ class MutabaahApp {
       sosialCount,
       jasadiyahCount,
       fikriyahCount,
-      berkaryaCount
+      berkaryaCount,
+      bestDay,
+      bestDayPercent
     } = data;
 
     const paragraphs = [];
 
-    // 1. Muqaddimah Syahdu
+    // 1. Muqaddimah Syahdu dengan data tebal
     paragraphs.push(
-      `Bismillahirrohmaanirrohiim. Assalamu’alaykum warahmatullah duhai ${userName}...\n\n` +
-      `Tujuh hari baru saja bergulir meninggalkan kita. Sebanyak 168 jam telah menjadi saksi bisu setiap desah nafas, lelah, dan ikhtiar yang kau persembahkan. Dalam sepekan ini, rata-rata konsistensi amalanmu berada di angka ${avgPercent}%, dengan total ${totalAmalanDone} catatan kebaikan yang sempat terukir rapi di lembaran amalmu.`
+      `Bismillahirrohmaanirrohiim. Assalamu’alaykum warahmatullah duhai **${userName}**...\n\n` +
+      `**7 hari** baru saja bergulir meninggalkan kita. Sebanyak **168 jam** telah menjadi saksi bisu setiap desah nafas, lelah, dan ikhtiar yang kau persembahkan. Dalam sepekan ini, rata-rata konsistensi amalanmu berada di angka **${avgPercent}%**, dengan total **${totalAmalanDone} catatan kebaikan** yang sempat terukir rapi di lembaran amalmu.`
     );
 
-    // 2. Potret Sujud & Shalat
+    // 2. Potret Sujud & Shalat dengan data tebal
     if (totalFardhu === 0) {
       paragraphs.push(
         `Memandang lembaran shalat fardhu sepekan ini yang masih tampak sunyi, barangkali pundakmu sedang memikul beban dunia yang teramat berat, atau keletihan sedang menguji langkahmu. Jangan biarkan rasa bersalah menjauhkanmu dari-Nya. Ketahuilah, sujud bukanlah beban yang memberatkan, melainkan oase tempat jiwa yang lelah bersandar dan menumpahkan segala keluh kesah. Mulailah kembali dengan satu shalat terdekat; sambutlah panggilan-Nya dengan bisikan hati yang tulus: 'Aku kembali kepada-Mu, ya Rabb.'`
       );
     } else {
-      let shalatText = `Dari 35 waktu shalat fardhu dalam seminggu, tercatat ${totalFardhu} waktu telah kau tunaikan dengan penuh perjuangan.`;
+      let shalatText = `Dari **35 waktu shalat fardhu** dalam seminggu, tercatat **${totalFardhu} waktu** telah kau tunaikan dengan penuh perjuangan.`;
       const jamaahTotal = fardhuTepatWaktu + fardhuJamaah;
 
       if (jamaahTotal >= 15) {
-        shalatText += ` Masya Allah, ${jamaahTotal} di antaranya kau sambut dalam balutan shaf jama'ah dan ketepatan waktu. Setiap ayunan langkah menuju rumah-Nya di fajar dan senja adalah permata yang meninggikan derajatmu. Jagalah keikhlasan ini agar tetap suci lillahi ta'ala, terjaga dari riya dan ujub.`;
+        shalatText += ` Masya Allah, **${jamaahTotal} kali** di antaranya kau sambut dalam balutan shaf jama'ah dan ketepatan waktu. Setiap ayunan langkah menuju rumah-Nya di fajar dan senja adalah permata yang meninggikan derajatmu. Jagalah keikhlasan ini agar tetap suci lillahi ta'ala, terjaga dari riya dan ujub.`;
       } else if (jamaahTotal > 0) {
-        shalatText += ` Di antaranya, ${jamaahTotal} kali langkahmu berhasil merapatkan shaf jama'ah. Di saat lelah atau kesibukan sempat membuatmu mengerjakannya sendiri, jadikan itu pengingat rindu: azan adalah panggilan kasih sayang dari Dzat yang paling mencintaimu, mengajakmu sejenak rehat dari kepenatan fana.`;
+        shalatText += ` Di antaranya, **${jamaahTotal} kali** langkahmu berhasil merapatkan shaf jama'ah. Di saat lelah atau kesibukan sempat membuatmu mengerjakannya sendiri (**${fardhuSendiri} waktu**), jadikan itu pengingat rindu: azan adalah panggilan kasih sayang dari Dzat yang paling mencintaimu, mengajakmu sejenak rehat dari kepenatan fana.`;
       } else {
-        shalatText += ` Walau sebagian besar masih tertunaikan sendiri, ikhtiarmu menjaga tiang agama ini adalah kebaikan yang berharga. Semoga di pekan mendatang, Allah mudahkan langkahmu untuk sesekali merasakan sejuknya shaf jama'ah di masjid.`;
+        shalatText += ` Walau seluruhnya masih tertunaikan sendiri (**${fardhuSendiri} waktu**), ikhtiarmu menjaga tiang agama ini adalah kebaikan yang berharga. Semoga di pekan mendatang, Allah mudahkan langkahmu untuk sesekali merasakan sejuknya shaf jama'ah di masjid.`;
       }
 
       if (rawatibCount + sunnahCount > 0) {
-        shalatText += ` Ditambah ${rawatibCount + sunnahCount} amalan sunnah dan rawatib yang kau usahakan, laksana pagar indah yang menyempurnakan kekurangan shalat wajibmu.`;
+        shalatText += ` Ditambah **${rawatibCount + sunnahCount} amalan sunnah dan rawatib** yang kau usahakan, laksana pagar indah yang menyempurnakan kekurangan shalat wajibmu.`;
       }
       paragraphs.push(shalatText);
     }
 
-    // 3. Tilawah Al-Qur'an & Dzikir
+    // 3. Tilawah Al-Qur'an & Dzikir dengan data tebal
     if (tilawahCount > 0 || dzikirCount > 0) {
       let ruhiyahText = `Lisanmu yang sempat dibasahi oleh `;
       if (tilawahCount > 0 && dzikirCount > 0) {
-        ruhiyahText += `bacaan ayat-ayat suci Al-Qur'an serta untaian dzikir dan istighfar`;
+        ruhiyahText += `bacaan **${tilawahCount} capaian ayat suci Al-Qur'an** serta **${dzikirCount} untaian dzikir dan istighfar**`;
       } else if (tilawahCount > 0) {
-        ruhiyahText += `lantunan ayat-ayat suci Al-Qur'an`;
+        ruhiyahText += `lantunan **${tilawahCount} capaian ayat suci Al-Qur'an**`;
       } else {
-        ruhiyahText += `untaian dzikir, istighfar, dan doa harian`;
+        ruhiyahText += `untaian **${dzikirCount} amalan dzikir, istighfar, dan doa harian**`;
       }
       ruhiyahText += ` laksana tetesan embun penyejuk di tengah terik hiruk-pikuk kehidupan. Walau barangkali hanya beberapa lembar atau bait tasbih ringkas, kebiasaan yang berkesinambungan (*adwam*) adalah yang paling dicintai oleh Allah. Teruslah membersamainya hingga kelak Al-Qur'an menjadi syafaat dan pembela setiamu di hari akhir.`;
       paragraphs.push(ruhiyahText);
@@ -1994,18 +2122,25 @@ class MutabaahApp {
       );
     }
 
-    // 4. Amal Sosial, Jasmani, & Karya Nyata
+    // 4. Amal Sosial, Jasmani, & Karya Nyata dengan data tebal
     const muamalahTotal = sosialCount + jasadiyahCount + fikriyahCount + berkaryaCount;
     if (muamalahTotal > 0) {
       paragraphs.push(
-        `Engkau pun membuktikan bahwa ibadah tidak hanya terhenti di atas sajadah. Usahamu dalam berbagi dan bersilaturahim, merawat raga yang menjadi amanah titipan, menuntut ilmu bermanfaat, serta bekerja dan berkarya dengan sungguh-sungguh adalah ibadah nyata yang bernilai agung di sisi Allah. Keringat dan senyuman yang kau tebar adalah butir-butir pahala yang memberatkan timbangan kebaikan.`
+        `Engkau pun membuktikan bahwa ibadah tidak hanya terhenti di atas sajadah. Sebanyak **${muamalahTotal} ikhtiar kebaikan** (berbagi sosial, menjaga kebugaran jasmani, menuntut ilmu, dan menuntaskan tugas berkarya) telah kau perjuangkan. Ketahuilah, setiap nafkah yang halal, tubuh sehat yang dijaga untuk ketaatan, dan senyum ikhlas kepada sesama adalah sedekah yang berbobot berat di timbangan akhirat.`
       );
     }
 
-    // 5. Nasihat Penuh Hikmah & Doa Penutup
+    // 5. Highlight Hari Terbaik jika ada
+    if (bestDay && bestDayPercent > 0) {
+      paragraphs.push(
+        `Catatan terbaikmu dalam sepekan ini terukir pada hari **${bestDay}** dengan capaian konsistensi mencapai **${bestDayPercent}%**. Jadikan momentum terbaik itu sebagai bukti pada dirimu sendiri bahwa engkau memiliki potensi istiqomah yang luar biasa dengan izin Allah.`
+      );
+    }
+
+    // 6. Nasihat Penuh Hikmah & Doa Penutup
     paragraphs.push(
       `Duhai jiwa yang terus bertumbuh... Ingatlah selalu bahwa mutaba'ah ini bukanlah timbangan vonis, melainkan cermin kejujuran nurani untuk melihat di mana kaki kita sedang berpijak. Hakikat istiqomah bukanlah kesempurnaan tanpa cela, melainkan ketulusan untuk selalu bangkit bersujud setiap kali kita tersandung kelalaian.\n\n` +
-      `Mari beristighfar atas segala kekurangan 7 hari yang lalu, bersyukur tulus atas setiap hidayah yang dimudahkan, dan mari melangkah ke sepekan ke depan dengan bismillah: hati yang lebih lapang, niat yang lebih murni, dan cinta yang lebih mendalam kepada Allah Ta'ala.`
+      `Mari beristighfar atas segala kekurangan **7 hari** yang lalu, bersyukur tulus atas setiap hidayah yang dimudahkan, dan mari melangkah ke sepekan ke depan dengan bismillah: hati yang lebih lapang, niat yang lebih murni, dan cinta yang lebih mendalam kepada Allah Ta'ala.`
     );
 
     return paragraphs.join('\n\n');
@@ -2013,10 +2148,12 @@ class MutabaahApp {
 
   copyReviewNarrative() {
     if (!this._cachedNarrative) return;
-    const textToCopy = `Review Jujur 7 Hari - Mutaba'ah Yaumiyah\n\n${this._cachedNarrative}`;
+    const cleanNarrative = this._cachedNarrative.replace(/\*\*/g, '');
+    const tableText = this._cachedTableText || '';
+    const textToCopy = `Review Jujur 7 Hari - Mutaba'ah Yaumiyah\n\n${cleanNarrative}\n\n${tableText}`;
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(textToCopy).then(() => {
-        this.showToast('Alhamdulillah, catatan muhasabah 7 hari berhasil disalin!');
+        this.showToast('Alhamdulillah, catatan muhasabah & tabel 7 hari berhasil disalin!');
       }).catch(() => {
         this.fallbackCopyText(textToCopy);
       });
@@ -2342,8 +2479,8 @@ class MutabaahApp {
 
     // Open Backup Modal
     const openBackup = () => this.openModal('modalBackup');
-    document.getElementById('btnBackupModal').addEventListener('click', openBackup);
-    document.getElementById('navBackup').addEventListener('click', openBackup);
+    document.getElementById('btnBackupModal')?.addEventListener('click', openBackup);
+    document.getElementById('navBackup')?.addEventListener('click', openBackup);
 
     // Export Data (Backup)
     document.getElementById('btnExportData').addEventListener('click', () => {

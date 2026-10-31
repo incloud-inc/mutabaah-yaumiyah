@@ -2208,6 +2208,129 @@ body.mode-gelap .toast-message {
   margin-bottom: 0;
 }
 
+.review-narrative-text strong {
+  font-weight: 750;
+  color: var(--theme-primary);
+}
+
+body.mode-light .review-narrative-text strong {
+  color: #1c1f24;
+  font-weight: 800;
+}
+
+body.mode-dark .review-narrative-text strong {
+  color: #f8f9fa;
+  font-weight: 800;
+}
+
+/* Review Jujur 7-Day Achievement Table */
+.review-table-container {
+  margin-top: 14px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: 14px 12px;
+}
+
+.review-table-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px dashed var(--border-default);
+  color: var(--theme-primary);
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 0.3px;
+}
+
+.review-table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.review-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.76rem;
+  text-align: left;
+  min-width: 320px;
+}
+
+.review-table th {
+  padding: 8px 6px;
+  color: var(--text-muted);
+  font-weight: 700;
+  border-bottom: 1px solid var(--border-default);
+  text-transform: uppercase;
+  font-size: 0.67rem;
+  letter-spacing: 0.4px;
+  white-space: nowrap;
+}
+
+.review-table td {
+  padding: 8px 6px;
+  border-bottom: 1px solid var(--border-muted);
+  vertical-align: middle;
+}
+
+.review-table tr:last-child td {
+  border-bottom: none;
+}
+
+.review-table tr.is-today-row {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+body.mode-dark .review-table tr.is-today-row {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.review-today-pill {
+  font-size: 0.62rem;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: var(--radius-full);
+  background: var(--theme-primary);
+  color: var(--theme-btn-text);
+  margin-left: 3px;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.review-sub-info {
+  display: block;
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.review-tags-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.review-badge-pct {
+  display: inline-block;
+  padding: 2px 7px;
+  border-radius: var(--radius-full);
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.72rem;
+}
+
+.pct-high { background: rgba(43, 138, 62, 0.16); color: #2b8a3e; }
+.pct-mid { background: rgba(34, 139, 230, 0.16); color: #228be6; }
+.pct-low { background: rgba(232, 89, 12, 0.16); color: #e8590c; }
+.pct-zero { background: rgba(134, 142, 150, 0.16); color: var(--text-muted); }
+
+body.mode-dark .pct-high { color: #69db7c; background: rgba(81, 207, 102, 0.18); }
+body.mode-dark .pct-mid { color: #74c0fc; background: rgba(77, 171, 247, 0.18); }
+body.mode-dark .pct-low { color: #ffa94d; background: rgba(255, 169, 77, 0.18); }
+body.mode-dark .pct-zero { color: #868e96; background: rgba(134, 142, 150, 0.18); }
+
 .modal-review-actions {
   display: flex;
   gap: 8px;
