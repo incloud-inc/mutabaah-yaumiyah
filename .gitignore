@@ -1,0 +1,14 @@
+# OS generated files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Logs
+*.log
+npm-debug.log*
+
+# Editor / scratch
+.vscode/
+.idea/
+*.tmp
+*.swp

@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" rx="112" fill="#0c0e12"/>
+  <rect x="64" y="64" width="384" height="384" rx="72" fill="#15181e" stroke="#2d333b" stroke-width="8"/>
+  <!-- 2D Islamic Geometry / Heatmap Grid Icon -->
+  <g rx="16">
+    <rect x="116" y="116" width="76" height="76" rx="16" fill="#1f242c" stroke="#2d333b" stroke-width="4"/>
+    <rect x="218" y="116" width="76" height="76" rx="16" fill="#2b8a3e"/>
+    <rect x="320" y="116" width="76" height="76" rx="16" fill="#51cf66"/>
+    
+    <rect x="116" y="218" width="76" height="76" rx="16" fill="#37b24d"/>
+    <rect x="218" y="218" width="76" height="76" rx="16" fill="#69db7c"/>
+    <rect x="320" y="218" width="76" height="76" rx="16" fill="#37b24d"/>
+    
+    <rect x="116" y="320" width="76" height="76" rx="16" fill="#51cf66"/>
+    <rect x="218" y="320" width="76" height="76" rx="16" fill="#2b8a3e"/>
+    <rect x="320" y="320" width="76" height="76" rx="16" fill="#1f242c" stroke="#2d333b" stroke-width="4"/>
+  </g>
+  <!-- Center Accent Check -->
+  <circle cx="256" cy="256" r="38" fill="#0c0e12"/>
+  <path d="M240 256 l11 11 l22 -22" fill="none" stroke="#69db7c" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+
