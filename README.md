@@ -35,7 +35,7 @@ Aplikasi **To-Do List Mutaba'ah Yaumiyah** (pelacak konsistensi ibadah & kebiasa
 3. **Ikon 100% 2D Flat Vector**:
    - Ikon api (streak counter) dan seluruh ikon antarmuka menggunakan vektor 2D SVG yang bersih, tajam, dan serasi.
 
-4. **Grafik Aktivitas Amalan Penuh Layar**:
+4. **Grafik Amalan Yaumiyah Penuh Layar**:
    - Menampilkan seluruh riwayat aktivitas tanpa potongan filter, dimulai dari hari pertama pengguna mencatat amalan.
    - Dilengkapi kotak kosong lanjutan hingga memenuhi layar secara mulus dan rapi.
    - Penanda scroll bar disembunyikan (*hidden scrollbar*), dengan pergeseran horizontal (*smooth horizontal scroll*) yang sangat lancar melalui swipe touch maupun drag mouse.
