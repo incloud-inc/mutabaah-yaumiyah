@@ -464,9 +464,10 @@ textarea:focus-visible,
 .section-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   margin-bottom: 12px;
   gap: 8px;
+  flex-wrap: wrap;
 }
 
 .section-title-group {

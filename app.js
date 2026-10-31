@@ -1053,12 +1053,6 @@ class MutabaahApp {
 
     cells.forEach(c => grid.appendChild(c));
 
-    // Summary Text
-    const summaryEl = document.getElementById('heatmapSummaryText');
-    if (summaryEl) {
-      summaryEl.textContent = `${totalRecordedAmalan} amalan tercatat (Semua Riwayat)`;
-    }
-
     // Scroll smoothly to current week
     setTimeout(() => {
       if (wrapper) {
@@ -1644,7 +1638,7 @@ class MutabaahApp {
     const completedSet = new Set(this.state.history[dateStr] || []);
     const progress = this.calculateDailyProgress(dateStr);
 
-    subtitle.textContent = `Tingkat Capaian: ${progress.percent}% (${progress.doneCount} amalan tercatat)`;
+    subtitle.textContent = `Tingkat Capaian: ${progress.percent}% (${progress.doneCount} amalan selesai)`;
 
     let listHtml = '<div class="day-detail-list">';
 
