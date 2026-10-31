@@ -1286,6 +1286,12 @@ body.mode-dark .prayer-pill-points {
 .copyright-note {
   font-size: 0.68rem;
   color: var(--text-muted);
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  line-height: 1.6;
 }
 
 /* ===================================================================
@@ -1827,6 +1833,19 @@ body.mode-gelap .toast-message {
 .footer-link:hover {
   text-decoration: underline;
   color: var(--theme-primary);
+}
+
+.footer-wa-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.footer-wa-icon {
+  width: 13px;
+  height: 13px;
+  flex-shrink: 0;
+  fill: currentColor;
 }
 
 /* Icons Generic */
