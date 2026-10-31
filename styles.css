@@ -2123,3 +2123,97 @@ body.mode-gelap .toast-message {
   flex: 1;
 }
 
+/* ===================================================================
+   REVIEW JUJUR 7 HARI MODAL
+   =================================================================== */
+.modal-review-sheet {
+  max-width: 520px;
+}
+
+.review-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.review-stat-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  text-align: center;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.review-stat-card:hover {
+  border-color: var(--theme-primary);
+}
+
+.review-stat-value {
+  font-size: 1.35rem;
+  font-weight: 800;
+  font-family: var(--font-mono);
+  color: var(--theme-primary);
+  line-height: 1.2;
+}
+
+.review-stat-label {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+.review-narrative-container {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-left: 4px solid var(--theme-primary);
+  border-radius: var(--radius-md);
+  padding: 16px 14px;
+  margin-bottom: 12px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.review-narrative-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px dashed var(--border-default);
+  color: var(--theme-primary);
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 0.3px;
+}
+
+.review-narrative-header svg {
+  flex-shrink: 0;
+}
+
+.review-narrative-text {
+  font-size: 0.86rem;
+  color: var(--text-primary);
+  line-height: 1.8;
+  white-space: pre-line;
+}
+
+.review-narrative-text p {
+  margin-bottom: 12px;
+}
+
+.review-narrative-text p:last-child {
+  margin-bottom: 0;
+}
+
+.modal-review-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.modal-review-actions button {
+  flex: 1;
+}
+

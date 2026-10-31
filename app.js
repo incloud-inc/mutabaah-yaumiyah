@@ -981,19 +981,18 @@ class MutabaahApp {
     const firstUse = this.parseDate(this.state.firstUseDate);
     let startDate = new Date(firstUse.getFullYear(), firstUse.getMonth(), 1);
 
-    // Align startDate to Monday of that week
-    const startDay = startDate.getDay();
-    const mondayOffset = startDay === 0 ? 6 : startDay - 1;
-    startDate.setDate(startDate.getDate() - mondayOffset);
+    // Align startDate to Ahad (Sunday: day 0 - permulaan pekan kalender Islam)
+    const ahadOffset = startDate.getDay();
+    startDate.setDate(startDate.getDate() - ahadOffset);
 
-    // Current Sunday
+    // Current Sabtu (Saturday: day 6 - penutup pekan kalender Islam)
     const todayDay = today.getDay();
-    const todaySundayOffset = todayDay === 0 ? 0 : 7 - todayDay;
-    const currentSunday = new Date(today);
-    currentSunday.setDate(today.getDate() + todaySundayOffset);
+    const currentSabtuOffset = 6 - todayDay;
+    const currentSabtu = new Date(today);
+    currentSabtu.setDate(today.getDate() + currentSabtuOffset);
 
-    // Number of recorded weeks from first input date to current Sunday
-    const diffTime = currentSunday.getTime() - startDate.getTime();
+    // Number of recorded weeks from startDate to current Sabtu
+    const diffTime = currentSabtu.getTime() - startDate.getTime();
     const diffDays = Math.round(diffTime / (24 * 3600 * 1000)) + 1;
     const recordedWeeks = Math.max(1, Math.ceil(diffDays / 7));
 
@@ -1786,6 +1785,269 @@ class MutabaahApp {
   }
 
   // ===================================================================
+  // REVIEW JUJUR 7 HARI (Rangkuman & Narasi Penuh Hikmah Tanpa Menggurui)
+  // ===================================================================
+  openReviewJujurModal() {
+    const today = new Date();
+    const days = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(today.getDate() - i);
+      days.push(d);
+    }
+
+    const startDateStr = this.formatDate(days[0]);
+    const endDateStr = this.formatDate(days[6]);
+
+    // Subtitle rentang tanggal
+    const subtitleEl = document.getElementById('reviewJujurSubtitle');
+    if (subtitleEl) {
+      subtitleEl.textContent = `${this.formatDisplayDate(startDateStr)} – ${this.formatDisplayDate(endDateStr)}`;
+    }
+
+    let totalPercentSum = 0;
+    let totalAmalanDone = 0;
+    let fardhuTepatWaktu = 0;
+    let fardhuJamaah = 0;
+    let fardhuSendiri = 0;
+    let totalFardhu = 0;
+    let rawatibCount = 0;
+    let sunnahCount = 0;
+    let tilawahCount = 0;
+    let dzikirCount = 0;
+    let sosialCount = 0;
+    let jasadiyahCount = 0;
+    let fikriyahCount = 0;
+    let berkaryaCount = 0;
+
+    let bestDay = null;
+    let bestDayPercent = -1;
+    let daysWithActivity = 0;
+
+    days.forEach(dateObj => {
+      const dateKey = this.formatDate(dateObj);
+      const list = this.state.history[dateKey] || [];
+      const progress = this.calculateDailyProgress(dateKey);
+
+      totalPercentSum += progress.percent;
+      totalAmalanDone += progress.doneCount;
+
+      if (progress.doneCount > 0) daysWithActivity++;
+
+      if (progress.percent > bestDayPercent) {
+        bestDayPercent = progress.percent;
+        bestDay = dateKey;
+      }
+
+      // Hitung shalat fardhu
+      ['subuh', 'zuhur', 'ashar', 'maghrib', 'isya'].forEach(pId => {
+        const mode = this.getPrayerMode(pId, dateKey);
+        if (mode === 'tepat-waktu') { fardhuTepatWaktu++; totalFardhu++; }
+        else if (mode === 'jamaah') { fardhuJamaah++; totalFardhu++; }
+        else if (mode === 'sendiri') { fardhuSendiri++; totalFardhu++; }
+      });
+
+      // Hitung amalan lainnya
+      list.forEach(id => {
+        if (id.startsWith('rawatib-')) rawatibCount++;
+        else if (id.startsWith('sunnah-')) sunnahCount++;
+        else if (id.startsWith('tilawah-')) tilawahCount++;
+        else {
+          const task = this.state.tasks.find(t => t.id === id);
+          if (task) {
+            if (task.category === 'Dzikir') dzikirCount++;
+            else if (task.category === 'Sosial') sosialCount++;
+            else if (task.category === 'Jasadiyah') jasadiyahCount++;
+            else if (task.category === 'Fikriyah') fikriyahCount++;
+            else if (task.category === 'Berkarya') berkaryaCount++;
+          }
+        }
+      });
+    });
+
+    const avgPercent = Math.round(totalPercentSum / 7);
+    const userName = this.state.profile.name || 'Sahabat Fillah';
+
+    const narrative = this.generateReviewNarrative({
+      userName,
+      avgPercent,
+      totalAmalanDone,
+      daysWithActivity,
+      totalFardhu,
+      fardhuTepatWaktu,
+      fardhuJamaah,
+      fardhuSendiri,
+      rawatibCount,
+      sunnahCount,
+      tilawahCount,
+      dzikirCount,
+      sosialCount,
+      jasadiyahCount,
+      fikriyahCount,
+      berkaryaCount,
+      bestDay: bestDay ? this.formatDisplayDate(bestDay) : null,
+      bestDayPercent
+    });
+
+    this._cachedNarrative = narrative;
+
+    const bodyEl = document.getElementById('reviewJujurBody');
+    if (bodyEl) {
+      bodyEl.innerHTML = `
+        <div class="review-stats-grid">
+          <div class="review-stat-card">
+            <div class="review-stat-value">${avgPercent}%</div>
+            <div class="review-stat-label">Rata-rata Capaian</div>
+          </div>
+          <div class="review-stat-card">
+            <div class="review-stat-value">${totalAmalanDone}</div>
+            <div class="review-stat-label">Total Amalan Selesai</div>
+          </div>
+          <div class="review-stat-card">
+            <div class="review-stat-value">${fardhuTepatWaktu + fardhuJamaah}x</div>
+            <div class="review-stat-label">Shalat Berjama'ah / TW</div>
+          </div>
+          <div class="review-stat-card">
+            <div class="review-stat-value">${tilawahCount + dzikirCount}x</div>
+            <div class="review-stat-label">Tilawah & Dzikir</div>
+          </div>
+        </div>
+
+        <div class="review-narrative-container">
+          <div class="review-narrative-header">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 20h9"></path>
+              <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+            </svg>
+            <span>Catatan Muhasabah Diri</span>
+          </div>
+          <div class="review-narrative-text" id="reviewNarrativeText">
+            ${narrative.split('\n\n').map(p => `<p>${this.escapeHtml(p)}</p>`).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    this.openModal('modalReviewJujur');
+  }
+
+  generateReviewNarrative(data) {
+    const {
+      userName,
+      avgPercent,
+      totalAmalanDone,
+      daysWithActivity,
+      totalFardhu,
+      fardhuTepatWaktu,
+      fardhuJamaah,
+      fardhuSendiri,
+      rawatibCount,
+      sunnahCount,
+      tilawahCount,
+      dzikirCount,
+      sosialCount,
+      jasadiyahCount,
+      fikriyahCount,
+      berkaryaCount
+    } = data;
+
+    const paragraphs = [];
+
+    // 1. Muqaddimah Syahdu
+    paragraphs.push(
+      `Bismillahirrohmaanirrohiim. Assalamu’alaykum warahmatullah duhai ${userName}...\n\n` +
+      `Tujuh hari baru saja bergulir meninggalkan kita. Sebanyak 168 jam telah menjadi saksi bisu setiap desah nafas, lelah, dan ikhtiar yang kau persembahkan. Dalam sepekan ini, rata-rata konsistensi amalanmu berada di angka ${avgPercent}%, dengan total ${totalAmalanDone} catatan kebaikan yang sempat terukir rapi di lembaran amalmu.`
+    );
+
+    // 2. Potret Sujud & Shalat
+    if (totalFardhu === 0) {
+      paragraphs.push(
+        `Memandang lembaran shalat fardhu sepekan ini yang masih tampak sunyi, barangkali pundakmu sedang memikul beban dunia yang teramat berat, atau keletihan sedang menguji langkahmu. Jangan biarkan rasa bersalah menjauhkanmu dari-Nya. Ketahuilah, sujud bukanlah beban yang memberatkan, melainkan oase tempat jiwa yang lelah bersandar dan menumpahkan segala keluh kesah. Mulailah kembali dengan satu shalat terdekat; sambutlah panggilan-Nya dengan bisikan hati yang tulus: 'Aku kembali kepada-Mu, ya Rabb.'`
+      );
+    } else {
+      let shalatText = `Dari 35 waktu shalat fardhu dalam seminggu, tercatat ${totalFardhu} waktu telah kau tunaikan dengan penuh perjuangan.`;
+      const jamaahTotal = fardhuTepatWaktu + fardhuJamaah;
+
+      if (jamaahTotal >= 15) {
+        shalatText += ` Masya Allah, ${jamaahTotal} di antaranya kau sambut dalam balutan shaf jama'ah dan ketepatan waktu. Setiap ayunan langkah menuju rumah-Nya di fajar dan senja adalah permata yang meninggikan derajatmu. Jagalah keikhlasan ini agar tetap suci lillahi ta'ala, terjaga dari riya dan ujub.`;
+      } else if (jamaahTotal > 0) {
+        shalatText += ` Di antaranya, ${jamaahTotal} kali langkahmu berhasil merapatkan shaf jama'ah. Di saat lelah atau kesibukan sempat membuatmu mengerjakannya sendiri, jadikan itu pengingat rindu: azan adalah panggilan kasih sayang dari Dzat yang paling mencintaimu, mengajakmu sejenak rehat dari kepenatan fana.`;
+      } else {
+        shalatText += ` Walau sebagian besar masih tertunaikan sendiri, ikhtiarmu menjaga tiang agama ini adalah kebaikan yang berharga. Semoga di pekan mendatang, Allah mudahkan langkahmu untuk sesekali merasakan sejuknya shaf jama'ah di masjid.`;
+      }
+
+      if (rawatibCount + sunnahCount > 0) {
+        shalatText += ` Ditambah ${rawatibCount + sunnahCount} amalan sunnah dan rawatib yang kau usahakan, laksana pagar indah yang menyempurnakan kekurangan shalat wajibmu.`;
+      }
+      paragraphs.push(shalatText);
+    }
+
+    // 3. Tilawah Al-Qur'an & Dzikir
+    if (tilawahCount > 0 || dzikirCount > 0) {
+      let ruhiyahText = `Lisanmu yang sempat dibasahi oleh `;
+      if (tilawahCount > 0 && dzikirCount > 0) {
+        ruhiyahText += `bacaan ayat-ayat suci Al-Qur'an serta untaian dzikir dan istighfar`;
+      } else if (tilawahCount > 0) {
+        ruhiyahText += `lantunan ayat-ayat suci Al-Qur'an`;
+      } else {
+        ruhiyahText += `untaian dzikir, istighfar, dan doa harian`;
+      }
+      ruhiyahText += ` laksana tetesan embun penyejuk di tengah terik hiruk-pikuk kehidupan. Walau barangkali hanya beberapa lembar atau bait tasbih ringkas, kebiasaan yang berkesinambungan (*adwam*) adalah yang paling dicintai oleh Allah. Teruslah membersamainya hingga kelak Al-Qur'an menjadi syafaat dan pembela setiamu di hari akhir.`;
+      paragraphs.push(ruhiyahText);
+    } else {
+      paragraphs.push(
+        `Di sela riuhnya kesibukan sepekan ini, mushaf dan bait dzikir barangkali sempat menanti sentuhan tangan serta getar bibirmu. Jangan berkecil hati; pintu kemuliaan Al-Qur'an dan istighfar tak pernah tertutup. Ambillah mushaf hari ini, peluk dan bacalah walau satu dua ayat dengan tadabbur perlahan. Rasakan ketenangan yang meresap ke dasar jiwamu.`
+      );
+    }
+
+    // 4. Amal Sosial, Jasmani, & Karya Nyata
+    const muamalahTotal = sosialCount + jasadiyahCount + fikriyahCount + berkaryaCount;
+    if (muamalahTotal > 0) {
+      paragraphs.push(
+        `Engkau pun membuktikan bahwa ibadah tidak hanya terhenti di atas sajadah. Usahamu dalam berbagi dan bersilaturahim, merawat raga yang menjadi amanah titipan, menuntut ilmu bermanfaat, serta bekerja dan berkarya dengan sungguh-sungguh adalah ibadah nyata yang bernilai agung di sisi Allah. Keringat dan senyuman yang kau tebar adalah butir-butir pahala yang memberatkan timbangan kebaikan.`
+      );
+    }
+
+    // 5. Nasihat Penuh Hikmah & Doa Penutup
+    paragraphs.push(
+      `Duhai jiwa yang terus bertumbuh... Ingatlah selalu bahwa mutaba'ah ini bukanlah timbangan vonis, melainkan cermin kejujuran nurani untuk melihat di mana kaki kita sedang berpijak. Hakikat istiqomah bukanlah kesempurnaan tanpa cela, melainkan ketulusan untuk selalu bangkit bersujud setiap kali kita tersandung kelalaian.\n\n` +
+      `Mari beristighfar atas segala kekurangan 7 hari yang lalu, bersyukur tulus atas setiap hidayah yang dimudahkan, dan mari melangkah ke sepekan ke depan dengan bismillah: hati yang lebih lapang, niat yang lebih murni, dan cinta yang lebih mendalam kepada Allah Ta'ala.`
+    );
+
+    return paragraphs.join('\n\n');
+  }
+
+  copyReviewNarrative() {
+    if (!this._cachedNarrative) return;
+    const textToCopy = `Review Jujur 7 Hari - Mutaba'ah Yaumiyah\n\n${this._cachedNarrative}`;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(textToCopy).then(() => {
+        this.showToast('Alhamdulillah, catatan muhasabah 7 hari berhasil disalin!');
+      }).catch(() => {
+        this.fallbackCopyText(textToCopy);
+      });
+    } else {
+      this.fallbackCopyText(textToCopy);
+    }
+  }
+
+  fallbackCopyText(text) {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try {
+      document.execCommand('copy');
+      this.showToast('Alhamdulillah, catatan muhasabah 7 hari berhasil disalin!');
+    } catch (e) {
+      this.showToast('Gagal menyalin teks.', 'error');
+    }
+    document.body.removeChild(ta);
+  }
+
+  // ===================================================================
   // EVENT LISTENERS & BINDINGS
   // ===================================================================
   bindEvents() {
@@ -1810,6 +2072,16 @@ class MutabaahApp {
     };
     document.getElementById('btnThemeModal')?.addEventListener('click', openThemeModal);
     document.getElementById('navTheme')?.addEventListener('click', openThemeModal);
+
+    // Review Jujur 7 Hari Modal Trigger
+    document.getElementById('btnReviewJujur')?.addEventListener('click', () => {
+      this.openReviewJujurModal();
+    });
+
+    // Copy Review Narrative
+    document.getElementById('btnCopyNarrative')?.addEventListener('click', () => {
+      this.copyReviewNarrative();
+    });
 
     // Status Pill click -> Open Status Modal
     const statusPill = document.getElementById('userStatusPill');
