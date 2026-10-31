@@ -213,7 +213,7 @@ class MutabaahApp {
       profile: {
         name: 'Hamba Allah',
         handle: 'mutabaah_warrior',
-        bio: 'Menjaga konsistensi ibadah yaumiyah. Tiada hari tanpa tilawah dan qiyamul lail. Bismillah.',
+        bio: "Assalamu'alaykum, halo calon member FIRDAUS. :-) Untuk mulai menggunakan, klik tombol BACKUP kemudian HAPUS SEMUA DATA. Jangan lupa lengkapi data diri.",
         status: 'Istiqomah', // 'Istiqomah', 'Iman lagi naik', 'Iman lagi turun', or custom
         hasCustomAvatar: false,
         hasCustomCover: false,
@@ -221,13 +221,14 @@ class MutabaahApp {
         cover: ''
       },
       theme: {
-        color: 'green', // Key in OPEN_COLOR_PALETTES
-        mode: 'dark'    // 'dark' or 'light'
+        color: 'orange', // Key in OPEN_COLOR_PALETTES: Surya Sahara (Default Baru)
+        mode: 'light'    // 'light' (Mode Terang Default Baru)
       },
       tasks: [...DEFAULT_TASKS],
       history: {}, // Format: { "YYYY-MM-DD": ["task-id-1", "task-id-2"] }
       selectedDate: this.formatDate(new Date()),
-      activeCategory: 'Shalat' // DEFAULT: Shalat (Kategori Pertama)
+      activeCategory: 'Shalat', // DEFAULT: Shalat (Kategori Pertama)
+      firstUseDate: this.formatDate(new Date(new Date().getFullYear(), new Date().getMonth(), 1))
     };
 
     this.init();
@@ -334,6 +335,18 @@ class MutabaahApp {
         const parsed = JSON.parse(saved);
         if (parsed.profile) this.state.profile = { ...this.state.profile, ...parsed.profile };
         if (parsed.theme) this.state.theme = { ...this.state.theme, ...parsed.theme };
+        if (parsed.firstUseDate) {
+          this.state.firstUseDate = parsed.firstUseDate;
+        } else {
+          const recordedDates = parsed.history ? Object.keys(parsed.history).sort() : [];
+          if (recordedDates.length > 0) {
+            const earliest = this.parseDate(recordedDates[0]);
+            this.state.firstUseDate = this.formatDate(new Date(earliest.getFullYear(), earliest.getMonth(), 1));
+          } else {
+            const now = new Date();
+            this.state.firstUseDate = this.formatDate(new Date(now.getFullYear(), now.getMonth(), 1));
+          }
+        }
         if (parsed.tasks && Array.isArray(parsed.tasks)) {
           // Check if tasks are from old format or need migration
           const hasOldCategories = parsed.tasks.some(t => 
@@ -354,6 +367,8 @@ class MutabaahApp {
         }
         if (parsed.history) this.state.history = parsed.history;
       } else {
+        const now = new Date();
+        this.state.firstUseDate = this.formatDate(new Date(now.getFullYear(), now.getMonth(), 1));
         this.seedDemoActivity();
         this.saveToStorage();
       }
@@ -370,6 +385,7 @@ class MutabaahApp {
       const dataToSave = {
         version: 2,
         savedAt: new Date().toISOString(),
+        firstUseDate: this.state.firstUseDate,
         profile: this.state.profile,
         theme: this.state.theme,
         tasks: this.state.tasks,
@@ -467,9 +483,12 @@ class MutabaahApp {
     ];
     const tasksPool = this.state.tasks.map(t => t.id);
 
-    // Generate recent 25 days of data
-    for (let i = 25; i >= 1; i--) {
-      const d = new Date();
+    // Generate recent days within current month (starting from day 1 up to yesterday)
+    const currentDayOfMonth = today.getDate();
+    const daysToSeed = Math.min(25, Math.max(0, currentDayOfMonth - 1));
+
+    for (let i = daysToSeed; i >= 1; i--) {
+      const d = new Date(today);
       d.setDate(today.getDate() - i);
       const dateKey = this.formatDate(d);
       const dayPicks = [];
@@ -819,9 +838,9 @@ class MutabaahApp {
 
     if (!isAlreadyActive) {
       list.push(targetId);
-      let modeLabel = 'Sendiri (+1%)';
-      if (mode === 'jamaah') modeLabel = 'Berjama\'ah (+3%)';
-      if (mode === 'tepat-waktu') modeLabel = 'Jama\'ah Tepat Waktu (+5%)';
+      let modeLabel = 'Sendiri';
+      if (mode === 'jamaah') modeLabel = 'Berjama\'ah';
+      if (mode === 'tepat-waktu') modeLabel = 'Jama\'ah Tepat Waktu';
       this.showToast(`${prayerName}: ${modeLabel} dicatat! 🕌`);
     } else {
       this.showToast(`Pilihan ${prayerName} dibatalkan.`);
@@ -954,17 +973,13 @@ class MutabaahApp {
 
     const today = new Date();
 
-    // 1. Find earliest recorded date in user's history
-    const recordedDates = Object.keys(this.state.history)
-      .filter(d => (this.state.history[d] || []).length > 0)
-      .sort();
-
-    let startDate;
-    if (recordedDates.length > 0) {
-      startDate = this.parseDate(recordedDates[0]);
-    } else {
-      startDate = new Date(today);
+    // 1. Penanggalan dimulai dari tanggal 1 bulan saat pertama kali menggunakan
+    if (!this.state.firstUseDate) {
+      this.state.firstUseDate = this.formatDate(new Date(today.getFullYear(), today.getMonth(), 1));
     }
+
+    const firstUse = this.parseDate(this.state.firstUseDate);
+    let startDate = new Date(firstUse.getFullYear(), firstUse.getMonth(), 1);
 
     // Align startDate to Monday of that week
     const startDay = startDate.getDay();
@@ -1118,6 +1133,13 @@ class MutabaahApp {
     // Active category (Default: Shalat)
     const category = this.state.activeCategory || 'Shalat';
 
+    // Toggle "Tambah Target Amalan Baru" button visibility:
+    // User tidak bisa menambah atau mengurangi list di kategori shalat dan tilawah
+    const addTaskBar = document.querySelector('.add-task-bar');
+    if (addTaskBar) {
+      addTaskBar.style.display = (category === 'Shalat' || category === 'Tilawah') ? 'none' : 'block';
+    }
+
     // Synchronize Tabs selection
     const tabs = document.querySelectorAll('#categoryTabs .tab-btn');
     tabs.forEach(tab => {
@@ -1149,22 +1171,18 @@ class MutabaahApp {
             </div>
 
             <div class="prayer-options-group">
-              <span class="prayer-options-label">Pilihan Pelaksanaan:</span>
               <div class="prayer-pill-options" role="radiogroup" aria-label="Pelaksanaan ${this.escapeHtml(prayer.name)}">
                 <button type="button" class="prayer-pill ${currentMode === 'sendiri' ? 'active' : ''}" data-fardhu="${prayer.id}" data-mode="sendiri" role="radio" aria-checked="${currentMode === 'sendiri'}">
                   <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                   <span>Sendiri</span>
-                  <span class="prayer-pill-points">+1%</span>
                 </button>
                 <button type="button" class="prayer-pill ${currentMode === 'jamaah' ? 'active' : ''}" data-fardhu="${prayer.id}" data-mode="jamaah" role="radio" aria-checked="${currentMode === 'jamaah'}">
                   <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
                   <span>Jama'ah</span>
-                  <span class="prayer-pill-points">+3%</span>
                 </button>
                 <button type="button" class="prayer-pill ${currentMode === 'tepat-waktu' ? 'active' : ''}" data-fardhu="${prayer.id}" data-mode="tepat-waktu" role="radio" aria-checked="${currentMode === 'tepat-waktu'}">
                   <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
                   <span>Jama'ah Tepat Waktu</span>
-                  <span class="prayer-pill-points">+5%</span>
                 </button>
               </div>
             </div>
@@ -1174,7 +1192,6 @@ class MutabaahApp {
         if (prayer.rawatib && prayer.rawatib.length > 0) {
           html += `
             <div class="prayer-rawatib-list">
-              <span class="rawatib-section-title">Sunnah Rawatib:</span>
           `;
           prayer.rawatib.forEach(r => {
             const isChecked = completedIds.has(r.id);
@@ -1230,42 +1247,6 @@ class MutabaahApp {
           </div>
         `;
       });
-
-      // Target Tambahan Kustom Kategori Shalat jika ada
-      const customShalatTasks = this.state.tasks.filter(t => t.category === 'Shalat');
-      if (customShalatTasks.length > 0) {
-        html += `
-          <div class="sunnah-divider-card" style="margin-top: 14px;">
-            <div class="sunnah-divider-line"></div>
-            <span class="sunnah-divider-text">Target Tambahan Shalat</span>
-            <div class="sunnah-divider-line"></div>
-          </div>
-        `;
-        customShalatTasks.forEach(task => {
-          const isChecked = completedIds.has(task.id);
-          html += `
-            <div class="todo-item ${isChecked ? 'checked' : ''}" data-task-id="${task.id}" tabindex="0" role="checkbox" aria-checked="${isChecked}">
-              <div class="todo-left">
-                <div class="custom-checkbox" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                    <polyline points="20 6 9 17 4 12"></polyline>
-                  </svg>
-                </div>
-                <div class="todo-content">
-                  <span class="todo-title">${this.escapeHtml(task.title)}</span>
-                  ${task.desc ? `<span class="task-desc">${this.escapeHtml(task.desc)}</span>` : ''}
-                </div>
-              </div>
-              <button class="btn-delete-task" title="Hapus Target" data-id="${task.id}" aria-label="Hapus amalan ${this.escapeHtml(task.title)}">
-                <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <line x1="18" y1="6" x2="6" y2="18"></line>
-                  <line x1="6" y1="6" x2="18" y2="18"></line>
-                </svg>
-              </button>
-            </div>
-          `;
-        });
-      }
 
       listEl.innerHTML = html;
       this.updateDailyProgress();
@@ -1346,42 +1327,6 @@ class MutabaahApp {
           </div>
         </div>
       `;
-
-      // Target Tambahan Kustom Kategori Tilawah jika ada
-      const customTilawahTasks = this.state.tasks.filter(t => t.category === 'Tilawah');
-      if (customTilawahTasks.length > 0) {
-        html += `
-          <div class="sunnah-divider-card" style="margin-top: 14px;">
-            <div class="sunnah-divider-line"></div>
-            <span class="sunnah-divider-text">Target Tambahan Tilawah</span>
-            <div class="sunnah-divider-line"></div>
-          </div>
-        `;
-        customTilawahTasks.forEach(task => {
-          const isChecked = completedIds.has(task.id);
-          html += `
-            <div class="todo-item ${isChecked ? 'checked' : ''}" data-task-id="${task.id}" tabindex="0" role="checkbox" aria-checked="${isChecked}">
-              <div class="todo-left">
-                <div class="custom-checkbox" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                    <polyline points="20 6 9 17 4 12"></polyline>
-                  </svg>
-                </div>
-                <div class="todo-content">
-                  <span class="todo-title">${this.escapeHtml(task.title)}</span>
-                  ${task.desc ? `<span class="task-desc">${this.escapeHtml(task.desc)}</span>` : ''}
-                </div>
-              </div>
-              <button class="btn-delete-task" title="Hapus Target" data-id="${task.id}" aria-label="Hapus amalan ${this.escapeHtml(task.title)}">
-                <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <line x1="18" y1="6" x2="6" y2="18"></line>
-                  <line x1="6" y1="6" x2="18" y2="18"></line>
-                </svg>
-              </button>
-            </div>
-          `;
-        });
-      }
 
       listEl.innerHTML = html;
       this.updateDailyProgress();
@@ -1473,6 +1418,10 @@ class MutabaahApp {
 
   // Add New Custom Task
   addTask(title, category, desc) {
+    if (category === 'Shalat' || category === 'Tilawah') {
+      this.showToast('Amalan kategori Shalat dan Tilawah adalah standar dan tidak dapat ditambah.', 'error');
+      return;
+    }
     const newTask = {
       id: `custom-task-${Date.now()}`,
       title,
@@ -1490,6 +1439,10 @@ class MutabaahApp {
   // Delete Task
   deleteTask(taskId) {
     const task = this.state.tasks.find(t => t.id === taskId);
+    if (task && (task.category === 'Shalat' || task.category === 'Tilawah')) {
+      this.showToast('Amalan kategori Shalat dan Tilawah tidak dapat dihapus.', 'error');
+      return;
+    }
     const title = task ? task.title : 'amalan ini';
     
     if (confirm(`Hapus target "${title}" dari daftar harian?`)) {
@@ -1514,6 +1467,7 @@ class MutabaahApp {
         app: 'Mutabaah Yaumiyah',
         version: 2,
         exportedAt: new Date().toISOString(),
+        firstUseDate: this.state.firstUseDate,
         profile: this.state.profile,
         theme: this.state.theme,
         tasks: this.state.tasks,
@@ -1569,6 +1523,7 @@ class MutabaahApp {
         if (confirm(confirmMsg)) {
           if (imported.profile) this.state.profile = { ...this.state.profile, ...imported.profile };
           if (imported.theme) this.state.theme = { ...this.state.theme, ...imported.theme };
+          if (imported.firstUseDate) this.state.firstUseDate = imported.firstUseDate;
           if (imported.tasks) this.state.tasks = imported.tasks;
           if (imported.history) this.state.history = imported.history;
 
@@ -1593,29 +1548,32 @@ class MutabaahApp {
   resetAllData() {
     if (confirm('PERINGATAN: Seluruh data catatan mutaba\'ah akan dihapus permanen dari browser ini. Lanjutkan?')) {
       localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem('mutabaah_yaumiyah_data_v1');
+      const now = new Date();
+      this.state.firstUseDate = this.formatDate(new Date(now.getFullYear(), now.getMonth(), 1));
       this.state.profile = {
         name: 'Hamba Allah',
         handle: 'mutabaah_warrior',
-        bio: 'Menjaga konsistensi ibadah yaumiyah. Tiada hari tanpa tilawah dan qiyamul lail. Bismillah.',
+        bio: "Assalamu'alaykum, halo calon member FIRDAUS. :-) Untuk mulai menggunakan, klik tombol BACKUP kemudian HAPUS SEMUA DATA. Jangan lupa lengkapi data diri.",
         status: 'Istiqomah',
         hasCustomAvatar: false,
         hasCustomCover: false,
-        avatar: this.getThemeAvatarSvg('green', 'dark'),
-        cover: this.getThemeCoverSvg('green', 'dark')
+        avatar: this.getThemeAvatarSvg('orange', 'light'),
+        cover: this.getThemeCoverSvg('orange', 'light')
       };
-      this.state.theme = { color: 'green', mode: 'dark' };
+      this.state.theme = { color: 'orange', mode: 'light' };
       this.state.tasks = [...DEFAULT_TASKS];
-      this.state.history = {};
+      this.state.history = {}; // Benar-benar kosong dari awal
+      this.state.selectedDate = this.formatDate(now);
       this.state.activeCategory = 'Shalat';
-      this.seedDemoActivity();
       this.saveToStorage();
-      this.applyTheme('green', 'dark');
+      this.applyTheme('orange', 'light');
       this.renderProfile();
       this.renderHeatmap();
       this.renderChecklist();
       this.updateStats();
       this.closeModal('modalBackup');
-      this.showToast('Data aplikasi telah di-reset ke setelan awal.');
+      this.showToast('Seluruh data berhasil dihapus. Selamat memulai kembali!', 'success');
     }
   }
 
