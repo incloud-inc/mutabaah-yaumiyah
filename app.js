@@ -1502,58 +1502,28 @@ class MutabaahApp {
     }
 
     // ---------------------------------------------------------------
-    // 2. KATEGORI KEDUA: TILAWAH (Jumlah Lembar dengan Stepper - dan +)
+    // 2. KATEGORI KEDUA: TILAWAH (Tombol -, Jumlah Lembar, Tombol +)
     // ---------------------------------------------------------------
     if (category === 'Tilawah') {
       const sheets = this.getTilawahSheets(selectedDate);
       let html = `
-        <div class="tilawah-card">
-          <div class="tilawah-header">
-            <div class="tilawah-header-icon">
-              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
-                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
-              </svg>
-            </div>
-            <div>
-              <div class="tilawah-title">Tilawah Al-Qur'an</div>
-              <div class="tilawah-subtitle">Catat jumlah lembar bacaan Al-Qur'an hari ini</div>
-            </div>
+        <div class="tilawah-single-row-card">
+          <button type="button" class="tilawah-stepper-btn btn-stepper-minus" id="btnTilawahMinus" aria-label="Kurangi lembar" title="Kurangi 1 lembar">
+            <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="3">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+          </button>
+          
+          <div class="tilawah-input-center">
+            <input type="number" id="tilawahSheetsInput" class="tilawah-number-input" min="0" max="604" value="${sheets}" inputmode="numeric" placeholder="0" aria-label="Jumlah lembar" />
           </div>
 
-          <div class="tilawah-stepper-box">
-            <span class="tilawah-stepper-title">Jumlah Lembar</span>
-            <div class="tilawah-stepper-row">
-              <button type="button" class="tilawah-stepper-btn btn-stepper-minus" id="btnTilawahMinus" aria-label="Kurangi lembar" title="Kurangi 1 lembar">
-                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="3">
-                  <line x1="5" y1="12" x2="19" y2="12"></line>
-                </svg>
-              </button>
-              
-              <div class="tilawah-input-wrap">
-                <input type="number" id="tilawahSheetsInput" class="tilawah-number-input" min="0" max="604" value="${sheets}" inputmode="numeric" aria-label="Jumlah lembar tilawah" />
-                <span class="tilawah-unit-label">Lembar</span>
-              </div>
-
-              <button type="button" class="tilawah-stepper-btn btn-stepper-plus" id="btnTilawahPlus" aria-label="Tambah lembar" title="Tambah 1 lembar">
-                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="3">
-                  <line x1="12" y1="5" x2="12" y2="19"></line>
-                  <line x1="5" y1="12" x2="19" y2="12"></line>
-                </svg>
-              </button>
-            </div>
-
-            ${sheets > 0 ? `
-              <div class="tilawah-status-note">
-                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                <span>Tercatat <strong>${sheets} Lembar</strong> (${sheets * 2} Halaman) pada tanggal ini.</span>
-              </div>
-            ` : `
-              <div class="tilawah-status-note zero">
-                <span>Belum ada lembar tilawah yang dicatat hari ini. Gunakan tombol + atau ketik angka.</span>
-              </div>
-            `}
-          </div>
+          <button type="button" class="tilawah-stepper-btn btn-stepper-plus" id="btnTilawahPlus" aria-label="Tambah lembar" title="Tambah 1 lembar">
+            <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="3">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+          </button>
         </div>
       `;
 
@@ -2655,53 +2625,55 @@ class MutabaahApp {
     ctx.fillStyle = bgCanvas;
     ctx.fillRect(0, 0, 1080, 1350);
 
-    // 2. Draw Main White/Dark Card Container
-    const cardX = 40;
-    const cardY = 40;
-    const cardW = 1000;
-    const cardH = 1270;
-    const cardR = 28;
+    // 2. Draw Main White/Dark Card Container (Margins 24px)
+    const cardX = 24;
+    const cardY = 24;
+    const cardW = 1032;
+    const cardH = 1302;
+    const cardR = 30;
 
     roundRect(cardX, cardY, cardW, cardH, cardR);
     ctx.fillStyle = bgCard;
     ctx.fill();
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 2.5;
     ctx.strokeStyle = borderCol;
     ctx.stroke();
 
-    // 3. Top App Header / Badge
-    const badgeW = 280;
-    const badgeH = 34;
+    // 3. Top App Header / Badge (BESAR & JELAS)
+    const badgeW = 380;
+    const badgeH = 44;
     const badgeX = cardX + (cardW - badgeW) / 2;
-    const badgeY = cardY + 30;
-    roundRect(badgeX, badgeY, badgeW, badgeH, 17);
+    const badgeY = cardY + 28;
+    roundRect(badgeX, badgeY, badgeW, badgeH, 22);
     ctx.fillStyle = bgSurface;
     ctx.fill();
-    ctx.lineWidth = 1;
+    ctx.lineWidth = 1.5;
     ctx.strokeStyle = borderCol;
     ctx.stroke();
 
-    ctx.font = '600 13px system-ui, -apple-system, sans-serif';
+    ctx.font = '700 18px system-ui, -apple-system, sans-serif';
     ctx.fillStyle = primaryCol;
     ctx.textAlign = 'center';
-    ctx.fillText("MUTABA'AH YAUMIYAH • 7 HARI", badgeX + badgeW / 2, badgeY + 22);
+    ctx.fillText("MUTABA'AH YAUMIYAH • 7 HARI", badgeX + badgeW / 2, badgeY + 28);
 
-    // Title: Tabel Pencapaian 7 Hari
-    ctx.font = '700 32px system-ui, -apple-system, sans-serif';
+    // Title: Tabel Pencapaian 7 Hari (BESAR & BOLD)
+    ctx.font = '800 44px system-ui, -apple-system, sans-serif';
     ctx.fillStyle = textPrimary;
     ctx.textAlign = 'center';
-    ctx.fillText(data.tableTitle || 'Tabel Pencapaian 7 Hari', 540, cardY + 100);
+    ctx.fillText(data.tableTitle || 'Tabel Pencapaian 7 Hari', 540, cardY + 116);
 
-    // Subtitle: User Name & Period
-    ctx.font = '500 17px system-ui, -apple-system, sans-serif';
+    // Subtitle: User Name & Period (LEBIH BESAR & JELAS)
+    ctx.font = '600 22px system-ui, -apple-system, sans-serif';
     ctx.fillStyle = textSecondary;
-    ctx.fillText(`Muhasabah ${data.userName} • Evaluasi Konsistensi Amalan`, 540, cardY + 130);
+    ctx.fillText(`Muhasabah ${data.userName} • Evaluasi Konsistensi Amalan`, 540, cardY + 154);
 
-    // 4. 4 KPI Stat Cards
-    const kpiY = cardY + 158;
-    const kpiH = 88;
+    // 4. 4 KPI Stat Cards (BESAR: Angka 40px, Label 17px)
+    const tblX = cardX + 24;
+    const tblW = cardW - 48; // 984px
+    const kpiY = cardY + 180;
+    const kpiH = 110;
     const kpiGap = 16;
-    const kpiW = (cardW - 60 - (kpiGap * 3)) / 4;
+    const kpiW = (tblW - (kpiGap * 3)) / 4; // 234px
     const kpis = [
       { val: `${data.avgPercent}%`, label: 'Rata-rata Capaian' },
       { val: `${data.totalAmalanDone}`, label: 'Total Amalan' },
@@ -2710,105 +2682,104 @@ class MutabaahApp {
     ];
 
     kpis.forEach((kpi, idx) => {
-      const kX = cardX + 30 + idx * (kpiW + kpiGap);
-      roundRect(kX, kpiY, kpiW, kpiH, 14);
+      const kX = tblX + idx * (kpiW + kpiGap);
+      roundRect(kX, kpiY, kpiW, kpiH, 16);
       ctx.fillStyle = bgSurface;
       ctx.fill();
-      ctx.lineWidth = 1;
+      ctx.lineWidth = 1.5;
       ctx.strokeStyle = borderCol;
       ctx.stroke();
 
       ctx.textAlign = 'center';
-      ctx.font = '700 24px system-ui, -apple-system, sans-serif';
+      ctx.font = '800 40px system-ui, -apple-system, sans-serif';
       ctx.fillStyle = primaryCol;
-      ctx.fillText(kpi.val, kX + kpiW / 2, kpiY + 40);
+      ctx.fillText(kpi.val, kX + kpiW / 2, kpiY + 52);
 
-      ctx.font = '500 13px system-ui, -apple-system, sans-serif';
+      ctx.font = '600 17px system-ui, -apple-system, sans-serif';
       ctx.fillStyle = textSecondary;
-      ctx.fillText(kpi.label, kX + kpiW / 2, kpiY + 68);
+      ctx.fillText(kpi.label, kX + kpiW / 2, kpiY + 88);
     });
 
-    // 5. Table Header
-    const thY = cardY + 270;
-    const thH = 46;
-    const tblX = cardX + 30;
-    const tblW = cardW - 60;
-    roundRect(tblX, thY, tblW, thH, 10);
+    // 5. Table Header (BESAR & TEBAL)
+    const thY = cardY + 314;
+    const thH = 54;
+    roundRect(tblX, thY, tblW, thH, 14);
     ctx.fillStyle = bgSurface;
     ctx.fill();
-    ctx.lineWidth = 1;
+    ctx.lineWidth = 1.5;
     ctx.strokeStyle = borderCol;
     ctx.stroke();
 
-    ctx.font = '600 14px system-ui, -apple-system, sans-serif';
+    ctx.font = '800 19px system-ui, -apple-system, sans-serif';
     ctx.fillStyle = textPrimary;
     ctx.textAlign = 'left';
-    ctx.fillText('HARI / TANGGAL', tblX + 20, thY + 29);
-    ctx.fillText('SHALAT (FARDHU & SUNNAH)', tblX + 240, thY + 29);
-    ctx.fillText('TILAWAH', tblX + 540, thY + 29);
-    ctx.fillText('PUASA', tblX + 710, thY + 29);
+    ctx.fillText('HARI / TANGGAL', tblX + 22, thY + 34);
+    ctx.fillText('SHALAT (FARDHU & SUNNAH)', tblX + 250, thY + 34);
+    ctx.fillText('TILAWAH', tblX + 575, thY + 34);
+    ctx.fillText('PUASA', tblX + 740, thY + 34);
     ctx.textAlign = 'right';
-    ctx.fillText('CAPAIAN', tblX + tblW - 20, thY + 29);
+    ctx.fillText('CAPAIAN', tblX + tblW - 24, thY + 34);
 
-    // 6. 7 Table Rows
+    // 6. 7 Table Rows (Tinggi 108px, Font Besar)
     let rowY = thY + thH + 12;
-    const rowH = 100;
+    const rowH = 108;
     const rowGap = 8;
 
     data.daysData.forEach((day, index) => {
       const isAlt = index % 2 === 1;
-      roundRect(tblX, rowY, tblW, rowH, 12);
+      roundRect(tblX, rowY, tblW, rowH, 14);
       ctx.fillStyle = day.isToday ? (isLightMode ? '#e7f5ff' : '#182438') : (isAlt ? bgSurface : bgCard);
       ctx.fill();
-      ctx.lineWidth = 1;
+      ctx.lineWidth = day.isToday ? 2.5 : 1.5;
       ctx.strokeStyle = day.isToday ? primaryCol : borderCol;
       ctx.stroke();
 
-      // Col 1: Hari & Tanggal
+      // Col 1: Hari & Tanggal (BESAR & TEBAL)
       ctx.textAlign = 'left';
-      ctx.font = '700 17px system-ui, -apple-system, sans-serif';
+      ctx.font = '800 24px system-ui, -apple-system, sans-serif';
       ctx.fillStyle = textPrimary;
-      ctx.fillText(day.dName, tblX + 20, rowY + 32);
+      ctx.fillText(day.dName, tblX + 22, rowY + 36);
 
-      ctx.font = '600 13px system-ui, -apple-system, sans-serif';
+      ctx.font = '700 18px system-ui, -apple-system, sans-serif';
       ctx.fillStyle = primaryCol;
-      ctx.fillText(day.hijriStr, tblX + 20, rowY + 54);
+      ctx.fillText(day.hijriStr, tblX + 22, rowY + 66);
 
-      ctx.font = 'italic 12px system-ui, -apple-system, sans-serif';
+      ctx.font = 'italic 16px system-ui, -apple-system, sans-serif';
       ctx.fillStyle = textMuted;
-      ctx.fillText(day.masehiStr, tblX + 20, rowY + 76);
+      ctx.fillText(day.masehiStr, tblX + 22, rowY + 92);
 
-      // Col 2: Shalat
-      ctx.font = '700 16px system-ui, -apple-system, sans-serif';
+      // Col 2: Shalat (BESAR & TEBAL)
+      ctx.font = '800 23px system-ui, -apple-system, sans-serif';
       ctx.fillStyle = textPrimary;
-      ctx.fillText(`${day.shalatDone}/5 Fardhu`, tblX + 240, rowY + 32);
+      ctx.fillText(`${day.shalatDone}/5 Fardhu`, tblX + 250, rowY + 36);
 
-      ctx.font = '500 12px system-ui, -apple-system, sans-serif';
+      ctx.font = '600 17px system-ui, -apple-system, sans-serif';
       ctx.fillStyle = textSecondary;
-      ctx.fillText(day.fardhuPartsText, tblX + 240, rowY + 54);
+      ctx.fillText(day.fardhuPartsText, tblX + 250, rowY + 66);
 
       let sunnahTxt = [];
       if (day.rawatibDone > 0) sunnahTxt.push(`${day.rawatibDone} Rawatib`);
       if (day.sunnahShalatDone > 0) sunnahTxt.push(`${day.sunnahShalatDone} Sunnah`);
+      ctx.font = '500 16px system-ui, -apple-system, sans-serif';
       ctx.fillStyle = textMuted;
-      ctx.fillText(sunnahTxt.length > 0 ? sunnahTxt.join(' • ') : 'Rawatib/Sunnah: -', tblX + 240, rowY + 76);
+      ctx.fillText(sunnahTxt.length > 0 ? sunnahTxt.join(' • ') : 'Rawatib/Sunnah: -', tblX + 250, rowY + 92);
 
-      // Col 3: Tilawah
-      ctx.font = '600 14px system-ui, -apple-system, sans-serif';
+      // Col 3: Tilawah (BESAR & TEBAL)
+      ctx.font = '700 21px system-ui, -apple-system, sans-serif';
       ctx.fillStyle = day.tilawahText !== '-' ? primaryCol : textMuted;
-      ctx.fillText(day.tilawahText !== '-' ? `📖 ${day.tilawahText}` : '-', tblX + 540, rowY + 50);
+      ctx.fillText(day.tilawahText !== '-' ? `📖 ${day.tilawahText}` : '-', tblX + 575, rowY + 60);
 
-      // Col 4: Puasa
-      ctx.font = '600 14px system-ui, -apple-system, sans-serif';
+      // Col 4: Puasa (BESAR & TEBAL)
+      ctx.font = '700 20px system-ui, -apple-system, sans-serif';
       ctx.fillStyle = day.puasaText !== '-' ? '#2b8a3e' : textMuted;
-      ctx.fillText(day.puasaText !== '-' ? `🌾 ${day.puasaText}` : '-', tblX + 710, rowY + 50);
+      ctx.fillText(day.puasaText !== '-' ? `🌾 ${day.puasaText}` : '-', tblX + 740, rowY + 60);
 
-      // Col 5: Capaian Badge Pill
-      const pctBadgeW = 86;
-      const pctBadgeH = 34;
+      // Col 5: Capaian Badge Pill (BESAR & TEBAL)
+      const pctBadgeW = 104;
+      const pctBadgeH = 46;
       const pctBadgeX = tblX + tblW - pctBadgeW - 20;
       const pctBadgeY = rowY + (rowH - pctBadgeH) / 2;
-      roundRect(pctBadgeX, pctBadgeY, pctBadgeW, pctBadgeH, 17);
+      roundRect(pctBadgeX, pctBadgeY, pctBadgeW, pctBadgeH, 23);
 
       let pctBg = isLightMode ? '#e9ecef' : '#2b313b';
       let pctColor = textSecondary;
@@ -2822,31 +2793,31 @@ class MutabaahApp {
       ctx.fillStyle = pctBg;
       ctx.fill();
 
-      ctx.font = '700 15px system-ui, -apple-system, sans-serif';
+      ctx.font = '800 23px system-ui, -apple-system, sans-serif';
       ctx.fillStyle = pctColor;
       ctx.textAlign = 'center';
-      ctx.fillText(`${day.percent}%`, pctBadgeX + pctBadgeW / 2, pctBadgeY + 23);
+      ctx.fillText(`${day.percent}%`, pctBadgeX + pctBadgeW / 2, pctBadgeY + 31);
 
       rowY += rowH + rowGap;
     });
 
-    // 7. Footer Divider & Branding
-    const footerY = cardY + cardH - 85;
+    // 7. Footer Divider & Branding (BESAR & TEBAL)
+    const footerY = cardY + cardH - 95;
     ctx.strokeStyle = borderCol;
-    ctx.lineWidth = 1;
+    ctx.lineWidth = 1.5;
     ctx.beginPath();
     ctx.moveTo(cardX + 30, footerY);
     ctx.lineTo(cardX + cardW - 30, footerY);
     ctx.stroke();
 
     ctx.textAlign = 'center';
-    ctx.font = 'italic 13px system-ui, -apple-system, sans-serif';
+    ctx.font = 'italic 18px system-ui, -apple-system, sans-serif';
     ctx.fillStyle = textMuted;
-    ctx.fillText('“Amalan yang paling dicintai Allah adalah yang terus-menerus walau sedikit.” (HR. Bukhari)', 540, footerY + 30);
+    ctx.fillText('“Amalan yang paling dicintai Allah adalah yang terus-menerus walau sedikit.” (HR. Bukhari)', 540, footerY + 38);
 
-    ctx.font = '600 15px system-ui, -apple-system, sans-serif';
+    ctx.font = '800 24px system-ui, -apple-system, sans-serif';
     ctx.fillStyle = primaryCol;
-    ctx.fillText('🌐 mastatag.com • Mutaba\'ah Yaumiyah', 540, footerY + 58);
+    ctx.fillText('🌐 mastatag.com • Mutaba\'ah Yaumiyah', 540, footerY + 74);
 
     // 8. Trigger PNG Download
     try {

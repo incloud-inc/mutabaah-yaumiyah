@@ -1818,20 +1818,32 @@ body.mode-dark .prayer-pill-points {
   padding: 12px 18px;
   border-radius: var(--radius-lg);
   border: 2px solid var(--theme-primary);
-  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.4), 0 0 18px var(--theme-glow);
+  background: #ffffff !important;
+  color: #1a1e24 !important;
+  opacity: 1 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: 0 14px 35px rgba(0, 0, 0, 0.28), 0 0 18px var(--theme-glow);
   transition: transform 0.2s ease;
 }
 
-/* Light Mode: White card, dark text, glowing theme border */
+/* Light Mode & Theme Modes: Solid White background, high contrast dark text */
 body.mode-light .toast-wrapper,
-body.mode-terang .toast-wrapper {
+body.mode-terang .toast-wrapper,
+body.mode-theme-light .toast-wrapper,
+body.mode-theme-dark .toast-wrapper {
   background: #ffffff !important;
   color: #1a1e24 !important;
+  opacity: 1 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
   box-shadow: 0 14px 34px rgba(0, 0, 0, 0.22), 0 0 15px var(--theme-glow) !important;
 }
 
 body.mode-light .toast-message,
-body.mode-terang .toast-message {
+body.mode-terang .toast-message,
+body.mode-theme-light .toast-message,
+body.mode-theme-dark .toast-message {
   color: #1a1e24 !important;
   font-weight: 700 !important;
   font-size: 0.88rem;
@@ -1842,6 +1854,9 @@ body.mode-dark .toast-wrapper,
 body.mode-gelap .toast-wrapper {
   background: #15181e !important;
   color: #f8f9fa !important;
+  opacity: 1 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
   box-shadow: 0 16px 42px rgba(0, 0, 0, 0.8), 0 0 20px var(--theme-glow) !important;
 }
 
@@ -2552,8 +2567,26 @@ body.mode-dark .pct-zero { color: #868e96; background: rgba(134, 142, 150, 0.18)
 }
 
 /* ===================================================================
-   TILAWAH STEPPER CARD (Jumlah Lembar, - kiri & + kanan)
+   TILAWAH SINGLE ROW CARD (Tombol -, Jumlah Lembar, Tombol +)
    =================================================================== */
+.tilawah-single-row-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 22px 16px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  margin-top: 4px;
+}
+
+.tilawah-input-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .tilawah-card {
   background: var(--bg-surface);
   border: 1px solid var(--border-default);
@@ -2602,10 +2635,10 @@ body.mode-dark .pct-zero { color: #868e96; background: rgba(134, 142, 150, 0.18)
 }
 
 .tilawah-stepper-btn {
-  width: 52px;
-  height: 52px;
+  width: 58px;
+  height: 58px;
   border-radius: 50%;
-  background: var(--bg-surface);
+  background: var(--bg-card);
   border: 2px solid var(--border-default);
   color: var(--text-primary);
   display: flex;
@@ -2613,7 +2646,7 @@ body.mode-dark .pct-zero { color: #868e96; background: rgba(134, 142, 150, 0.18)
   justify-content: center;
   cursor: pointer;
   transition: all 0.15s ease;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
   flex-shrink: 0;
   touch-action: manipulation;
 }
@@ -2621,6 +2654,7 @@ body.mode-dark .pct-zero { color: #868e96; background: rgba(134, 142, 150, 0.18)
 .tilawah-stepper-btn:hover {
   border-color: var(--theme-primary);
   color: var(--theme-primary);
+  transform: scale(1.05);
 }
 
 .tilawah-stepper-btn:active {
@@ -2639,16 +2673,25 @@ body.mode-dark .pct-zero { color: #868e96; background: rgba(134, 142, 150, 0.18)
 }
 
 .tilawah-number-input {
-  width: 100px;
+  width: 104px;
+  height: 58px;
   text-align: center;
   font-family: var(--font-mono);
   font-size: 2.2rem;
   font-weight: 800;
   color: var(--theme-primary);
-  background: transparent;
-  border: none;
+  background: var(--bg-card);
+  border: 2px solid var(--border-default);
+  border-radius: var(--radius-md);
   outline: none;
-  padding: 2px 0;
+  padding: 0;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.04);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.tilawah-number-input:focus {
+  border-color: var(--theme-primary);
+  box-shadow: 0 0 0 3px var(--theme-glow);
 }
 
 .tilawah-number-input::-webkit-inner-spin-button,
