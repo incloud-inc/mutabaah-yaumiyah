@@ -77,7 +77,7 @@ const OPEN_COLOR_PALETTES = {
     id: 'yellow',
     name: 'Fajar Emas',
     sub: 'Kuning Mentari Hangat & Bercahaya',
-    colors: ['#fff9db', '#fff3bf', '#ffec99', '#ffe066', '#fcc419', '#fab005', '#f59f00', '#f08c00', '#e67700', '#d9480f']
+    colors: ['#fff9db', '#fff3bf', '#ffec99', '#ffe066', '#ffd43b', '#fab005', '#f59f00', '#f08c00', '#e67700', '#d9480f']
   },
   orange: {
     id: 'orange',
@@ -284,7 +284,7 @@ class MutabaahApp {
   getThemeAvatarSvg(themeKey, mode) {
     const palette = OPEN_COLOR_PALETTES[themeKey] || OPEN_COLOR_PALETTES.green;
     const c = palette.colors;
-    const isLight = mode === 'light' || mode === 'theme-light';
+    const isLight = mode !== 'dark';
     const col1 = isLight ? c[5] : c[8];
     const col2 = isLight ? c[3] : c[6];
     const iconColor = '#ffffff';
@@ -296,7 +296,7 @@ class MutabaahApp {
   getThemeCoverSvg(themeKey, mode) {
     const palette = OPEN_COLOR_PALETTES[themeKey] || OPEN_COLOR_PALETTES.green;
     const c = palette.colors;
-    const isLight = mode === 'light' || mode === 'theme-light';
+    const isLight = mode !== 'dark';
     const cBg1 = isLight ? c[1] : c[9];
     const cBg2 = isLight ? c[3] : '#0c0e12';
     const cGrid = isLight ? c[5] : c[4];
@@ -728,36 +728,36 @@ class MutabaahApp {
 
       document.querySelector('meta[name="theme-color"]')?.setAttribute('content', c[2]);
     } else if (mode === 'theme-dark') {
-      // MODE GELAP TEMA: Background bernuansa tema pekat (misal c[7] = #f76707 pada Surya Sahara)
-      root.style.setProperty('--bg-canvas', c[7]);
-      root.style.setProperty('--bg-card', c[8]);
-      root.style.setProperty('--bg-surface', c[9]);
-      root.style.setProperty('--bg-surface-hover', 'rgba(0, 0, 0, 0.16)');
-      root.style.setProperty('--border-default', c[6]);
-      root.style.setProperty('--border-muted', c[7]);
-      root.style.setProperty('--border-subtle', 'rgba(255, 255, 255, 0.14)');
+      // MODE GELAP TEMA: Background bernuansa tema sedang yang teduh dan nyaman (misal c[4] = #ffa94d pada Surya Sahara, #ffd43b pada Yellow, #a9e34b pada Lime)
+      root.style.setProperty('--bg-canvas', c[4]);
+      root.style.setProperty('--bg-card', '#ffffff');
+      root.style.setProperty('--bg-surface', c[0] || '#fff4e6');
+      root.style.setProperty('--bg-surface-hover', c[1] || '#ffe8cc');
+      root.style.setProperty('--border-default', c[5]);
+      root.style.setProperty('--border-muted', c[3]);
+      root.style.setProperty('--border-subtle', 'rgba(0, 0, 0, 0.08)');
 
-      root.style.setProperty('--text-primary', '#ffffff');
-      root.style.setProperty('--text-secondary', c[1] || '#ffe8cc');
-      root.style.setProperty('--text-muted', c[2] || '#ffd8a8');
-      root.style.setProperty('--text-link', '#ffffff');
+      root.style.setProperty('--text-primary', '#1e1e1e');
+      root.style.setProperty('--text-secondary', '#343a40');
+      root.style.setProperty('--text-muted', '#5c636a');
+      root.style.setProperty('--text-link', isYellowOrLime ? c[9] : c[8]);
 
-      root.style.setProperty('--theme-level-0', c[9]);
-      root.style.setProperty('--theme-level-0-border', c[8]);
-      root.style.setProperty('--theme-level-1', c[5]);
+      root.style.setProperty('--theme-level-0', '#ffffff');
+      root.style.setProperty('--theme-level-0-border', c[3]);
+      root.style.setProperty('--theme-level-1', c[1]);
       root.style.setProperty('--theme-level-2', c[3]);
-      root.style.setProperty('--theme-level-3', c[1]);
-      root.style.setProperty('--theme-level-4', '#ffffff');
+      root.style.setProperty('--theme-level-3', c[5]);
+      root.style.setProperty('--theme-level-4', c[8]);
 
-      root.style.setProperty('--theme-primary', '#ffffff');
-      root.style.setProperty('--theme-btn-text', c[9]);
-      root.style.setProperty('--theme-check-icon-color', c[9]);
-      root.style.setProperty('--theme-glow', `rgba(${this.hexToRgb(c[9])}, 0.45)`);
+      root.style.setProperty('--theme-primary', isYellowOrLime ? c[9] : c[7]);
+      root.style.setProperty('--theme-btn-text', '#ffffff');
+      root.style.setProperty('--theme-check-icon-color', '#ffffff');
+      root.style.setProperty('--theme-glow', `rgba(${this.hexToRgb(c[6])}, 0.25)`);
 
-      root.style.setProperty('--theme-checked-bg', 'rgba(0, 0, 0, 0.22)');
-      root.style.setProperty('--theme-checked-border', c[3]);
+      root.style.setProperty('--theme-checked-bg', c[1]);
+      root.style.setProperty('--theme-checked-border', c[6]);
 
-      document.querySelector('meta[name="theme-color"]')?.setAttribute('content', c[7]);
+      document.querySelector('meta[name="theme-color"]')?.setAttribute('content', c[4]);
     } else {
       // MODE GELAP STANDARD: Hitam Elegan (#0c0e12)
       root.style.setProperty('--bg-canvas', '#0c0e12');
@@ -1541,13 +1541,6 @@ class MutabaahApp {
                   <line x1="5" y1="12" x2="19" y2="12"></line>
                 </svg>
               </button>
-            </div>
-
-            <div class="tilawah-quick-presets">
-              <button type="button" class="btn-tilawah-preset" data-preset="2">+2 Lembar</button>
-              <button type="button" class="btn-tilawah-preset" data-preset="5">+5 Lembar</button>
-              <button type="button" class="btn-tilawah-preset" data-preset="10">+10 Lembar (1/2 Juz)</button>
-              <button type="button" class="btn-tilawah-preset" data-preset="20">+20 Lembar (1 Juz)</button>
             </div>
 
             ${sheets > 0 ? `
@@ -2633,15 +2626,15 @@ class MutabaahApp {
     const palette = OPEN_COLOR_PALETTES[themeKey] || OPEN_COLOR_PALETTES.green;
     const c = palette.colors;
 
-    const isLightMode = mode === 'light' || mode === 'theme-light';
-    const bgCanvas = isLightMode ? (mode === 'theme-light' ? c[2] : '#f8f9fa') : (mode === 'theme-dark' ? c[7] : '#0c0e12');
-    const bgCard = isLightMode ? '#ffffff' : (mode === 'theme-dark' ? c[8] : '#15181e');
-    const bgSurface = isLightMode ? (mode === 'theme-light' ? c[0] : '#f1f3f5') : (mode === 'theme-dark' ? c[9] : '#1f242c');
-    const textPrimary = isLightMode ? '#1e1e1e' : '#ffffff';
-    const textSecondary = isLightMode ? '#495057' : '#ced4da';
-    const textMuted = isLightMode ? '#868e96' : '#868e96';
-    const borderCol = isLightMode ? (mode === 'theme-light' ? c[3] : '#dee2e6') : (mode === 'theme-dark' ? c[6] : '#2d333b');
-    const primaryCol = isLightMode ? c[7] : c[5];
+    const isLightMode = mode !== 'dark';
+    const bgCanvas = mode === 'theme-dark' ? c[4] : (mode === 'theme-light' ? c[2] : (mode === 'light' ? '#f8f9fa' : '#0c0e12'));
+    const bgCard = (mode === 'dark') ? '#15181e' : '#ffffff';
+    const bgSurface = (mode === 'dark') ? '#1f242c' : (mode === 'theme-dark' ? (c[0] || '#fff4e6') : (mode === 'theme-light' ? (c[0] || '#fff4e6') : '#f1f3f5'));
+    const textPrimary = (mode === 'dark') ? '#ffffff' : '#1e1e1e';
+    const textSecondary = (mode === 'dark') ? '#ced4da' : '#343a40';
+    const textMuted = (mode === 'dark') ? '#868e96' : '#687076';
+    const borderCol = (mode === 'dark') ? '#2d333b' : (mode === 'theme-dark' ? c[5] : (mode === 'theme-light' ? c[3] : '#dee2e6'));
+    const primaryCol = (mode === 'dark') ? c[5] : (themeKey === 'yellow' || themeKey === 'lime' ? c[8] : c[7]);
 
     // Helper: Rounded Rectangle
     const roundRect = (x, y, w, h, r) => {
@@ -3081,17 +3074,7 @@ class MutabaahApp {
         return;
       }
 
-      // 5. Tilawah Preset Buttons (+2, +5, +10, +20 Lembar)
-      const presetBtn = e.target.closest('.btn-tilawah-preset');
-      if (presetBtn && presetBtn.dataset.preset) {
-        e.stopPropagation();
-        const add = parseInt(presetBtn.dataset.preset, 10) || 0;
-        const cur = this.getTilawahSheets(this.state.selectedDate);
-        this.setTilawahSheets(cur + add, this.state.selectedDate);
-        return;
-      }
-
-      // 6. Prayer execution mode pill (Sendiri, Jama'ah, Jama'ah Tepat Waktu)
+      // 5. Prayer execution mode pill (Sendiri, Jama'ah, Jama'ah Tepat Waktu)
       const prayerPill = e.target.closest('.prayer-pill');
       if (prayerPill && prayerPill.dataset.fardhu && prayerPill.dataset.mode) {
         this.setPrayerMode(prayerPill.dataset.fardhu, prayerPill.dataset.mode, this.state.selectedDate);

@@ -2278,13 +2278,13 @@ body.mode-gelap .toast-message {
 }
 
 body.mode-light .review-narrative-text strong,
-body.mode-theme-light .review-narrative-text strong {
+body.mode-theme-light .review-narrative-text strong,
+body.mode-theme-dark .review-narrative-text strong {
   color: #1c1f24;
   font-weight: 800;
 }
 
-body.mode-dark .review-narrative-text strong,
-body.mode-theme-dark .review-narrative-text strong {
+body.mode-dark .review-narrative-text strong {
   color: #f8f9fa;
   font-weight: 800;
 }
@@ -2349,9 +2349,14 @@ body.mode-theme-dark .review-narrative-text strong {
   background: rgba(0, 0, 0, 0.03);
 }
 
-body.mode-dark .review-table tr.is-today-row,
-body.mode-theme-dark .review-table tr.is-today-row {
+body.mode-dark .review-table tr.is-today-row {
   background: rgba(255, 255, 255, 0.08);
+}
+
+body.mode-light .review-table tr.is-today-row,
+body.mode-theme-light .review-table tr.is-today-row,
+body.mode-theme-dark .review-table tr.is-today-row {
+  background: rgba(0, 0, 0, 0.04);
 }
 
 .review-today-pill {
@@ -2525,10 +2530,10 @@ body.mode-dark .review-puasa-badge {
 .pct-low { background: rgba(232, 89, 12, 0.16); color: #e8590c; }
 .pct-zero { background: rgba(134, 142, 150, 0.16); color: var(--text-muted); }
 
-body.mode-dark .pct-high, body.mode-theme-dark .pct-high { color: #69db7c; background: rgba(81, 207, 102, 0.18); }
-body.mode-dark .pct-mid, body.mode-theme-dark .pct-mid { color: #74c0fc; background: rgba(77, 171, 247, 0.18); }
-body.mode-dark .pct-low, body.mode-theme-dark .pct-low { color: #ffa94d; background: rgba(255, 169, 77, 0.18); }
-body.mode-dark .pct-zero, body.mode-theme-dark .pct-zero { color: #868e96; background: rgba(134, 142, 150, 0.18); }
+body.mode-dark .pct-high { color: #69db7c; background: rgba(81, 207, 102, 0.18); }
+body.mode-dark .pct-mid { color: #74c0fc; background: rgba(77, 171, 247, 0.18); }
+body.mode-dark .pct-low { color: #ffa94d; background: rgba(255, 169, 77, 0.18); }
+body.mode-dark .pct-zero { color: #868e96; background: rgba(134, 142, 150, 0.18); }
 
 .modal-review-actions {
   display: flex;
@@ -2658,32 +2663,6 @@ body.mode-dark .pct-zero, body.mode-theme-dark .pct-zero { color: #868e96; backg
   color: var(--text-muted);
 }
 
-.tilawah-quick-presets {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 6px;
-}
-
-.quick-preset-pill {
-  background: var(--bg-card);
-  border: 1px solid var(--border-default);
-  color: var(--text-secondary);
-  font-size: 0.72rem;
-  font-weight: 600;
-  padding: 6px 4px;
-  border-radius: var(--radius-full);
-  cursor: pointer;
-  text-align: center;
-  transition: all 0.15s;
-}
-
-.quick-preset-pill:hover,
-.quick-preset-pill:active {
-  background: var(--theme-primary);
-  color: var(--theme-btn-text);
-  border-color: var(--theme-primary);
-}
-
 /* ===================================================================
    SEDEKAH SUBUH ACTION BUTTONS (Apresiasi Creator & GAZA Palestina)
    =================================================================== */
@@ -2730,15 +2709,13 @@ body.mode-dark .pct-zero, body.mode-theme-dark .pct-zero { color: #868e96; backg
   color: #ffffff;
 }
 
-body.mode-dark .btn-qris,
-body.mode-theme-dark .btn-qris {
+body.mode-dark .btn-qris {
   background: rgba(77, 171, 247, 0.16);
   color: #74c0fc;
   border-color: rgba(77, 171, 247, 0.35);
 }
 
-body.mode-dark .btn-palestina,
-body.mode-theme-dark .btn-palestina {
+body.mode-dark .btn-palestina {
   background: rgba(81, 207, 102, 0.16);
   color: #69db7c;
   border-color: rgba(81, 207, 102, 0.35);
