@@ -739,11 +739,12 @@ body.mode-light .heatmap-cell.level-4 .heatmap-hijri-badge {
 }
 
 .current-date-heading {
-  font-size: 0.98rem;
+  font-size: 0.86rem;
   font-weight: 700;
   letter-spacing: -0.01em;
   color: var(--text-primary);
   margin: 0;
+  line-height: 1.3;
 }
 
 .date-masehi-sub {
@@ -2276,12 +2277,14 @@ body.mode-gelap .toast-message {
   color: var(--theme-primary);
 }
 
-body.mode-light .review-narrative-text strong {
+body.mode-light .review-narrative-text strong,
+body.mode-theme-light .review-narrative-text strong {
   color: #1c1f24;
   font-weight: 800;
 }
 
-body.mode-dark .review-narrative-text strong {
+body.mode-dark .review-narrative-text strong,
+body.mode-theme-dark .review-narrative-text strong {
   color: #f8f9fa;
   font-weight: 800;
 }
@@ -2346,8 +2349,9 @@ body.mode-dark .review-narrative-text strong {
   background: rgba(0, 0, 0, 0.03);
 }
 
-body.mode-dark .review-table tr.is-today-row {
-  background: rgba(255, 255, 255, 0.04);
+body.mode-dark .review-table tr.is-today-row,
+body.mode-theme-dark .review-table tr.is-today-row {
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .review-today-pill {
@@ -2521,18 +2525,243 @@ body.mode-dark .review-puasa-badge {
 .pct-low { background: rgba(232, 89, 12, 0.16); color: #e8590c; }
 .pct-zero { background: rgba(134, 142, 150, 0.16); color: var(--text-muted); }
 
-body.mode-dark .pct-high { color: #69db7c; background: rgba(81, 207, 102, 0.18); }
-body.mode-dark .pct-mid { color: #74c0fc; background: rgba(77, 171, 247, 0.18); }
-body.mode-dark .pct-low { color: #ffa94d; background: rgba(255, 169, 77, 0.18); }
-body.mode-dark .pct-zero { color: #868e96; background: rgba(134, 142, 150, 0.18); }
+body.mode-dark .pct-high, body.mode-theme-dark .pct-high { color: #69db7c; background: rgba(81, 207, 102, 0.18); }
+body.mode-dark .pct-mid, body.mode-theme-dark .pct-mid { color: #74c0fc; background: rgba(77, 171, 247, 0.18); }
+body.mode-dark .pct-low, body.mode-theme-dark .pct-low { color: #ffa94d; background: rgba(255, 169, 77, 0.18); }
+body.mode-dark .pct-zero, body.mode-theme-dark .pct-zero { color: #868e96; background: rgba(134, 142, 150, 0.18); }
 
 .modal-review-actions {
   display: flex;
   gap: 8px;
   margin-top: 16px;
+  flex-wrap: wrap;
 }
 
 .modal-review-actions button {
-  flex: 1;
+  flex: 1 1 calc(50% - 8px);
+  min-width: 110px;
+}
+
+.modal-review-actions button:last-child {
+  flex: 1 1 100%;
+}
+
+/* ===================================================================
+   TILAWAH STEPPER CARD (Jumlah Lembar, - kiri & + kanan)
+   =================================================================== */
+.tilawah-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  padding: 16px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.tilawah-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.tilawah-icon-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.tilawah-card-title {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.tilawah-card-desc {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.tilawah-stepper-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  padding: 14px 8px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+}
+
+.tilawah-stepper-btn {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--bg-surface);
+  border: 2px solid var(--border-default);
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  flex-shrink: 0;
+  touch-action: manipulation;
+}
+
+.tilawah-stepper-btn:hover {
+  border-color: var(--theme-primary);
+  color: var(--theme-primary);
+}
+
+.tilawah-stepper-btn:active {
+  transform: scale(0.92);
+  background: var(--theme-primary);
+  color: var(--theme-btn-text);
+  border-color: var(--theme-primary);
+}
+
+.tilawah-input-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 120px;
+}
+
+.tilawah-number-input {
+  width: 100px;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: var(--theme-primary);
+  background: transparent;
+  border: none;
+  outline: none;
+  padding: 2px 0;
+}
+
+.tilawah-number-input::-webkit-inner-spin-button,
+.tilawah-number-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.tilawah-unit-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.tilawah-quick-presets {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+
+.quick-preset-pill {
+  background: var(--bg-card);
+  border: 1px solid var(--border-default);
+  color: var(--text-secondary);
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 6px 4px;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s;
+}
+
+.quick-preset-pill:hover,
+.quick-preset-pill:active {
+  background: var(--theme-primary);
+  color: var(--theme-btn-text);
+  border-color: var(--theme-primary);
+}
+
+/* ===================================================================
+   SEDEKAH SUBUH ACTION BUTTONS (Apresiasi Creator & GAZA Palestina)
+   =================================================================== */
+.sedekah-action-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.btn-sedekah-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 11px;
+  border-radius: var(--radius-full);
+  font-size: 0.73rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  line-height: 1.2;
+}
+
+.btn-qris {
+  background: rgba(34, 139, 230, 0.12);
+  color: #228be6;
+  border: 1px solid rgba(34, 139, 230, 0.3);
+}
+
+.btn-qris:hover, .btn-qris:active {
+  background: #228be6;
+  color: #ffffff;
+}
+
+.btn-palestina {
+  background: rgba(43, 138, 62, 0.12);
+  color: #2b8a3e;
+  border: 1px solid rgba(43, 138, 62, 0.3);
+}
+
+.btn-palestina:hover, .btn-palestina:active {
+  background: #2b8a3e;
+  color: #ffffff;
+}
+
+body.mode-dark .btn-qris,
+body.mode-theme-dark .btn-qris {
+  background: rgba(77, 171, 247, 0.16);
+  color: #74c0fc;
+  border-color: rgba(77, 171, 247, 0.35);
+}
+
+body.mode-dark .btn-palestina,
+body.mode-theme-dark .btn-palestina {
+  background: rgba(81, 207, 102, 0.16);
+  color: #69db7c;
+  border-color: rgba(81, 207, 102, 0.35);
+}
+
+/* Modal QRIS Apresiasi */
+.modal-qris-sheet {
+  max-width: 380px;
+}
+
+.qris-image-wrapper {
+  background: #ffffff;
+  padding: 10px;
+  border-radius: var(--radius-md);
+  display: inline-block;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.15);
+}
+
+.qris-img {
+  max-width: 260px;
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 4px;
 }
 

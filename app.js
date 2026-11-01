@@ -284,7 +284,7 @@ class MutabaahApp {
   getThemeAvatarSvg(themeKey, mode) {
     const palette = OPEN_COLOR_PALETTES[themeKey] || OPEN_COLOR_PALETTES.green;
     const c = palette.colors;
-    const isLight = mode === 'light';
+    const isLight = mode === 'light' || mode === 'theme-light';
     const col1 = isLight ? c[5] : c[8];
     const col2 = isLight ? c[3] : c[6];
     const iconColor = '#ffffff';
@@ -296,7 +296,7 @@ class MutabaahApp {
   getThemeCoverSvg(themeKey, mode) {
     const palette = OPEN_COLOR_PALETTES[themeKey] || OPEN_COLOR_PALETTES.green;
     const c = palette.colors;
-    const isLight = mode === 'light';
+    const isLight = mode === 'light' || mode === 'theme-light';
     const cBg1 = isLight ? c[1] : c[9];
     const cBg2 = isLight ? c[3] : '#0c0e12';
     const cGrid = isLight ? c[5] : c[4];
@@ -662,11 +662,10 @@ class MutabaahApp {
     const palette = OPEN_COLOR_PALETTES[themeKey] || OPEN_COLOR_PALETTES.green;
     const c = palette.colors;
     const root = document.documentElement;
-    const isLight = mode === 'light';
     const isYellowOrLime = themeKey === 'yellow' || themeKey === 'lime';
 
-    if (isLight) {
-      // MODE TERANG: Ambil warna muda-nya untuk background dan variasi tingkatan
+    if (mode === 'light') {
+      // MODE TERANG STANDARD: Putih / Abu Netral
       root.style.setProperty('--bg-canvas', '#f8f9fa');
       root.style.setProperty('--bg-card', '#ffffff');
       root.style.setProperty('--bg-surface', '#f1f3f5');
@@ -697,8 +696,70 @@ class MutabaahApp {
       root.style.setProperty('--theme-checked-border', c[3]);
 
       document.querySelector('meta[name="theme-color"]')?.setAttribute('content', '#f8f9fa');
+    } else if (mode === 'theme-light') {
+      // MODE TERANG TEMA: Background bernuansa tema muda (misal c[2] = #ffd8a8 pada Surya Sahara)
+      root.style.setProperty('--bg-canvas', c[2]);
+      root.style.setProperty('--bg-card', '#ffffff');
+      root.style.setProperty('--bg-surface', c[0]);
+      root.style.setProperty('--bg-surface-hover', c[1]);
+      root.style.setProperty('--border-default', c[3]);
+      root.style.setProperty('--border-muted', c[2]);
+      root.style.setProperty('--border-subtle', 'rgba(0, 0, 0, 0.08)');
+
+      root.style.setProperty('--text-primary', '#1e1e1e');
+      root.style.setProperty('--text-secondary', '#343a40');
+      root.style.setProperty('--text-muted', '#687076');
+      root.style.setProperty('--text-link', isYellowOrLime ? c[9] : c[8]);
+
+      root.style.setProperty('--theme-level-0', '#ffffff');
+      root.style.setProperty('--theme-level-0-border', c[3]);
+      root.style.setProperty('--theme-level-1', c[1]);
+      root.style.setProperty('--theme-level-2', c[3]);
+      root.style.setProperty('--theme-level-3', c[5]);
+      root.style.setProperty('--theme-level-4', c[8]);
+
+      root.style.setProperty('--theme-primary', isYellowOrLime ? c[8] : c[7]);
+      root.style.setProperty('--theme-btn-text', '#ffffff');
+      root.style.setProperty('--theme-check-icon-color', '#ffffff');
+      root.style.setProperty('--theme-glow', `rgba(${this.hexToRgb(c[6])}, 0.2)`);
+
+      root.style.setProperty('--theme-checked-bg', c[1]);
+      root.style.setProperty('--theme-checked-border', c[5]);
+
+      document.querySelector('meta[name="theme-color"]')?.setAttribute('content', c[2]);
+    } else if (mode === 'theme-dark') {
+      // MODE GELAP TEMA: Background bernuansa tema pekat (misal c[7] = #f76707 pada Surya Sahara)
+      root.style.setProperty('--bg-canvas', c[7]);
+      root.style.setProperty('--bg-card', c[8]);
+      root.style.setProperty('--bg-surface', c[9]);
+      root.style.setProperty('--bg-surface-hover', 'rgba(0, 0, 0, 0.16)');
+      root.style.setProperty('--border-default', c[6]);
+      root.style.setProperty('--border-muted', c[7]);
+      root.style.setProperty('--border-subtle', 'rgba(255, 255, 255, 0.14)');
+
+      root.style.setProperty('--text-primary', '#ffffff');
+      root.style.setProperty('--text-secondary', c[1] || '#ffe8cc');
+      root.style.setProperty('--text-muted', c[2] || '#ffd8a8');
+      root.style.setProperty('--text-link', '#ffffff');
+
+      root.style.setProperty('--theme-level-0', c[9]);
+      root.style.setProperty('--theme-level-0-border', c[8]);
+      root.style.setProperty('--theme-level-1', c[5]);
+      root.style.setProperty('--theme-level-2', c[3]);
+      root.style.setProperty('--theme-level-3', c[1]);
+      root.style.setProperty('--theme-level-4', '#ffffff');
+
+      root.style.setProperty('--theme-primary', '#ffffff');
+      root.style.setProperty('--theme-btn-text', c[9]);
+      root.style.setProperty('--theme-check-icon-color', c[9]);
+      root.style.setProperty('--theme-glow', `rgba(${this.hexToRgb(c[9])}, 0.45)`);
+
+      root.style.setProperty('--theme-checked-bg', 'rgba(0, 0, 0, 0.22)');
+      root.style.setProperty('--theme-checked-border', c[3]);
+
+      document.querySelector('meta[name="theme-color"]')?.setAttribute('content', c[7]);
     } else {
-      // MODE GELAP: Ambil warna tua/gelap untuk background, Level 1: warna paling tua/gelap
+      // MODE GELAP STANDARD: Hitam Elegan (#0c0e12)
       root.style.setProperty('--bg-canvas', '#0c0e12');
       root.style.setProperty('--bg-card', '#15181e');
       root.style.setProperty('--bg-surface', '#1f242c');
@@ -712,7 +773,7 @@ class MutabaahApp {
       root.style.setProperty('--text-muted', '#868e96');
       root.style.setProperty('--text-link', c[4]);
 
-      // Heatmap Levels: Kurang (Level 0) -> Penuh (Level 4) [Disamakan dengan Mode Terang: muda -> tua]
+      // Heatmap Levels: Kurang (Level 0) -> Penuh (Level 4)
       root.style.setProperty('--theme-level-0', '#1a1e24');
       root.style.setProperty('--theme-level-0-border', '#272f38');
       root.style.setProperty('--theme-level-1', c[1]); // muda (Kurang)
@@ -755,8 +816,12 @@ class MutabaahApp {
     // Toggle active state on mode buttons
     const btnLight = document.getElementById('btnModeLight');
     const btnDark = document.getElementById('btnModeDark');
+    const btnThemeLight = document.getElementById('btnModeThemeLight');
+    const btnThemeDark = document.getElementById('btnModeThemeDark');
     if (btnLight) btnLight.classList.toggle('active', currentMode === 'light');
     if (btnDark) btnDark.classList.toggle('active', currentMode === 'dark');
+    if (btnThemeLight) btnThemeLight.classList.toggle('active', currentMode === 'theme-light');
+    if (btnThemeDark) btnThemeDark.classList.toggle('active', currentMode === 'theme-dark');
 
     const grid = document.getElementById('themeCardsGrid');
     if (!grid) return;
@@ -1003,8 +1068,65 @@ class MutabaahApp {
     };
   }
 
+  // Get Tilawah sheet count for a given date
+  getTilawahSheets(dateStr) {
+    const list = this.state.history[dateStr] || [];
+    for (const item of list) {
+      if (typeof item === 'string' && item.startsWith('tilawah-lembar-')) {
+        const num = parseInt(item.replace('tilawah-lembar-', ''), 10);
+        if (!isNaN(num)) return num;
+      }
+    }
+    // Backward compatibility with legacy pills
+    if (list.includes('tilawah-8-lembar')) return 8;
+    if (list.includes('tilawah-6-lembar')) return 6;
+    if (list.includes('tilawah-4-lembar')) return 4;
+    if (list.includes('tilawah-2-lembar')) return 2;
+    if (list.includes('tilawah-4-juz')) return 40;
+    if (list.includes('tilawah-3-juz')) return 30;
+    if (list.includes('tilawah-2-juz')) return 20;
+    if (list.includes('tilawah-1-juz')) return 10;
+    return 0;
+  }
+
+  // Set Tilawah sheet count for a given date
+  setTilawahSheets(count, dateStr) {
+    if (!this.state.history[dateStr]) {
+      this.state.history[dateStr] = [];
+    }
+    let list = this.state.history[dateStr];
+    // Filter out existing tilawah entries
+    list = list.filter(item => 
+      !item.startsWith('tilawah-lembar-') &&
+      !['tilawah-2-lembar', 'tilawah-4-lembar', 'tilawah-6-lembar', 'tilawah-8-lembar',
+        'tilawah-1-juz', 'tilawah-2-juz', 'tilawah-3-juz', 'tilawah-4-juz'].includes(item)
+    );
+
+    const validCount = Math.max(0, parseInt(count, 10) || 0);
+    if (validCount > 0) {
+      list.push(`tilawah-lembar-${validCount}`);
+    }
+
+    this.state.history[dateStr] = list;
+    this.saveToStorage();
+    this.renderChecklist();
+    this.renderHeatmap();
+    this.updateStats();
+
+    if (validCount > 0) {
+      this.showToast(`Tilawah ${validCount} Lembar tercatat ✨`);
+    } else {
+      this.showToast('Catatan tilawah direset');
+    }
+  }
+
   // Find human-readable task title for toasts across all configurations
   getTaskTitleById(taskId) {
+    if (typeof taskId === 'string' && taskId.startsWith('tilawah-lembar-')) {
+      const sheets = taskId.replace('tilawah-lembar-', '');
+      return `Tilawah ${sheets} Lembar`;
+    }
+
     // Check in tasks
     const t = this.state.tasks.find(x => x.id === taskId);
     if (t) return t.title;
@@ -1248,7 +1370,9 @@ class MutabaahApp {
       masehiEl.textContent = dualDate.masehiSub;
     }
     const todayTag = document.getElementById('isTodayTag');
-    todayTag.style.display = isToday ? 'inline-block' : 'none';
+    if (todayTag) {
+      todayTag.style.display = isToday ? 'inline-block' : 'none';
+    }
 
     // Synchronize inline calendar picker input
     const datePicker = document.getElementById('datePickerInput');
@@ -1378,76 +1502,64 @@ class MutabaahApp {
     }
 
     // ---------------------------------------------------------------
-    // 2. KATEGORI KEDUA: TILAWAH (Sub checklist Lembar & Juz)
+    // 2. KATEGORI KEDUA: TILAWAH (Jumlah Lembar dengan Stepper - dan +)
     // ---------------------------------------------------------------
     if (category === 'Tilawah') {
+      const sheets = this.getTilawahSheets(selectedDate);
       let html = `
         <div class="tilawah-card">
           <div class="tilawah-header">
             <div class="tilawah-header-icon">
-              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
                 <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
               </svg>
             </div>
             <div>
               <div class="tilawah-title">Tilawah Al-Qur'an</div>
-              <div class="tilawah-subtitle">Pilih capaian bacaan lembar atau juz hari ini</div>
+              <div class="tilawah-subtitle">Catat jumlah lembar bacaan Al-Qur'an hari ini</div>
             </div>
           </div>
 
-          <!-- Sub checklist Capaian Lembar: 2 lembar, 4 lembar, 6 lembar, 8 lembar -->
-          <div class="tilawah-group">
-            <span class="tilawah-group-title">Capaian Lembar Harian:</span>
-            <div class="tilawah-pills-grid" role="group" aria-label="Capaian lembar tilawah">
-      `;
+          <div class="tilawah-stepper-box">
+            <span class="tilawah-stepper-title">Jumlah Lembar</span>
+            <div class="tilawah-stepper-row">
+              <button type="button" class="tilawah-stepper-btn btn-stepper-minus" id="btnTilawahMinus" aria-label="Kurangi lembar" title="Kurangi 1 lembar">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="3">
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+              </button>
+              
+              <div class="tilawah-input-wrap">
+                <input type="number" id="tilawahSheetsInput" class="tilawah-number-input" min="0" max="604" value="${sheets}" inputmode="numeric" aria-label="Jumlah lembar tilawah" />
+                <span class="tilawah-unit-label">Lembar</span>
+              </div>
 
-      TILAWAH_LEMBAR_CONFIG.forEach(item => {
-        const isChecked = completedIds.has(item.id);
-        html += `
-          <div class="tilawah-pill ${isChecked ? 'active' : ''}" data-task-id="${item.id}" tabindex="0" role="checkbox" aria-checked="${isChecked}">
-            <div class="tilawah-pill-text">
-              <span class="tilawah-pill-label">${this.escapeHtml(item.label)}</span>
-              <span class="tilawah-pill-sub">${this.escapeHtml(item.sub)}</span>
+              <button type="button" class="tilawah-stepper-btn btn-stepper-plus" id="btnTilawahPlus" aria-label="Tambah lembar" title="Tambah 1 lembar">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="3">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+              </button>
             </div>
-            <div class="tilawah-pill-indicator">
-              <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" style="display: ${isChecked ? 'block' : 'none'};">
-                <polyline points="20 6 9 17 4 12"></polyline>
-              </svg>
-            </div>
-          </div>
-        `;
-      });
 
-      html += `
+            <div class="tilawah-quick-presets">
+              <button type="button" class="btn-tilawah-preset" data-preset="2">+2 Lembar</button>
+              <button type="button" class="btn-tilawah-preset" data-preset="5">+5 Lembar</button>
+              <button type="button" class="btn-tilawah-preset" data-preset="10">+10 Lembar (1/2 Juz)</button>
+              <button type="button" class="btn-tilawah-preset" data-preset="20">+20 Lembar (1 Juz)</button>
             </div>
-          </div>
 
-          <!-- Sub checklist Capaian Juz: 1 JUZ, 2 JUZ, 3 JUZ, 4 JUZ -->
-          <div class="tilawah-group">
-            <span class="tilawah-group-title">Capaian Juz Al-Qur'an:</span>
-            <div class="tilawah-pills-grid" role="group" aria-label="Capaian juz tilawah">
-      `;
-
-      TILAWAH_JUZ_CONFIG.forEach(item => {
-        const isChecked = completedIds.has(item.id);
-        html += `
-          <div class="tilawah-pill ${isChecked ? 'active' : ''}" data-task-id="${item.id}" tabindex="0" role="checkbox" aria-checked="${isChecked}">
-            <div class="tilawah-pill-text">
-              <span class="tilawah-pill-label">${this.escapeHtml(item.label)}</span>
-              <span class="tilawah-pill-sub">${this.escapeHtml(item.sub)}</span>
-            </div>
-            <div class="tilawah-pill-indicator">
-              <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" style="display: ${isChecked ? 'block' : 'none'};">
-                <polyline points="20 6 9 17 4 12"></polyline>
-              </svg>
-            </div>
-          </div>
-        `;
-      });
-
-      html += `
-            </div>
+            ${sheets > 0 ? `
+              <div class="tilawah-status-note">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Tercatat <strong>${sheets} Lembar</strong> (${sheets * 2} Halaman) pada tanggal ini.</span>
+              </div>
+            ` : `
+              <div class="tilawah-status-note zero">
+                <span>Belum ada lembar tilawah yang dicatat hari ini. Gunakan tombol + atau ketik angka.</span>
+              </div>
+            `}
           </div>
         </div>
       `;
@@ -1558,8 +1670,34 @@ class MutabaahApp {
         const escapedCategory = this.escapeHtml(task.category);
         const escapedDesc = task.desc ? `<span class="task-desc">${this.escapeHtml(task.desc)}</span>` : '';
 
+        let extraButtonsHtml = '';
+        if (task.id === 'task-sosial-sedekah') {
+          extraButtonsHtml = `
+            <div class="sedekah-action-buttons">
+              <button type="button" class="btn-sedekah-action btn-qris" data-action="open-qris" title="Apresiasi Creator via QRIS">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="3" width="7" height="7"></rect>
+                  <rect x="14" y="3" width="7" height="7"></rect>
+                  <rect x="14" y="14" width="7" height="7"></rect>
+                  <rect x="3" y="14" width="7" height="7"></rect>
+                </svg>
+                <span>Apresiasi Creator</span>
+              </button>
+              <a href="https://sedekah.id/campaigns/dapurpalestina?ref=tatag-wara-95aw&amp;utm_source=mitra&amp;utm_medium=affiliate&amp;utm_campaign=tatag-wara-95aw" target="_blank" rel="noopener noreferrer" class="btn-sedekah-action btn-palestina" title="Donasi Dapur Umum Palestina">
+                <span class="flag-icon">🇵🇸</span>
+                <span>Bangun GAZA Palestina</span>
+                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                  <polyline points="15 3 21 3 21 9"></polyline>
+                  <line x1="10" y1="14" x2="21" y2="3"></line>
+                </svg>
+              </a>
+            </div>
+          `;
+        }
+
         html += `
-          <div class="todo-item ${isChecked ? 'checked' : ''}" data-task-id="${task.id}" tabindex="0" role="checkbox" aria-checked="${isChecked}" aria-label="${escapedTitle}, ${escapedCategory}. ${isChecked ? 'Selesai' : 'Belum selesai'}">
+          <div class="todo-item ${isChecked ? 'checked' : ''} ${task.id === 'task-sosial-sedekah' ? 'todo-item-with-actions' : ''}" data-task-id="${task.id}" tabindex="0" role="checkbox" aria-checked="${isChecked}" aria-label="${escapedTitle}, ${escapedCategory}. ${isChecked ? 'Selesai' : 'Belum selesai'}">
             <div class="todo-left">
               <div class="custom-checkbox" aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -1569,6 +1707,7 @@ class MutabaahApp {
               <div class="todo-content">
                 <span class="todo-title">${escapedTitle}</span>
                 ${escapedDesc}
+                ${extraButtonsHtml}
               </div>
             </div>
             <button class="btn-delete-task" title="Hapus Target" data-id="${task.id}" aria-label="Hapus amalan ${escapedTitle}">
@@ -1911,17 +2050,15 @@ class MutabaahApp {
     });
 
     // 4. Tilawah Al-Qur'an
-    const tilawahDone = [...TILAWAH_LEMBAR_CONFIG, ...TILAWAH_JUZ_CONFIG].filter(item => completedSet.has(item.id));
-    if (tilawahDone.length > 0) {
+    const tilawahSheets = this.getTilawahSheets(dateStr);
+    if (tilawahSheets > 0) {
       listHtml += '<div class="day-detail-group-title" style="margin-top:10px;">Tilawah Al-Qur\'an:</div>';
-      tilawahDone.forEach(item => {
-        listHtml += `
-          <div class="day-detail-row">
-            <span>Tilawah: ${this.escapeHtml(item.label)} (${this.escapeHtml(item.sub)})</span>
-            <span style="font-weight:700; color: var(--theme-primary);">✓ Tercapai</span>
-          </div>
-        `;
-      });
+      listHtml += `
+        <div class="day-detail-row">
+          <span>Tilawah: ${tilawahSheets} Lembar (${tilawahSheets * 2} Halaman)</span>
+          <span style="font-weight:700; color: var(--theme-primary);">✓ Tercapai</span>
+        </div>
+      `;
     }
 
     // 5. Puasa
@@ -2049,6 +2186,7 @@ class MutabaahApp {
     let rawatibCount = 0;
     let sunnahCount = 0;
     let tilawahCount = 0;
+    let tilawahSheetsTotal = 0;
     let puasaCount = 0;
     let dzikirCount = 0;
     let sosialCount = 0;
@@ -2083,13 +2221,21 @@ class MutabaahApp {
         else if (mode === 'sendiri') { fardhuSendiri++; totalFardhu++; }
       });
 
+      // Hitung tilawah sheets
+      const sheetsToday = this.getTilawahSheets(dateKey);
+      if (sheetsToday > 0) {
+        tilawahCount++;
+        tilawahSheetsTotal += sheetsToday;
+      }
+
       // Hitung amalan lainnya & puasa
       list.forEach(id => {
         if (id.startsWith('puasa-')) puasaCount++;
         else if (id.startsWith('rawatib-')) rawatibCount++;
         else if (id.startsWith('sunnah-')) sunnahCount++;
-        else if (id.startsWith('tilawah-')) tilawahCount++;
-        else {
+        else if (id.startsWith('tilawah-')) {
+          // already counted via getTilawahSheets
+        } else {
           const task = this.state.tasks.find(t => t.id === id);
           if (task) {
             if (task.category === 'Dzikir') dzikirCount++;
@@ -2117,6 +2263,7 @@ class MutabaahApp {
       rawatibCount,
       sunnahCount,
       tilawahCount,
+      tilawahSheetsTotal,
       puasaCount,
       dzikirCount,
       sosialCount,
@@ -2133,8 +2280,32 @@ class MutabaahApp {
     const dayNames = ['Ahad', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
     const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
 
+    const startHijri = this.getHijriDateParts(days[0]);
+    const endHijri = this.getHijriDateParts(days[days.length - 1]);
+    const hijriYearText = (startHijri.year === endHijri.year) ? `${endHijri.year} H` : `${startHijri.year}-${endHijri.year} H`;
+    const startMasehiYear = days[0].getFullYear();
+    const endMasehiYear = days[days.length - 1].getFullYear();
+    const masehiYearText = (startMasehiYear === endMasehiYear) ? `${endMasehiYear} M` : `${startMasehiYear}-${endMasehiYear} M`;
+    const tableTitle = `Tabel Pencapaian 7 Hari (${hijriYearText} / ${masehiYearText})`;
+
     let tableRowsHtml = '';
-    const tableTextLines = ['\n--- TABEL PENCAPAIAN 7 HARI ---'];
+    const tableTextLines = [];
+
+    // Cache review data for canvas 4:5 image generation
+    this._cachedReviewDaysData = {
+      userName,
+      tableTitle,
+      hijriYearText,
+      masehiYearText,
+      avgPercent,
+      totalAmalanDone,
+      fardhuTepatWaktu,
+      fardhuJamaah,
+      tilawahCount,
+      tilawahSheetsTotal,
+      puasaCount,
+      daysData: []
+    };
 
     days.forEach(dateObj => {
       const dateKey = this.formatDate(dateObj);
@@ -2166,11 +2337,8 @@ class MutabaahApp {
       if (shalatS > 0) fardhuParts.push(`${shalatS} Sendiri`);
 
       // 2. Tilawah
-      const tilawahItems = list.filter(id => id.startsWith('tilawah-'));
-      const tilawahText = tilawahItems.map(id => {
-        const item = TILAWAH_LEMBAR_CONFIG.find(c => c.id === id) || TILAWAH_JUZ_CONFIG.find(c => c.id === id);
-        return item ? item.label : id.replace('tilawah-', '');
-      }).join(', ');
+      const tilawahSheets = this.getTilawahSheets(dateKey);
+      const tilawahText = tilawahSheets > 0 ? `${tilawahSheets} Lembar` : '';
 
       // 3. Puasa
       const puasaItems = list.filter(id => id.startsWith('puasa-'));
@@ -2231,11 +2399,38 @@ class MutabaahApp {
 
       // Text row for clipboard
       const shalatSummaryTxt = `Fardhu ${shalatDone}/5 (${fardhuParts.length > 0 ? fardhuParts.join(', ') : '0'}), Rawatib: ${rawatibDone}, Sunnah: ${sunnahShalatDone}`;
-      tableTextLines.push(`- ${dName}, ${hijri.day} ${hijri.monthName} (${dNum} ${mName} ${dateObj.getFullYear()} M): Shalat [${shalatSummaryTxt}] | Tilawah: ${tilawahText || '-'} | Puasa: ${puasaTextSummary} | Capaian: ${progress.percent}%`);
+      tableTextLines.push(`• ${dName}, ${hijri.day} ${hijri.monthName} (${dNum} ${mName} ${dateObj.getFullYear()} M)\n  - Shalat : ${shalatSummaryTxt}\n  - Tilawah: ${tilawahText || '-'}\n  - Puasa  : ${puasaTextSummary}\n  - Capaian: ${progress.percent}%`);
+
+      // Store in canvas cache
+      this._cachedReviewDaysData.daysData.push({
+        dName,
+        hijriStr: `${hijri.day} ${hijri.monthName} H`,
+        masehiStr: `${dNum} ${mName} ${dateObj.getFullYear()} M`,
+        isToday,
+        shalatDone,
+        fardhuPartsText: fardhuParts.length > 0 ? fardhuParts.join(', ') : '0 waktu',
+        rawatibDone,
+        sunnahShalatDone,
+        tilawahText: tilawahText || '-',
+        puasaText: puasaTextSummary,
+        percent: progress.percent
+      });
     });
 
-    tableTextLines.push(`Rata-rata 7 Hari: ${avgPercent}% (Total ${totalAmalanDone} amalan)`);
-    this._cachedTableText = tableTextLines.join('\n');
+    const tableHeaderTxt = [
+      `══════════════════════════════════════════════════`,
+      `${tableTitle.toUpperCase()}`,
+      `Nama: ${userName} | Rata-rata: ${avgPercent}%`,
+      `══════════════════════════════════════════════════`
+    ].join('\n');
+    const tableFooterTxt = [
+      `──────────────────────────────────────────────────`,
+      `Rata-rata 7 Hari : ${avgPercent}% (Total ${totalAmalanDone} amalan)`,
+      `Shalat Jama'ah/TW: ${fardhuTepatWaktu + fardhuJamaah}x | Tilawah: ${tilawahCount} hari (${tilawahSheetsTotal} Lembar) | Puasa: ${puasaCount} hari`,
+      `mastatag.com • Mutaba'ah Yaumiyah`,
+      `══════════════════════════════════════════════════`
+    ].join('\n');
+    this._cachedTableText = `${tableHeaderTxt}\n${tableTextLines.join('\n\n')}\n${tableFooterTxt}`;
 
     const bodyEl = document.getElementById('reviewJujurBody');
     if (bodyEl) {
@@ -2254,7 +2449,7 @@ class MutabaahApp {
             <div class="review-stat-label">Shalat Berjama'ah / TW</div>
           </div>
           <div class="review-stat-card">
-            <div class="review-stat-value">${tilawahCount}x / ${puasaCount} hari</div>
+            <div class="review-stat-value">${tilawahSheetsTotal > 0 ? `${tilawahSheetsTotal} Lmb` : `${tilawahCount}x`} / ${puasaCount} hari</div>
             <div class="review-stat-label">Tilawah & Puasa</div>
           </div>
         </div>
@@ -2284,7 +2479,7 @@ class MutabaahApp {
               <line x1="3" y1="9" x2="21" y2="9"></line>
               <line x1="9" y1="21" x2="9" y2="9"></line>
             </svg>
-            <span>Tabel Pencapaian Selama 7 Hari</span>
+            <span>${tableTitle}</span>
           </div>
           <div class="review-table-scroll">
             <table class="review-table">
@@ -2309,6 +2504,7 @@ class MutabaahApp {
     this.openModal('modalReviewJujur');
   }
 
+  // Generate Review Narrative: Condense into exactly 4 paragraphs with rich bold data
   generateReviewNarrative(data) {
     const {
       userName,
@@ -2322,6 +2518,7 @@ class MutabaahApp {
       rawatibCount,
       sunnahCount,
       tilawahCount,
+      tilawahSheetsTotal,
       puasaCount,
       dzikirCount,
       sosialCount,
@@ -2334,101 +2531,347 @@ class MutabaahApp {
 
     const paragraphs = [];
 
-    // 1. Muqaddimah Syahdu dengan data tebal
-    paragraphs.push(
-      `Bismillahirrohmaanirrohiim. Assalamu’alaykum warahmatullah duhai **${userName}**...\n\n` +
-      `**7 hari** baru saja bergulir meninggalkan kita. Sebanyak **168 jam** telah menjadi saksi bisu setiap desah nafas, lelah, dan ikhtiar yang kau persembahkan. Dalam sepekan ini, rata-rata konsistensi amalanmu berada di angka **${avgPercent}%**, dengan total **${totalAmalanDone} catatan kebaikan** yang sempat terukir rapi di lembaran amalmu.`
-    );
-
-    // 2. Potret Sujud & Shalat dengan data tebal
-    if (totalFardhu === 0) {
-      paragraphs.push(
-        `Memandang lembaran shalat fardhu sepekan ini yang masih tampak sunyi, barangkali pundakmu sedang memikul beban dunia yang teramat berat, atau keletihan sedang menguji langkahmu. Jangan biarkan rasa bersalah menjauhkanmu dari-Nya. Ketahuilah, sujud bukanlah beban yang memberatkan, melainkan oase tempat jiwa yang lelah bersandar dan menumpahkan segala keluh kesah. Mulailah kembali dengan satu shalat terdekat; sambutlah panggilan-Nya dengan bisikan hati yang tulus: 'Aku kembali kepada-Mu, ya Rabb.'`
-      );
-    } else {
-      let shalatText = `Dari **35 waktu shalat fardhu** dalam seminggu, tercatat **${totalFardhu} waktu** telah kau tunaikan dengan penuh perjuangan.`;
-      const jamaahTotal = fardhuTepatWaktu + fardhuJamaah;
-
-      if (jamaahTotal >= 15) {
-        shalatText += ` Masya Allah, **${jamaahTotal} kali** di antaranya kau sambut dalam balutan shaf jama'ah dan ketepatan waktu. Setiap ayunan langkah menuju rumah-Nya di fajar dan senja adalah permata yang meninggikan derajatmu. Jagalah keikhlasan ini agar tetap suci lillahi ta'ala, terjaga dari riya dan ujub.`;
-      } else if (jamaahTotal > 0) {
-        shalatText += ` Di antaranya, **${jamaahTotal} kali** langkahmu berhasil merapatkan shaf jama'ah. Di saat lelah atau kesibukan sempat membuatmu mengerjakannya sendiri (**${fardhuSendiri} waktu**), jadikan itu pengingat rindu: azan adalah panggilan kasih sayang dari Dzat yang paling mencintaimu, mengajakmu sejenak rehat dari kepenatan fana.`;
-      } else {
-        shalatText += ` Walau seluruhnya masih tertunaikan sendiri (**${fardhuSendiri} waktu**), ikhtiarmu menjaga tiang agama ini adalah kebaikan yang berharga. Semoga di pekan mendatang, Allah mudahkan langkahmu untuk sesekali merasakan sejuknya shaf jama'ah di masjid.`;
-      }
-
-      if (rawatibCount + sunnahCount > 0) {
-        shalatText += ` Ditambah **${rawatibCount + sunnahCount} amalan sunnah dan rawatib** yang kau usahakan, laksana pagar indah yang menyempurnakan kekurangan shalat wajibmu.`;
-      }
-      paragraphs.push(shalatText);
-    }
-
-    // 3. Tilawah Al-Qur'an & Dzikir dengan data tebal
-    if (tilawahCount > 0 || dzikirCount > 0) {
-      let ruhiyahText = `Lisanmu yang sempat dibasahi oleh `;
-      if (tilawahCount > 0 && dzikirCount > 0) {
-        ruhiyahText += `bacaan **${tilawahCount} capaian ayat suci Al-Qur'an** serta **${dzikirCount} untaian dzikir dan istighfar**`;
-      } else if (tilawahCount > 0) {
-        ruhiyahText += `lantunan **${tilawahCount} capaian ayat suci Al-Qur'an**`;
-      } else {
-        ruhiyahText += `untaian **${dzikirCount} amalan dzikir, istighfar, dan doa harian**`;
-      }
-      ruhiyahText += ` laksana tetesan embun penyejuk di tengah terik hiruk-pikuk kehidupan. Walau barangkali hanya beberapa lembar atau bait tasbih ringkas, kebiasaan yang berkesinambungan (*adwam*) adalah yang paling dicintai oleh Allah. Teruslah membersamainya hingga kelak Al-Qur'an menjadi syafaat dan pembela setiamu di hari akhir.`;
-      paragraphs.push(ruhiyahText);
-    } else {
-      paragraphs.push(
-        `Di sela riuhnya kesibukan sepekan ini, mushaf dan bait dzikir barangkali sempat menanti sentuhan tangan serta getar bibirmu. Jangan berkecil hati; pintu kemuliaan Al-Qur'an dan istighfar tak pernah tertutup. Ambillah mushaf hari ini, peluk dan bacalah walau satu dua ayat dengan tadabbur perlahan. Rasakan ketenangan yang meresap ke dasar jiwamu.`
-      );
-    }
-
-    // 4. Puasa Sunnah & Wajib
-    if (puasaCount > 0) {
-      paragraphs.push(
-        `Masya Allah, di antara kesibukan sepekan ini, tercatat **${puasaCount} hari** engkau ikhlas menahan lapar dan dahaga dalam ibadah puasa (seperti puasa sunnah Senin-Kamis atau Ayyamul Bidh). Puasa adalah rahasia cinta antara seorang hamba dengan Rabb-nya; tiada yang mengetahuinya selain Allah. Setiap detik keikhlasanmu adalah benteng perisai dari api neraka dan pembuka pintu kemuliaan Ar-Rayyan.`
-      );
-    }
-
-    // 5. Amal Sosial, Jasmani, & Karya Nyata dengan data tebal
-    const muamalahTotal = sosialCount + jasadiyahCount + fikriyahCount + berkaryaCount;
-    if (muamalahTotal > 0) {
-      paragraphs.push(
-        `Engkau pun membuktikan bahwa ibadah tidak hanya terhenti di atas sajadah. Sebanyak **${muamalahTotal} ikhtiar kebaikan** (berbagi sosial, menjaga kebugaran jasmani, menuntut ilmu, dan menuntaskan tugas berkarya) telah kau perjuangkan. Ketahuilah, setiap nafkah yang halal, tubuh sehat yang dijaga untuk ketaatan, dan senyum ikhlas kepada sesama adalah sedekah yang berbobot berat di timbangan akhirat.`
-      );
-    }
-
-    // 6. Highlight Hari Terbaik jika ada
+    // PARAGRAF 1: Pembuka & Potret Sepekan
+    let p1 = `Bismillahirrohmaanirrohiim. Assalamu’alaykum warahmatullah duhai **${userName}**... `;
+    p1 += `**7 hari** baru saja bergulir, menjadi saksi bisu atas setiap hembusan nafas, ikhtiar, dan lelah yang kau persembahkan di hadapan Allah. `;
+    p1 += `Dalam sepekan ini, rata-rata konsistensi ibadahmu mencapai **${avgPercent}%** dengan total **${totalAmalanDone} amalan kebaikan** yang tertoreh di lembaran catatan amal.`;
     if (bestDay && bestDayPercent > 0) {
-      paragraphs.push(
-        `Catatan terbaikmu dalam sepekan ini terukir pada hari **${bestDay}** dengan capaian konsistensi mencapai **${bestDayPercent}%**. Jadikan momentum terbaik itu sebagai bukti pada dirimu sendiri bahwa engkau memiliki potensi istiqomah yang luar biasa dengan izin Allah.`
-      );
+      p1 += ` Momentum terindahmu hadir pada hari **${bestDay}** dengan capaian konsistensi menyentuh **${bestDayPercent}%**, membuktikan bahwa jiwamu senantiasa memiliki potensi istiqomah yang luar biasa.`;
+    }
+    paragraphs.push(p1);
+
+    // PARAGRAF 2: Sujud & Tiang Shalat (Fardhu, Jama'ah, Rawatib, Sunnah)
+    let p2 = '';
+    const jamaahTotal = fardhuTepatWaktu + fardhuJamaah;
+    if (totalFardhu === 0) {
+      p2 = `Menatap lembaran shalat sepekan ini yang masih tampak sunyi, barangkali keletihan raga atau himpitan urusan sedang membebani pundakmu. Ketahuilah, sujud bukanlah penambah beban, melainkan oase tempat jiwa bersandar menumpahkan segenap rasa lelah. Mulailah kembali dengan satu waktu shalat terdekat; sambut seruan azan dengan bisikan hati yang tulus: 'Hamba kembali kepada-Mu, ya Rabb.'`;
+    } else {
+      p2 = `Dari **35 waktu shalat fardhu** sepekan ini, tercatat **${totalFardhu} waktu** berhasil kau tegakkan dengan kesungguhan hati. `;
+      if (jamaahTotal > 0) {
+        p2 += `Sebanyak **${jamaahTotal} kali** di antaranya kau penuhi dalam indahnya shaf jama'ah dan ketepatan waktu${fardhuSendiri > 0 ? `, sementara **${fardhuSendiri} waktu** tertunaikan sendiri di sela kesibukan` : ''}. `;
+      } else {
+        p2 += `Walau tertunaikan sendiri (**${fardhuSendiri} waktu**), tegaknya tiang agamamu adalah pondasi yang amat berharga. `;
+      }
+      if (rawatibCount + sunnahCount > 0) {
+        p2 += `Keindahan sujudmu pun disempurnakan oleh **${rawatibCount + sunnahCount} amalan sunnah dan rawatib** yang laksana perhiasan pelengkap shalat fardhumu.`;
+      } else {
+        p2 += `Semoga di pekan mendatang, bait-bait rawatib dan shalat sunnah dapat turut menghiasi keseharianmu.`;
+      }
+    }
+    paragraphs.push(p2);
+
+    // PARAGRAF 3: Ruhiyah (Tilawah & Puasa) serta Amal Nyata (Sosial, Jasmani, Fikriyah, Berkarya)
+    const muamalahTotal = sosialCount + jasadiyahCount + fikriyahCount + berkaryaCount;
+    let p3 = '';
+    const ruhiyahParts = [];
+    if (tilawahSheetsTotal > 0 || tilawahCount > 0) {
+      const sheetsText = tilawahSheetsTotal > 0 ? `${tilawahSheetsTotal} lembar` : `${tilawahCount} capaian`;
+      ruhiyahParts.push(`bacaan **${sheetsText} Al-Qur'an**`);
+    }
+    if (dzikirCount > 0) {
+      ruhiyahParts.push(`**${dzikirCount} untaian dzikir & doa**`);
+    }
+    if (puasaCount > 0) {
+      ruhiyahParts.push(`**${puasaCount} hari berpuasa**`);
     }
 
-    // 7. Nasihat Penuh Hikmah & Doa Penutup
+    if (ruhiyahParts.length > 0) {
+      p3 += `Lisan dan ragamu yang sempat dihidupkan oleh ${ruhiyahParts.join(', ')} menjadi penyejuk di tengah hiruk-pikuk dunia. `;
+    } else {
+      p3 += `Bila mushaf, bait dzikir, atau puasa sunnah belum sempat terisi optimal pekan ini, jangan berputus asa; bukalah lembaran mushaf hari ini walau sejenak. `;
+    }
+
+    if (muamalahTotal > 0) {
+      p3 += `Di luar sajadah, engkau melengkapinya dengan **${muamalahTotal} ikhtiar kebaikan** (sedekah sosial, ikhtiar sehat jasmani, menuntut ilmu fikriyah, dan amanah berkarya). Setiap senyum, peluh nafkah halal, dan kebaikan sosial adalah sedekah berbobot berat di timbangan akhirat.`;
+    } else {
+      p3 += `Ibadah tak hanya di atas sajadah; niatkan setiap aktivitas keseharianmu sebagai ladang amal yang bernilai pahala.`;
+    }
+    paragraphs.push(p3);
+
+    // PARAGRAF 4: Nasihat Muhasabah & Doa Penutup
     paragraphs.push(
-      `Duhai jiwa yang terus bertumbuh... Ingatlah selalu bahwa mutaba'ah ini bukanlah timbangan vonis, melainkan cermin kejujuran nurani untuk melihat di mana kaki kita sedang berpijak. Hakikat istiqomah bukanlah kesempurnaan tanpa cela, melainkan ketulusan untuk selalu bangkit bersujud setiap kali kita tersandung kelalaian.\n\n` +
-      `Mari beristighfar atas segala kekurangan **7 hari** yang lalu, bersyukur tulus atas setiap hidayah yang dimudahkan, dan mari melangkah ke sepekan ke depan dengan bismillah: hati yang lebih lapang, niat yang lebih murni, dan cinta yang lebih mendalam kepada Allah Ta'ala.`
+      `Duhai hamba yang dirahmati Allah... Ingatlah bahwa mutaba'ah ini bukanlah vonis celaan, melainkan cermin kejujuran nurani untuk mengukur langkah kita. Hakikat istiqomah bukanlah kesempurnaan tanpa noda, melainkan ketulusan untuk selalu kembali bersujud tiap kali khilaf menyapa. Mari beristighfar atas kekurangan sepekan lalu, bersyukur atas setiap hidayah-Nya, dan melangkah ke depan dengan bismillah: niat yang lebih murni dan cinta yang lebih mendalam kepada Allah Ta'ala.`
     );
 
     return paragraphs.join('\n\n');
   }
 
-  copyReviewNarrative() {
-    if (!this._cachedNarrative) return;
-    const cleanNarrative = this._cachedNarrative.replace(/\*\*/g, '');
+  // Copy ONLY the table text to clipboard
+  copyReviewTableOnly() {
     const tableText = this._cachedTableText || '';
-    const textToCopy = `Review Jujur 7 Hari - Mutaba'ah Yaumiyah\n\n${cleanNarrative}\n\n${tableText}`;
+    if (!tableText) {
+      this.showToast('Tabel belum siap untuk disalin.', 'error');
+      return;
+    }
+
     if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(textToCopy).then(() => {
-        this.showToast('Alhamdulillah, catatan muhasabah & tabel 7 hari berhasil disalin!');
+      navigator.clipboard.writeText(tableText).then(() => {
+        this.showToast('Alhamdulillah, tabel pencapaian 7 hari berhasil disalin!');
       }).catch(() => {
-        this.fallbackCopyText(textToCopy);
+        this.fallbackCopyText(tableText, 'Alhamdulillah, tabel pencapaian 7 hari berhasil disalin!');
       });
     } else {
-      this.fallbackCopyText(textToCopy);
+      this.fallbackCopyText(tableText, 'Alhamdulillah, tabel pencapaian 7 hari berhasil disalin!');
     }
   }
 
-  fallbackCopyText(text) {
+  // Download 7-Day Achievement Table as 4:5 Instagram Post (1080x1350 px)
+  downloadReviewImage() {
+    const data = this._cachedReviewDaysData;
+    if (!data || !data.daysData || data.daysData.length === 0) {
+      this.showToast('Data tabel 7 hari belum tersedia.', 'error');
+      return;
+    }
+
+    const canvas = document.createElement('canvas');
+    canvas.width = 1080;
+    canvas.height = 1350;
+    const ctx = canvas.getContext('2d');
+
+    const themeKey = this.state.theme?.color || 'green';
+    const mode = this.state.theme?.mode || 'dark';
+    const palette = OPEN_COLOR_PALETTES[themeKey] || OPEN_COLOR_PALETTES.green;
+    const c = palette.colors;
+
+    const isLightMode = mode === 'light' || mode === 'theme-light';
+    const bgCanvas = isLightMode ? (mode === 'theme-light' ? c[2] : '#f8f9fa') : (mode === 'theme-dark' ? c[7] : '#0c0e12');
+    const bgCard = isLightMode ? '#ffffff' : (mode === 'theme-dark' ? c[8] : '#15181e');
+    const bgSurface = isLightMode ? (mode === 'theme-light' ? c[0] : '#f1f3f5') : (mode === 'theme-dark' ? c[9] : '#1f242c');
+    const textPrimary = isLightMode ? '#1e1e1e' : '#ffffff';
+    const textSecondary = isLightMode ? '#495057' : '#ced4da';
+    const textMuted = isLightMode ? '#868e96' : '#868e96';
+    const borderCol = isLightMode ? (mode === 'theme-light' ? c[3] : '#dee2e6') : (mode === 'theme-dark' ? c[6] : '#2d333b');
+    const primaryCol = isLightMode ? c[7] : c[5];
+
+    // Helper: Rounded Rectangle
+    const roundRect = (x, y, w, h, r) => {
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.lineTo(x + w - r, y);
+      ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+      ctx.lineTo(x + w, y + h - r);
+      ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+      ctx.lineTo(x + r, y + h);
+      ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+      ctx.lineTo(x, y + r);
+      ctx.quadraticCurveTo(x, y, x + r, y);
+      ctx.closePath();
+    };
+
+    // 1. Draw Full Canvas Background
+    ctx.fillStyle = bgCanvas;
+    ctx.fillRect(0, 0, 1080, 1350);
+
+    // 2. Draw Main White/Dark Card Container
+    const cardX = 40;
+    const cardY = 40;
+    const cardW = 1000;
+    const cardH = 1270;
+    const cardR = 28;
+
+    roundRect(cardX, cardY, cardW, cardH, cardR);
+    ctx.fillStyle = bgCard;
+    ctx.fill();
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = borderCol;
+    ctx.stroke();
+
+    // 3. Top App Header / Badge
+    const badgeW = 280;
+    const badgeH = 34;
+    const badgeX = cardX + (cardW - badgeW) / 2;
+    const badgeY = cardY + 30;
+    roundRect(badgeX, badgeY, badgeW, badgeH, 17);
+    ctx.fillStyle = bgSurface;
+    ctx.fill();
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = borderCol;
+    ctx.stroke();
+
+    ctx.font = '600 13px system-ui, -apple-system, sans-serif';
+    ctx.fillStyle = primaryCol;
+    ctx.textAlign = 'center';
+    ctx.fillText("MUTABA'AH YAUMIYAH • 7 HARI", badgeX + badgeW / 2, badgeY + 22);
+
+    // Title: Tabel Pencapaian 7 Hari
+    ctx.font = '700 32px system-ui, -apple-system, sans-serif';
+    ctx.fillStyle = textPrimary;
+    ctx.textAlign = 'center';
+    ctx.fillText(data.tableTitle || 'Tabel Pencapaian 7 Hari', 540, cardY + 100);
+
+    // Subtitle: User Name & Period
+    ctx.font = '500 17px system-ui, -apple-system, sans-serif';
+    ctx.fillStyle = textSecondary;
+    ctx.fillText(`Muhasabah ${data.userName} • Evaluasi Konsistensi Amalan`, 540, cardY + 130);
+
+    // 4. 4 KPI Stat Cards
+    const kpiY = cardY + 158;
+    const kpiH = 88;
+    const kpiGap = 16;
+    const kpiW = (cardW - 60 - (kpiGap * 3)) / 4;
+    const kpis = [
+      { val: `${data.avgPercent}%`, label: 'Rata-rata Capaian' },
+      { val: `${data.totalAmalanDone}`, label: 'Total Amalan' },
+      { val: `${data.fardhuTepatWaktu + data.fardhuJamaah}x`, label: "Jama'ah / TW" },
+      { val: `${data.tilawahSheetsTotal || data.tilawahCount} Lmb`, label: 'Total Tilawah' }
+    ];
+
+    kpis.forEach((kpi, idx) => {
+      const kX = cardX + 30 + idx * (kpiW + kpiGap);
+      roundRect(kX, kpiY, kpiW, kpiH, 14);
+      ctx.fillStyle = bgSurface;
+      ctx.fill();
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = borderCol;
+      ctx.stroke();
+
+      ctx.textAlign = 'center';
+      ctx.font = '700 24px system-ui, -apple-system, sans-serif';
+      ctx.fillStyle = primaryCol;
+      ctx.fillText(kpi.val, kX + kpiW / 2, kpiY + 40);
+
+      ctx.font = '500 13px system-ui, -apple-system, sans-serif';
+      ctx.fillStyle = textSecondary;
+      ctx.fillText(kpi.label, kX + kpiW / 2, kpiY + 68);
+    });
+
+    // 5. Table Header
+    const thY = cardY + 270;
+    const thH = 46;
+    const tblX = cardX + 30;
+    const tblW = cardW - 60;
+    roundRect(tblX, thY, tblW, thH, 10);
+    ctx.fillStyle = bgSurface;
+    ctx.fill();
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = borderCol;
+    ctx.stroke();
+
+    ctx.font = '600 14px system-ui, -apple-system, sans-serif';
+    ctx.fillStyle = textPrimary;
+    ctx.textAlign = 'left';
+    ctx.fillText('HARI / TANGGAL', tblX + 20, thY + 29);
+    ctx.fillText('SHALAT (FARDHU & SUNNAH)', tblX + 240, thY + 29);
+    ctx.fillText('TILAWAH', tblX + 540, thY + 29);
+    ctx.fillText('PUASA', tblX + 710, thY + 29);
+    ctx.textAlign = 'right';
+    ctx.fillText('CAPAIAN', tblX + tblW - 20, thY + 29);
+
+    // 6. 7 Table Rows
+    let rowY = thY + thH + 12;
+    const rowH = 100;
+    const rowGap = 8;
+
+    data.daysData.forEach((day, index) => {
+      const isAlt = index % 2 === 1;
+      roundRect(tblX, rowY, tblW, rowH, 12);
+      ctx.fillStyle = day.isToday ? (isLightMode ? '#e7f5ff' : '#182438') : (isAlt ? bgSurface : bgCard);
+      ctx.fill();
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = day.isToday ? primaryCol : borderCol;
+      ctx.stroke();
+
+      // Col 1: Hari & Tanggal
+      ctx.textAlign = 'left';
+      ctx.font = '700 17px system-ui, -apple-system, sans-serif';
+      ctx.fillStyle = textPrimary;
+      ctx.fillText(day.dName, tblX + 20, rowY + 32);
+
+      ctx.font = '600 13px system-ui, -apple-system, sans-serif';
+      ctx.fillStyle = primaryCol;
+      ctx.fillText(day.hijriStr, tblX + 20, rowY + 54);
+
+      ctx.font = 'italic 12px system-ui, -apple-system, sans-serif';
+      ctx.fillStyle = textMuted;
+      ctx.fillText(day.masehiStr, tblX + 20, rowY + 76);
+
+      // Col 2: Shalat
+      ctx.font = '700 16px system-ui, -apple-system, sans-serif';
+      ctx.fillStyle = textPrimary;
+      ctx.fillText(`${day.shalatDone}/5 Fardhu`, tblX + 240, rowY + 32);
+
+      ctx.font = '500 12px system-ui, -apple-system, sans-serif';
+      ctx.fillStyle = textSecondary;
+      ctx.fillText(day.fardhuPartsText, tblX + 240, rowY + 54);
+
+      let sunnahTxt = [];
+      if (day.rawatibDone > 0) sunnahTxt.push(`${day.rawatibDone} Rawatib`);
+      if (day.sunnahShalatDone > 0) sunnahTxt.push(`${day.sunnahShalatDone} Sunnah`);
+      ctx.fillStyle = textMuted;
+      ctx.fillText(sunnahTxt.length > 0 ? sunnahTxt.join(' • ') : 'Rawatib/Sunnah: -', tblX + 240, rowY + 76);
+
+      // Col 3: Tilawah
+      ctx.font = '600 14px system-ui, -apple-system, sans-serif';
+      ctx.fillStyle = day.tilawahText !== '-' ? primaryCol : textMuted;
+      ctx.fillText(day.tilawahText !== '-' ? `📖 ${day.tilawahText}` : '-', tblX + 540, rowY + 50);
+
+      // Col 4: Puasa
+      ctx.font = '600 14px system-ui, -apple-system, sans-serif';
+      ctx.fillStyle = day.puasaText !== '-' ? '#2b8a3e' : textMuted;
+      ctx.fillText(day.puasaText !== '-' ? `🌾 ${day.puasaText}` : '-', tblX + 710, rowY + 50);
+
+      // Col 5: Capaian Badge Pill
+      const pctBadgeW = 86;
+      const pctBadgeH = 34;
+      const pctBadgeX = tblX + tblW - pctBadgeW - 20;
+      const pctBadgeY = rowY + (rowH - pctBadgeH) / 2;
+      roundRect(pctBadgeX, pctBadgeY, pctBadgeW, pctBadgeH, 17);
+
+      let pctBg = isLightMode ? '#e9ecef' : '#2b313b';
+      let pctColor = textSecondary;
+      if (day.percent >= 75) {
+        pctBg = isLightMode ? '#d3f9d8' : '#143823';
+        pctColor = isLightMode ? '#2b8a3e' : '#51cf66';
+      } else if (day.percent >= 50) {
+        pctBg = isLightMode ? '#fff3bf' : '#3d3415';
+        pctColor = isLightMode ? '#e67700' : '#fcc419';
+      }
+      ctx.fillStyle = pctBg;
+      ctx.fill();
+
+      ctx.font = '700 15px system-ui, -apple-system, sans-serif';
+      ctx.fillStyle = pctColor;
+      ctx.textAlign = 'center';
+      ctx.fillText(`${day.percent}%`, pctBadgeX + pctBadgeW / 2, pctBadgeY + 23);
+
+      rowY += rowH + rowGap;
+    });
+
+    // 7. Footer Divider & Branding
+    const footerY = cardY + cardH - 85;
+    ctx.strokeStyle = borderCol;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(cardX + 30, footerY);
+    ctx.lineTo(cardX + cardW - 30, footerY);
+    ctx.stroke();
+
+    ctx.textAlign = 'center';
+    ctx.font = 'italic 13px system-ui, -apple-system, sans-serif';
+    ctx.fillStyle = textMuted;
+    ctx.fillText('“Amalan yang paling dicintai Allah adalah yang terus-menerus walau sedikit.” (HR. Bukhari)', 540, footerY + 30);
+
+    ctx.font = '600 15px system-ui, -apple-system, sans-serif';
+    ctx.fillStyle = primaryCol;
+    ctx.fillText('🌐 mastatag.com • Mutaba\'ah Yaumiyah', 540, footerY + 58);
+
+    // 8. Trigger PNG Download
+    try {
+      const dataUrl = canvas.toDataURL('image/png');
+      const link = document.createElement('a');
+      link.download = `mutabaah-7hari-${Date.now()}.png`;
+      link.href = dataUrl;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      this.showToast('Alhamdulillah, gambar tabel 7 hari (Instagram 4:5) berhasil diunduh! 📸');
+    } catch (err) {
+      console.error('Download error:', err);
+      this.showToast('Gagal mengunduh gambar tabel.', 'error');
+    }
+  }
+
+  fallbackCopyText(text, successMsg = 'Teks berhasil disalin!') {
     const ta = document.createElement('textarea');
     ta.value = text;
     ta.style.position = 'fixed';
@@ -2437,7 +2880,7 @@ class MutabaahApp {
     ta.select();
     try {
       document.execCommand('copy');
-      this.showToast('Alhamdulillah, catatan muhasabah 7 hari berhasil disalin!');
+      this.showToast(successMsg);
     } catch (e) {
       this.showToast('Gagal menyalin teks.', 'error');
     }
@@ -2448,9 +2891,11 @@ class MutabaahApp {
   // EVENT LISTENERS & BINDINGS
   // ===================================================================
   bindEvents() {
-    // Theme Mode Switchers (Light vs Dark)
+    // Theme Mode Switchers (Light, Dark, Terang Tema, Gelap Tema)
     const btnLight = document.getElementById('btnModeLight');
     const btnDark = document.getElementById('btnModeDark');
+    const btnThemeLight = document.getElementById('btnModeThemeLight');
+    const btnThemeDark = document.getElementById('btnModeThemeDark');
 
     btnLight?.addEventListener('click', () => {
       this.applyTheme(this.state.theme.color, 'light');
@@ -2460,6 +2905,16 @@ class MutabaahApp {
     btnDark?.addEventListener('click', () => {
       this.applyTheme(this.state.theme.color, 'dark');
       this.showToast('Mode Gelap diaktifkan');
+    });
+
+    btnThemeLight?.addEventListener('click', () => {
+      this.applyTheme(this.state.theme.color, 'theme-light');
+      this.showToast('Mode Terang Tema diaktifkan');
+    });
+
+    btnThemeDark?.addEventListener('click', () => {
+      this.applyTheme(this.state.theme.color, 'theme-dark');
+      this.showToast('Mode Gelap Tema diaktifkan');
     });
 
     // Theme Modal Triggers
@@ -2475,9 +2930,14 @@ class MutabaahApp {
       this.openReviewJujurModal();
     });
 
-    // Copy Review Narrative
+    // Copy Review Table Only
     document.getElementById('btnCopyNarrative')?.addEventListener('click', () => {
-      this.copyReviewNarrative();
+      this.copyReviewTableOnly();
+    });
+
+    // Download Review Table Image (Instagram 4:5)
+    document.getElementById('btnDownloadImage')?.addEventListener('click', () => {
+      this.downloadReviewImage();
     });
 
     // Status Pill click -> Open Status Modal
@@ -2578,7 +3038,7 @@ class MutabaahApp {
       }
     });
 
-    // Event Delegation: Daily Checklist (Prayer Pills, Tilawah Pills, Items, & Delete Task)
+    // Event Delegation: Daily Checklist (Prayer Pills, Tilawah Stepper, Sedekah Actions, Items, & Delete Task)
     const todoList = document.getElementById('todoList');
     todoList?.addEventListener('click', (e) => {
       // 1. Delete button
@@ -2589,30 +3049,91 @@ class MutabaahApp {
         return;
       }
 
-      // 2. Prayer execution mode pill (Sendiri, Jama'ah, Jama'ah Tepat Waktu)
+      // 2. Sedekah Subuh Actions: Apresiasi Creator (QRIS) & Gaza Link
+      const qrisBtn = e.target.closest('[data-action="open-qris"]');
+      if (qrisBtn) {
+        e.stopPropagation();
+        this.openModal('modalQris');
+        return;
+      }
+
+      const palestinaLink = e.target.closest('.btn-palestina');
+      if (palestinaLink) {
+        e.stopPropagation();
+        return; // Normal link click opens new window/tab
+      }
+
+      // 3. Tilawah Stepper Minus
+      const btnMinus = e.target.closest('#btnTilawahMinus');
+      if (btnMinus) {
+        e.stopPropagation();
+        const cur = this.getTilawahSheets(this.state.selectedDate);
+        if (cur > 0) this.setTilawahSheets(cur - 1, this.state.selectedDate);
+        return;
+      }
+
+      // 4. Tilawah Stepper Plus
+      const btnPlus = e.target.closest('#btnTilawahPlus');
+      if (btnPlus) {
+        e.stopPropagation();
+        const cur = this.getTilawahSheets(this.state.selectedDate);
+        this.setTilawahSheets(cur + 1, this.state.selectedDate);
+        return;
+      }
+
+      // 5. Tilawah Preset Buttons (+2, +5, +10, +20 Lembar)
+      const presetBtn = e.target.closest('.btn-tilawah-preset');
+      if (presetBtn && presetBtn.dataset.preset) {
+        e.stopPropagation();
+        const add = parseInt(presetBtn.dataset.preset, 10) || 0;
+        const cur = this.getTilawahSheets(this.state.selectedDate);
+        this.setTilawahSheets(cur + add, this.state.selectedDate);
+        return;
+      }
+
+      // 6. Prayer execution mode pill (Sendiri, Jama'ah, Jama'ah Tepat Waktu)
       const prayerPill = e.target.closest('.prayer-pill');
       if (prayerPill && prayerPill.dataset.fardhu && prayerPill.dataset.mode) {
         this.setPrayerMode(prayerPill.dataset.fardhu, prayerPill.dataset.mode, this.state.selectedDate);
         return;
       }
 
-      // 3. Tilawah milestone pill (2 lembar, 4 lembar..., 1 JUZ, 2 JUZ...)
+      // 7. Tilawah milestone pill (legacy compatibility)
       const tilawahPill = e.target.closest('.tilawah-pill');
       if (tilawahPill && tilawahPill.dataset.taskId) {
         this.toggleTask(tilawahPill.dataset.taskId, this.state.selectedDate);
         return;
       }
 
-      // 4. Regular or rawatib checkbox item
+      // 8. Regular or rawatib checkbox item
       const itemEl = e.target.closest('.todo-item');
       if (itemEl && itemEl.dataset.taskId) {
         this.toggleTask(itemEl.dataset.taskId, this.state.selectedDate);
       }
     });
 
+    // Input/Change event for Tilawah number input
+    todoList?.addEventListener('change', (e) => {
+      if (e.target && e.target.id === 'tilawahSheetsInput') {
+        const val = parseInt(e.target.value, 10);
+        this.setTilawahSheets(isNaN(val) ? 0 : val, this.state.selectedDate);
+      }
+    });
+
     todoList?.addEventListener('keydown', (e) => {
+      if (e.target && e.target.id === 'tilawahSheetsInput') {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          const val = parseInt(e.target.value, 10);
+          this.setTilawahSheets(isNaN(val) ? 0 : val, this.state.selectedDate);
+        }
+        return;
+      }
+
       if (e.key === 'Enter' || e.key === ' ') {
         if (e.target.closest('.btn-delete-task')) return;
+        if (e.target.closest('[data-action="open-qris"]')) return;
+        if (e.target.closest('.btn-palestina')) return;
 
         const prayerPill = e.target.closest('.prayer-pill');
         if (prayerPill && prayerPill.dataset.fardhu && prayerPill.dataset.mode) {

@@ -188,10 +188,7 @@
           <div class="date-display-group">
             <div class="date-title-wrapper">
               <div class="date-headings-stack">
-                <div class="date-hijri-row">
-                  <h3 class="current-date-heading" id="selectedDateText">Hari Ini</h3>
-                  <span class="today-tag" id="isTodayTag">TODAY</span>
-                </div>
+                <h3 class="current-date-heading" id="selectedDateText">Hari Ini</h3>
                 <span class="date-masehi-sub" id="selectedDateMasehi"></span>
               </div>
             </div>
@@ -308,7 +305,7 @@
           Pilih tema warna Open Color dan sesuaikan mode gelap atau terang favoritmu.
         </p>
 
-        <!-- Mode Switch: Terang vs Gelap -->
+        <!-- Mode Switch: Terang, Gelap, Terang Tema, Gelap Tema -->
         <div class="theme-mode-section">
           <label class="theme-section-title">Mode Tampilan</label>
           <div class="mode-toggle-group">
@@ -331,6 +328,19 @@
                 <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
               </svg>
               <span>Mode Gelap</span>
+            </button>
+            <button type="button" class="mode-toggle-btn" id="btnModeThemeLight" data-mode="theme-light">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="4"></circle>
+                <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+              </svg>
+              <span>Terang Tema</span>
+            </button>
+            <button type="button" class="mode-toggle-btn" id="btnModeThemeDark" data-mode="theme-dark">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"></path>
+              </svg>
+              <span>Gelap Tema</span>
             </button>
           </div>
         </div>
@@ -622,13 +632,53 @@
       </div>
       <div class="modal-actions modal-review-actions">
         <button type="button" class="btn-secondary" data-close="modalReviewJujur">Tutup</button>
-        <button type="button" class="btn-primary" id="btnCopyNarrative">
+        <button type="button" class="btn-secondary" id="btnCopyNarrative" title="Salin data tabel 7 hari">
           <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
             <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
           </svg>
-          <span>Salin Muhasabah</span>
+          <span>Salin Tabel</span>
         </button>
+        <button type="button" class="btn-primary" id="btnDownloadImage" title="Download tabel 7 hari format gambar Instagram 4:5">
+          <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+            <polyline points="21 15 16 10 5 21"></polyline>
+          </svg>
+          <span>Download Gambar (4:5)</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: QRIS Apresiasi Creator -->
+  <div class="modal-backdrop" id="modalQris" role="dialog" aria-modal="true" aria-labelledby="qrisTitle">
+    <div class="modal-sheet modal-qris-sheet">
+      <div class="modal-header">
+        <div class="header-icon-title">
+          <svg class="icon theme-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+            <rect x="7" y="7" width="3" height="3"></rect>
+            <rect x="14" y="7" width="3" height="3"></rect>
+            <rect x="7" y="14" width="3" height="3"></rect>
+          </svg>
+          <div>
+            <h3 class="modal-title" id="qrisTitle">Apresiasi Creator</h3>
+            <p class="modal-subtitle text-xs text-muted">Infaq & Dukungan Operasional Mutaba'ah Yaumiyah</p>
+          </div>
+        </div>
+        <button class="modal-close" data-close="modalQris" aria-label="Tutup QRIS">&times;</button>
+      </div>
+      <div class="modal-body text-center" style="padding: 16px 14px; text-align: center;">
+        <div class="qris-image-wrapper">
+          <img src="./qris.jpeg" alt="QRIS Apresiasi Creator" class="qris-img" />
+        </div>
+        <p class="text-xs text-muted" style="margin-top: 14px; line-height: 1.5;">
+          Bisa di-scan melalui seluruh aplikasi perbankan digital dan e-wallet (GoPay, OVO, Dana, ShopeePay, BCA, Mandiri, dll). Jazaakumullahu khayran katsiran.
+        </p>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn-primary btn-block" data-close="modalQris">Tutup</button>
       </div>
     </div>
   </div>
