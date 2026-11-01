@@ -1,5 +1,5 @@
 // Mutaba'ah Yaumiyah Service Worker for 100% Offline Support
-const CACHE_NAME = 'mutabaah-cache-v21';
+const CACHE_NAME = 'mutabaah-cache-v22';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -36,9 +36,9 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // Stale-while-revalidate / cache-first for reliable offline usage
+  // Stale-while-revalidate / cache-first for reliable offline usage (ignoreSearch ensures ?source=pwa matches ./index.html)
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
+    caches.match(event.request, { ignoreSearch: true }).then((cachedResponse) => {
       if (cachedResponse) {
         return cachedResponse;
       }

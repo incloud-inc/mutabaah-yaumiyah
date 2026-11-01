@@ -11,6 +11,18 @@ window.addEventListener('beforeinstallprompt', (e) => {
   window.deferredInstallPrompt = e;
 });
 
+window.addEventListener('appinstalled', () => {
+  try {
+    localStorage.setItem('mutabaah_pwa_installed', 'true');
+  } catch (err) {}
+  window.deferredInstallPrompt = null;
+  const banner = document.getElementById('pwaInstallBanner');
+  if (banner) {
+    banner.classList.add('hidden');
+    banner.classList.remove('show');
+  }
+});
+
 // Open Color Palettes (13 Color Families from https://yeun.github.io/open-color/)
 // Each palette contains 10 sequential shades (0: lightest -> 9: darkest)
 const OPEN_COLOR_PALETTES = {
@@ -2184,10 +2196,52 @@ class MutabaahApp {
   // ===================================================================
   // PWA SHORTCUT / INSTALL BANNER (7-Detik Auto-Close)
   // ===================================================================
+  // Deteksi komprehensif apakah aplikasi dibuka dari icon/shortcut yang telah di-install
+  isInstalledApp() {
+    // 1. Cek parameter URL dari manifest start_url (?source=pwa atau homescreen)
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('source') === 'pwa' || urlParams.get('utm_source') === 'homescreen') {
+      return true;
+    }
+
+    // 2. Cek display-mode standar W3C (standalone, fullscreen, minimal-ui, window-controls-overlay)
+    const displayModes = ['standalone', 'fullscreen', 'minimal-ui', 'window-controls-overlay'];
+    for (const mode of displayModes) {
+      if (window.matchMedia && window.matchMedia(`(display-mode: ${mode})`).matches) {
+        return true;
+      }
+    }
+
+    // 3. Cek iOS Safari Standalone Web App
+    if (window.navigator && window.navigator.standalone === true) {
+      return true;
+    }
+
+    // 4. Cek Android Trusted Web Activity (TWA)
+    if (document.referrer && document.referrer.startsWith('android-app://')) {
+      return true;
+    }
+
+    // 5. Cek flag status instalasi lokal yang tersimpan
+    try {
+      if (localStorage.getItem('mutabaah_pwa_installed') === 'true') {
+        return true;
+      }
+    } catch (e) {}
+
+    return false;
+  }
+
   initPwaInstallPrompt() {
-    // Jika aplikasi sudah dibuka dari shortcut / standalone PWA di HP atau Laptop
-    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
-    if (isStandalone) return;
+    // Jika aplikasi dibuka dari icon / shortcut yang telah di-install di HP atau Laptop, jangan tampilkan banner
+    if (this.isInstalledApp()) {
+      const banner = document.getElementById('pwaInstallBanner');
+      if (banner) {
+        banner.classList.add('hidden');
+        banner.classList.remove('show');
+      }
+      return;
+    }
 
     const btnInstall = document.getElementById('btnPwaInstall');
     const btnClose = document.getElementById('btnPwaClose');
@@ -2200,13 +2254,19 @@ class MutabaahApp {
       btnClose.addEventListener('click', () => this.closePwaInstallBanner());
     }
 
-    // Munculkan prompt setiap kali membuka aplikasi setelah 700ms
+    // Munculkan prompt jika belum terpasang dari icon, setelah jeda 700ms
     setTimeout(() => {
       this.showPwaInstallBanner();
     }, 700);
   }
 
   showPwaInstallBanner() {
+    // Pengaman ganda: Jangan pernah muncul jika dibuka dari icon yang telah di-install
+    if (this.isInstalledApp()) {
+      this.closePwaInstallBanner();
+      return;
+    }
+
     const banner = document.getElementById('pwaInstallBanner');
     if (!banner) return;
 
@@ -2263,6 +2323,9 @@ class MutabaahApp {
       try {
         const choice = await window.deferredInstallPrompt.userChoice;
         if (choice && choice.outcome === 'accepted') {
+          try {
+            localStorage.setItem('mutabaah_pwa_installed', 'true');
+          } catch (e) {}
           this.showToast('Alhamdulillah, aplikasi berhasil dipasang di layar Anda! 🎉');
         }
       } catch (err) {
