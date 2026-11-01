@@ -3155,47 +3155,4 @@ body.mode-dark .gdrive-badge.badge-on {
   box-shadow: 0 4px 12px rgba(66, 133, 244, 0.15);
 }
 
-.gdrive-helper-row {
-  display: flex;
-  justify-content: center;
-  margin-top: 8px;
-}
-
-.btn-text-link {
-  background: transparent;
-  border: none;
-  color: var(--text-muted);
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 4px;
-  transition: color 0.15s ease;
-}
-
-.btn-text-link:hover {
-  color: var(--theme-primary);
-  text-decoration: underline;
-}
-
-.gdrive-config-panel {
-  margin-top: 10px;
-  padding: 12px;
-  background: var(--bg-card);
-  border: 1px dashed var(--border-default);
-  border-radius: var(--radius-md);
-}
-
-.gdrive-guide-card {
-  padding: 8px 10px;
-  background: var(--bg-surface);
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border-muted);
-  font-size: 0.72rem;
-  line-height: 1.4;
-}
-
-.gdrive-guide-card strong {
-  color: var(--text-primary);
-}
 

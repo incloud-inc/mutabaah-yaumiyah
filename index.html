@@ -601,29 +601,6 @@
               </svg>
               <span>Hubungkan Akun Google Drive</span>
             </button>
-            <div class="gdrive-helper-row">
-              <button type="button" class="btn-text-link text-xs" id="btnToggleGdriveConfig">
-                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-                <span>Atur Google Client ID</span>
-              </button>
-            </div>
-            
-            <!-- Collapsible Google Client ID Config Box -->
-            <div class="gdrive-config-panel hidden" id="gdriveConfigPanel">
-              <label for="inputGdriveClientId" class="text-xs text-muted" style="display:block; margin-bottom:5px; font-weight:600;">Google Cloud OAuth Client ID:</label>
-              <input type="text" id="inputGdriveClientId" class="form-input text-xs" placeholder="Contoh: 12345-xxx.apps.googleusercontent.com" style="margin-bottom:8px; width:100%;" />
-              <div class="gdrive-guide-card">
-                <strong>Panduan Singkat Buat Client ID di Google Cloud:</strong>
-                <ol class="text-xs text-muted" style="margin:4px 0 0 16px; padding:0; line-height:1.45;">
-                  <li>Buka <a href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noopener" style="color:var(--text-link); text-decoration:underline;">Google Cloud Console</a>.</li>
-                  <li>Buat Project baru & aktifkan <strong>Google Drive API</strong> di Library.</li>
-                  <li>Pilih <strong>Credentials &rarr; Create Credentials &rarr; OAuth client ID</strong> (Web Application).</li>
-                  <li>Pada <em>Authorized JavaScript origins</em>, masukkan domain webmu (contoh: <code>https://mastatag.com</code>).</li>
-                  <li>Salin <em>Client ID</em> lalu simpan di form ini.</li>
-                </ol>
-              </div>
-              <button type="button" class="btn-primary btn-sm btn-block" id="btnSaveGdriveClientId" style="margin-top:8px;">Simpan Client ID</button>
-            </div>
           </div>
         </div>
 

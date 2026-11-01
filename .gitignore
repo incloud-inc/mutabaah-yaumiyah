@@ -12,3 +12,7 @@ npm-debug.log*
 .idea/
 *.tmp
 *.swp
+
+# Google Cloud OAuth secrets
+client_secret*.json
+credentials*.json

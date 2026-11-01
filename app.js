@@ -2371,12 +2371,6 @@ class MutabaahApp {
       console.warn('Gdrive config parse error:', e);
     }
 
-    // Set client ID value in config panel input if saved
-    const clientIdInput = document.getElementById('inputGdriveClientId');
-    if (clientIdInput) {
-      clientIdInput.value = this.getGoogleClientId();
-    }
-
     // Bind UI element events
     document.getElementById('btnGdriveConnect')?.addEventListener('click', () => {
       this.connectGoogleDrive();
@@ -2388,28 +2382,6 @@ class MutabaahApp {
 
     document.getElementById('btnGdriveDisconnect')?.addEventListener('click', () => {
       this.disconnectGoogleDrive();
-    });
-
-    document.getElementById('btnToggleGdriveConfig')?.addEventListener('click', () => {
-      const panel = document.getElementById('gdriveConfigPanel');
-      if (panel) {
-        panel.classList.toggle('hidden');
-      }
-    });
-
-    document.getElementById('btnSaveGdriveClientId')?.addEventListener('click', () => {
-      const input = document.getElementById('inputGdriveClientId');
-      if (input) {
-        const val = input.value.trim();
-        if (val) {
-          localStorage.setItem('mutabaah_gdrive_client_id', val);
-          this.showToast('Google Client ID berhasil disimpan!');
-          document.getElementById('gdriveConfigPanel')?.classList.add('hidden');
-        } else {
-          localStorage.removeItem('mutabaah_gdrive_client_id');
-          this.showToast('Google Client ID dikosongkan.');
-        }
-      }
     });
 
     // Update Initial UI
@@ -2424,7 +2396,7 @@ class MutabaahApp {
   }
 
   getGoogleClientId() {
-    return localStorage.getItem('mutabaah_gdrive_client_id') || '';
+    return localStorage.getItem('mutabaah_gdrive_client_id') || '1080393938692-96ap2j35ouiran6ipglof5n2vuhf7vmc.apps.googleusercontent.com';
   }
 
   saveGdriveConfig() {
@@ -2485,10 +2457,7 @@ class MutabaahApp {
   connectGoogleDrive() {
     const clientId = this.getGoogleClientId();
     if (!clientId) {
-      const panel = document.getElementById('gdriveConfigPanel');
-      if (panel) panel.classList.remove('hidden');
-      document.getElementById('inputGdriveClientId')?.focus();
-      this.showToast('Silakan isi Google Cloud OAuth Client ID di form pengaturan di bawah.', 'error');
+      this.showToast('Google OAuth Client ID belum dikonfigurasi.', 'error');
       return;
     }
 
@@ -2504,7 +2473,11 @@ class MutabaahApp {
         callback: async (tokenResponse) => {
           if (tokenResponse.error) {
             console.error('Google Auth Error:', tokenResponse);
-            this.showToast('Gagal otorisasi Google: ' + (tokenResponse.error_description || tokenResponse.error), 'error');
+            if (tokenResponse.error === 'access_denied') {
+              this.showToast('Akses ditolak (403): Tambahkan akun Anda di "Test users" Google Cloud Console atau publikasikan consent screen.', 'error');
+            } else {
+              this.showToast('Gagal otorisasi Google: ' + (tokenResponse.error_description || tokenResponse.error), 'error');
+            }
             return;
           }
 
