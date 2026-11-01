@@ -187,8 +187,13 @@
           
           <div class="date-display-group">
             <div class="date-title-wrapper">
-              <h3 class="current-date-heading" id="selectedDateText">Hari Ini</h3>
-              <span class="today-tag" id="isTodayTag">TODAY</span>
+              <div class="date-headings-stack">
+                <div class="date-hijri-row">
+                  <h3 class="current-date-heading" id="selectedDateText">Hari Ini</h3>
+                  <span class="today-tag" id="isTodayTag">TODAY</span>
+                </div>
+                <span class="date-masehi-sub" id="selectedDateMasehi"></span>
+              </div>
             </div>
             <input type="date" id="datePickerInput" class="date-picker-inline" title="Pilih Tanggal" aria-label="Pilih tanggal mutaba'ah spesifik">
           </div>
@@ -214,6 +219,7 @@
           <div class="category-tabs" id="categoryTabs" role="tablist" aria-label="Tab Kategori Amalan">
             <button class="tab-btn active" data-category="Shalat" role="tab" aria-selected="true">Shalat</button>
             <button class="tab-btn" data-category="Tilawah" role="tab" aria-selected="false">Tilawah</button>
+            <button class="tab-btn" data-category="Puasa" role="tab" aria-selected="false">Puasa</button>
             <button class="tab-btn" data-category="Dzikir" role="tab" aria-selected="false">Dzikir</button>
             <button class="tab-btn" data-category="Sosial" role="tab" aria-selected="false">Sosial</button>
             <button class="tab-btn" data-category="Jasadiyah" role="tab" aria-selected="false">Jasadiyah</button>
@@ -578,6 +584,7 @@
       <div class="modal-header">
         <div>
           <h3 class="modal-title" id="dayDetailTitle">Detail Tanggal</h3>
+          <div class="date-masehi-sub" id="dayDetailMasehi"></div>
           <p class="modal-subtitle text-xs text-muted" id="dayDetailSubtitle"></p>
         </div>
         <button class="modal-close" data-close="modalDayDetail" aria-label="Tutup detail amalan tanggal">&times;</button>

@@ -171,33 +171,79 @@ const TILAWAH_JUZ_CONFIG = [
   { id: 'tilawah-4-juz', label: '4 JUZ', sub: 'Khatam seminggu' }
 ];
 
+// Configuration for Core Puasa (Sunnah & Wajib)
+const PUASA_CONFIG = [
+  {
+    id: 'puasa-senin',
+    title: 'Puasa Sunnah Hari Senin',
+    desc: 'Sunnah mu\'akkadah mingguan kelahiran Rasulullah ﷺ (HR. Muslim No. 1162)',
+    badge: 'Senin',
+    scheduleType: 'senin'
+  },
+  {
+    id: 'puasa-kamis',
+    title: 'Puasa Sunnah Hari Kamis',
+    desc: 'Hari amalan dihadapkan kepada Allah Ta\'ala (HR. Tirmidzi)',
+    badge: 'Kamis',
+    scheduleType: 'kamis'
+  },
+  {
+    id: 'puasa-ayyamul-bidh',
+    title: 'Puasa Ayyamul Bidh (13, 14, 15 Hijriyah)',
+    desc: 'Tiga hari putih pertengahan bulan hijriyah laksana puasa sepanjang masa (HR. Bukhari)',
+    badge: 'Ayyamul Bidh',
+    scheduleType: 'ayyamul-bidh'
+  },
+  {
+    id: 'puasa-daud',
+    title: 'Puasa Sunnah Daud',
+    desc: 'Sehari puasa sehari berbuka, puasa sunnah yang paling dicintai Allah (HR. Bukhari)',
+    badge: 'Daud',
+    scheduleType: 'daud'
+  },
+  {
+    id: 'puasa-qadha',
+    title: 'Puasa Qadha Ramadhan / Nazar',
+    desc: 'Menunaikan hutang puasa wajib atau menyempurnakan nazar karena Allah',
+    badge: 'Wajib',
+    scheduleType: 'qadha'
+  },
+  {
+    id: 'puasa-sunnah-lain',
+    title: 'Puasa Sunnah Lainnya',
+    desc: 'Puasa 6 Hari Syawwal, Asyura (10 Muharram), Arafah (9 Dzulhijjah), dll',
+    badge: 'Sunnah',
+    scheduleType: 'lainnya'
+  }
+];
+
 // Default Tasks for Dzikir, Sosial, Jasadiyah, Fikriyah, Berkarya
 const DEFAULT_TASKS = [
-  // KATEGORI 3: Dzikir
+  // KATEGORI 4: Dzikir
   { id: 'task-dzikir-pagi', title: 'Dzikir Pagi Al-Ma\'tsurat', category: 'Dzikir', desc: 'Setelah shalat Subuh hingga terbit fajar' },
   { id: 'task-dzikir-petang', title: 'Dzikir Petang Al-Ma\'tsurat', category: 'Dzikir', desc: 'Menjelang shalat Maghrib hingga terbenam matahari' },
   { id: 'task-dzikir-istighfar', title: 'Istighfar 100x & Doa Harian', category: 'Dzikir', desc: 'Perbanyak memohon ampunan & shalawat nabi' },
   { id: 'task-dzikir-bada-shalat', title: 'Dzikir Ba\'da Shalat Fardhu & Tasbih', category: 'Dzikir', desc: 'Subhanallah, Alhamdulillah, Allahu Akbar (33x)' },
 
-  // KATEGORI 4: Sosial
+  // KATEGORI 5: Sosial
   { id: 'task-sosial-sedekah', title: 'Sedekah Subuh / Infaq Harian', category: 'Sosial', desc: 'Ikhlas semampunya untuk berkah hari ini' },
   { id: 'task-sosial-bantu', title: 'Membantu Orang Lain / Amal Kebaikan', category: 'Sosial', desc: 'Meringankan beban sesama mukmin & tetangga' },
   { id: 'task-sosial-silaturahim', title: 'Menjaga Silaturahim (Keluarga & Sahabat)', category: 'Sosial', desc: 'Sapa orang tua, keluarga, atau rekan kebaikan' },
   { id: 'task-sosial-salam', title: 'Menebar Salam & Senyum Ikhlas', category: 'Sosial', desc: 'Sedekah paling mudah yang membahagiakan sesama' },
 
-  // KATEGORI 5: Jasadiyah
+  // KATEGORI 6: Jasadiyah
   { id: 'task-jasadiyah-olahraga', title: 'Olahraga / Riadhoh Fisik (Min. 15-30 Menit)', category: 'Jasadiyah', desc: 'Jalan kaki, jogging, peregangan, atau push-up' },
   { id: 'task-jasadiyah-makan', title: 'Pola Makan Halalan Thayyiban & Berkah', category: 'Jasadiyah', desc: 'Makan tidak berlebihan, bernutrisi, dan sesuai sunnah' },
   { id: 'task-jasadiyah-tidur', title: 'Istirahat Cukup / Tidur Awal (Sebelum 22.00)', category: 'Jasadiyah', desc: 'Tidur berkualitas agar segar saat qiyamul lail & Subuh' },
   { id: 'task-jasadiyah-air', title: 'Minum Air Putih Cukup (Min. 2 Liter / 8 Gelas)', category: 'Jasadiyah', desc: 'Menjaga hidrasi tubuh dan stamina ibadah' },
 
-  // KATEGORI 6: Fikriyah
+  // KATEGORI 7: Fikriyah
   { id: 'task-fikriyah-kajian', title: 'Thalabul \'Ilmi / Mengikuti Kajian Islam', category: 'Fikriyah', desc: 'Kajian offline masjid atau streaming kajian bermanfaat' },
   { id: 'task-fikriyah-buku', title: 'Membaca Buku Bermanfaat (Min. 15 Menit)', category: 'Fikriyah', desc: 'Buku sirah, aqidah, fiqih, atau pengembangan diri' },
   { id: 'task-fikriyah-hadits', title: 'Membaca & Memahami Hadits Harian', category: 'Fikriyah', desc: 'Tadabbur 1-2 hadits Riyadhus Shalihin / Arbain' },
   { id: 'task-fikriyah-muhasabah', title: 'Muhasabah Diri / Evaluasi Harian', category: 'Fikriyah', desc: 'Merenungkan dosa, niat, dan target hari esok' },
 
-  // KATEGORI 7: Berkarya
+  // KATEGORI 8: Berkarya
   { id: 'task-berkarya-amanah', title: 'Menuntaskan Amanah Tugas / Kerja dengan Ihsan', category: 'Berkarya', desc: 'Bekerja atau belajar secara profesional & amanah' },
   { id: 'task-berkarya-karya', title: 'Membuat Karya Bermanfaat / Produktif', category: 'Berkarya', desc: 'Menulis, merancang, atau menyelesaikan proyek kebaikan' },
   { id: 'task-berkarya-dakwah', title: 'Menyebarkan Kebaikan / Dakwah Digital', category: 'Berkarya', desc: 'Berbagi kutipan hikmah, ayat, hadits, atau edukasi' },
@@ -279,10 +325,10 @@ class MutabaahApp {
     return `${y}-${m}-${d}`;
   }
 
-  // Parse YYYY-MM-DD safely
+  // Parse YYYY-MM-DD safely with local noon to prevent timezone shifts
   parseDate(str) {
     const [y, m, d] = str.split('-').map(Number);
-    return new Date(y, m - 1, d);
+    return new Date(y, m - 1, d, 12, 0, 0);
   }
 
   // Convert HEX to RGB string for rgba()
@@ -295,8 +341,46 @@ class MutabaahApp {
     return `${(num >> 16) & 255}, ${(num >> 8) & 255}, ${num & 255}`;
   }
 
-  // Human readable date string in Indonesian
-  formatDisplayDate(dateStr) {
+  // Islamic (Hijriyah) date calculation via Umm al-Qura Intl API
+  getHijriDateParts(dateObj) {
+    const hijriMonths = [
+      'Muharram', 'Shafar', 'Rabi\'ul Awwal', 'Rabi\'ul Akhir',
+      'Jumadil Ula', 'Jumadil Akhir', 'Rajab', 'Sya\'ban',
+      'Ramadhan', 'Syawwal', 'Dzulqa\'dah', 'Dzulhijjah'
+    ];
+
+    try {
+      const parts = new Intl.DateTimeFormat('id-u-ca-islamic-umalqura', {
+        day: 'numeric',
+        month: 'numeric',
+        year: 'numeric'
+      }).formatToParts(dateObj);
+
+      const day = Number(parts.find(p => p.type === 'day')?.value || 1);
+      const month = Number(parts.find(p => p.type === 'month')?.value || 1);
+      const year = Number(parts.find(p => p.type === 'year')?.value || 1448);
+      const monthName = hijriMonths[(month - 1) % 12] || 'Hijriyah';
+
+      return {
+        day,
+        month,
+        year,
+        monthName,
+        text: `${day} ${monthName} ${year} H`
+      };
+    } catch (e) {
+      return {
+        day: 1,
+        month: 1,
+        year: 1448,
+        monthName: 'Muharram',
+        text: '1 Muharram 1448 H'
+      };
+    }
+  }
+
+  // Format Dual Date: Utamakan Hijriyah di atas, Masehi di bawahnya miring non-bold lebih kecil 2 font
+  formatDualDate(dateStr, includePrefix = false) {
     const date = this.parseDate(dateStr);
     const todayStr = this.formatDate(new Date());
 
@@ -309,22 +393,34 @@ class MutabaahApp {
     const tomorrowStr = this.formatDate(tomorrow);
 
     const days = ['Ahad', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-    const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+    const monthsMasehi = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
 
     const dayName = days[date.getDay()];
-    const dateNum = date.getDate();
-    const monthName = months[date.getMonth()];
-    const year = date.getFullYear();
+    const hijri = this.getHijriDateParts(date);
+    const masehiStr = `${date.getDate()} ${monthsMasehi[date.getMonth()]} ${date.getFullYear()} M`;
 
-    if (dateStr === todayStr) {
-      return `Hari Ini, ${dayName} ${dateNum} ${monthName}`;
-    } else if (dateStr === yesterdayStr) {
-      return `Kemarin, ${dayName} ${dateNum} ${monthName}`;
-    } else if (dateStr === tomorrowStr) {
-      return `Besok, ${dayName} ${dateNum} ${monthName}`;
-    } else {
-      return `${dayName}, ${dateNum} ${monthName} ${year}`;
+    let prefix = '';
+    if (includePrefix) {
+      if (dateStr === todayStr) prefix = 'Hari Ini, ';
+      else if (dateStr === yesterdayStr) prefix = 'Kemarin, ';
+      else if (dateStr === tomorrowStr) prefix = 'Besok, ';
     }
+
+    return {
+      hijriHeading: `${prefix}${dayName}, ${hijri.text}`,
+      masehiSub: masehiStr,
+      dayName,
+      hijriDay: hijri.day,
+      hijriMonthName: hijri.monthName,
+      hijriYear: hijri.year,
+      fullText: `${dayName}, ${hijri.text} (${masehiStr})`
+    };
+  }
+
+  // Human readable date string in Indonesian
+  formatDisplayDate(dateStr) {
+    const dual = this.formatDualDate(dateStr, false);
+    return `${dual.dayName}, ${dual.hijriDay} ${dual.hijriMonthName} ${dual.hijriYear} H`;
   }
 
   // Storage Methods (Local Internal Storage with Quota Guard)
@@ -515,6 +611,16 @@ class MutabaahApp {
       // Pick tilawah
       if (Math.random() > 0.3) {
         dayPicks.push(tilawahPool[Math.floor(Math.random() * tilawahPool.length)]);
+      }
+
+      // Pick puasa if Monday, Thursday, or Ayyamul Bidh (13, 14, 15 Hijriyah)
+      const dHijri = this.getHijriDateParts(d);
+      if (d.getDay() === 1 && Math.random() > 0.35) {
+        dayPicks.push('puasa-senin');
+      } else if (d.getDay() === 4 && Math.random() > 0.35) {
+        dayPicks.push('puasa-kamis');
+      } else if ((dHijri.day === 13 || dHijri.day === 14 || dHijri.day === 15) && Math.random() > 0.25) {
+        dayPicks.push('puasa-ayyamul-bidh');
       }
 
       // Pick standard tasks
@@ -802,9 +908,9 @@ class MutabaahApp {
 
   // Total baseline target count for percentage calculation
   getTotalAmalanCount() {
-    // 5 Fardhu + 5 Rawatib + 4 Sunnah Shalat + 1 Tilawah target
+    // 5 Fardhu + 5 Rawatib + 4 Sunnah Shalat + 1 Tilawah target + 1 Puasa target
     // + all category tasks in state.tasks
-    const baseCount = 5 + 5 + 4 + 1;
+    const baseCount = 5 + 5 + 4 + 1 + 1;
     const taskCount = this.state.tasks.length;
     return Math.max(1, baseCount + taskCount);
   }
@@ -879,8 +985,8 @@ class MutabaahApp {
     const otherCompleted = list.filter(id => !id.startsWith('fardhu-'));
     const otherDoneCount = otherCompleted.length;
 
-    // Remaining 75% divided among 5 rawatib + 4 sunnah + 1 tilawah target + state.tasks.length (20 default + custom)
-    const totalOtherTarget = 5 + 4 + 1 + this.state.tasks.length;
+    // Remaining 75% divided among 5 rawatib + 4 sunnah + 1 tilawah target + 1 puasa target + state.tasks.length (20 default + custom)
+    const totalOtherTarget = 5 + 4 + 1 + 1 + this.state.tasks.length;
     const otherWeight = totalOtherTarget > 0 ? (75 / totalOtherTarget) : 0;
     const otherPercent = otherDoneCount * otherWeight;
 
@@ -902,6 +1008,10 @@ class MutabaahApp {
     // Check in tasks
     const t = this.state.tasks.find(x => x.id === taskId);
     if (t) return t.title;
+
+    // Check in puasa
+    const p = PUASA_CONFIG.find(x => x.id === taskId);
+    if (p) return p.title;
 
     // Check in rawatib
     for (const prayer of PRAYERS_CONFIG) {
@@ -1033,18 +1143,34 @@ class MutabaahApp {
         else level = 'level-4';
       }
 
+      const hijri = this.getHijriDateParts(cur);
+      const isAyyamulBidh = (hijri.day === 13 || hijri.day === 14 || hijri.day === 15);
+
       const cell = document.createElement('div');
-      cell.className = `heatmap-cell ${level} ${isSelected ? 'is-selected' : ''}`;
+      cell.className = `heatmap-cell ${level} ${isSelected ? 'is-selected' : ''} ${isAyyamulBidh ? 'is-ayyamul-bidh' : ''}`;
       cell.dataset.date = dateStr;
       cell.dataset.count = count;
       cell.dataset.percent = percentage;
-      cell.title = isFuture ? `${dateStr}: Hari mendatang` : `${dateStr}: ${count} amalan selesai (${percentage}%)`;
+      cell.dataset.hijriDay = hijri.day;
+
+      const ayyamulBidhNote = isAyyamulBidh ? ` • Ayyamul Bidh (${hijri.day} ${hijri.monthName} H)` : '';
+      cell.title = isFuture
+        ? `${hijri.day} ${hijri.monthName} ${hijri.year} H (${dateStr}): Hari mendatang${ayyamulBidhNote}`
+        : `${hijri.day} ${hijri.monthName} ${hijri.year} H (${dateStr}): ${count} amalan selesai (${percentage}%)${ayyamulBidhNote}`;
       cell.tabIndex = isFuture ? -1 : 0;
       cell.setAttribute('role', isFuture ? 'presentation' : 'button');
       cell.setAttribute('aria-label', cell.title);
 
       if (isToday) {
         cell.style.borderColor = 'var(--text-primary)';
+      }
+
+      // Tambahkan angka 13 14 15 di setiap bulan hijriyah pada kotak grafik, kecil saja
+      if (isAyyamulBidh) {
+        const badge = document.createElement('span');
+        badge.className = 'heatmap-hijri-badge';
+        badge.textContent = String(hijri.day);
+        cell.appendChild(badge);
       }
 
       cells.push(cell);
@@ -1114,8 +1240,13 @@ class MutabaahApp {
     const todayStr = this.formatDate(new Date());
     const isToday = selectedDate === todayStr;
 
-    // Update Header Date Text
-    document.getElementById('selectedDateText').textContent = this.formatDisplayDate(selectedDate);
+    // Update Header Date Text (Utamakan Hijriyah, Masehi di bawahnya miring non-bold lebih kecil 2 font)
+    const dualDate = this.formatDualDate(selectedDate, true);
+    document.getElementById('selectedDateText').textContent = dualDate.hijriHeading;
+    const masehiEl = document.getElementById('selectedDateMasehi');
+    if (masehiEl) {
+      masehiEl.textContent = dualDate.masehiSub;
+    }
     const todayTag = document.getElementById('isTodayTag');
     todayTag.style.display = isToday ? 'inline-block' : 'none';
 
@@ -1127,10 +1258,10 @@ class MutabaahApp {
     const category = this.state.activeCategory || 'Shalat';
 
     // Toggle "Tambah Target Amalan Baru" button visibility:
-    // User tidak bisa menambah atau mengurangi list di kategori shalat dan tilawah
+    // User tidak bisa menambah atau mengurangi list di kategori shalat, tilawah, dan puasa
     const addTaskBar = document.querySelector('.add-task-bar');
     if (addTaskBar) {
-      addTaskBar.style.display = (category === 'Shalat' || category === 'Tilawah') ? 'none' : 'block';
+      addTaskBar.style.display = (category === 'Shalat' || category === 'Tilawah' || category === 'Puasa') ? 'none' : 'block';
     }
 
     // Synchronize Tabs selection
@@ -1327,6 +1458,88 @@ class MutabaahApp {
     }
 
     // ---------------------------------------------------------------
+    // 3. KATEGORI KETIGA: PUASA (Otomatis Senin, Kamis & Ayyamul Bidh 13, 14, 15 Hijriyah)
+    // ---------------------------------------------------------------
+    if (category === 'Puasa') {
+      const selectedDateObj = this.parseDate(selectedDate);
+      const dayOfWeek = selectedDateObj.getDay(); // 0: Ahad, 1: Senin, 2: Selasa, 3: Rabu, 4: Kamis, 5: Jumat, 6: Sabtu
+      const hijri = this.getHijriDateParts(selectedDateObj);
+
+      const isSenin = (dayOfWeek === 1);
+      const isKamis = (dayOfWeek === 4);
+      const isAyyamulBidh = (hijri.day === 13 || hijri.day === 14 || hijri.day === 15);
+      const hasAutoPuasaToday = isSenin || isKamis || isAyyamulBidh;
+
+      let html = '';
+
+      if (hasAutoPuasaToday) {
+        const autoReasons = [];
+        if (isSenin) autoReasons.push('Hari Senin (Sunnah Mingguan)');
+        if (isKamis) autoReasons.push('Hari Kamis (Sunnah Mingguan)');
+        if (isAyyamulBidh) autoReasons.push(`Ayyamul Bidh (${hijri.day} ${hijri.monthName} H)`);
+
+        html += `
+          <div class="puasa-auto-banner">
+            <div class="puasa-auto-badge">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+              <span>Jadwal Puasa Otomatis Hari Ini</span>
+            </div>
+            <div class="puasa-auto-desc">
+              Hari ini bertepatan dengan <strong>${this.escapeHtml(autoReasons.join(' & '))}</strong>. Disunnahkan berpuasa untuk mengharap ridha Allah Ta'ala.
+            </div>
+          </div>
+        `;
+      }
+
+      // Sort: items scheduled for today float to the top
+      const sortedPuasa = [...PUASA_CONFIG].sort((a, b) => {
+        const aIsScheduled = (a.id === 'puasa-senin' && isSenin) ||
+                             (a.id === 'puasa-kamis' && isKamis) ||
+                             (a.id === 'puasa-ayyamul-bidh' && isAyyamulBidh);
+        const bIsScheduled = (b.id === 'puasa-senin' && isSenin) ||
+                             (b.id === 'puasa-kamis' && isKamis) ||
+                             (b.id === 'puasa-ayyamul-bidh' && isAyyamulBidh);
+        if (aIsScheduled && !bIsScheduled) return -1;
+        if (!aIsScheduled && bIsScheduled) return 1;
+        return 0;
+      });
+
+      html += '<div class="puasa-list-grid">';
+
+      sortedPuasa.forEach(item => {
+        const isChecked = completedIds.has(item.id);
+        const isScheduledToday = (item.id === 'puasa-senin' && isSenin) ||
+                                 (item.id === 'puasa-kamis' && isKamis) ||
+                                 (item.id === 'puasa-ayyamul-bidh' && isAyyamulBidh);
+
+        html += `
+          <div class="todo-item puasa-item ${isChecked ? 'checked' : ''} ${isScheduledToday ? 'is-scheduled-today' : ''}" data-task-id="${item.id}" tabindex="0" role="checkbox" aria-checked="${isChecked}" aria-label="${this.escapeHtml(item.title)}. ${isChecked ? 'Selesai' : 'Belum selesai'}">
+            <div class="todo-left">
+              <div class="custom-checkbox" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </div>
+              <div class="todo-content">
+                <div class="puasa-title-row">
+                  <span class="todo-title">${this.escapeHtml(item.title)}</span>
+                  ${isScheduledToday ? '<span class="puasa-today-badge">Jadwal Hari Ini</span>' : ''}
+                  <span class="puasa-badge">${this.escapeHtml(item.badge)}</span>
+                </div>
+                <span class="task-desc">${this.escapeHtml(item.desc)}</span>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+
+      html += '</div>';
+      listEl.innerHTML = html;
+      this.updateDailyProgress();
+      return;
+    }
+
+    // ---------------------------------------------------------------
     // 3 - 7. KATEGORI: Dzikir, Sosial, Jasadiyah, Fikriyah, Berkarya & Lainnya
     // ---------------------------------------------------------------
     const filteredTasks = this.state.tasks.filter(t => t.category === category);
@@ -1411,8 +1624,8 @@ class MutabaahApp {
 
   // Add New Custom Task
   addTask(title, category, desc) {
-    if (category === 'Shalat' || category === 'Tilawah') {
-      this.showToast('Amalan kategori Shalat dan Tilawah adalah standar dan tidak dapat ditambah.', 'error');
+    if (category === 'Shalat' || category === 'Tilawah' || category === 'Puasa') {
+      this.showToast('Amalan kategori Shalat, Tilawah, dan Puasa adalah standar dan tidak dapat ditambah.', 'error');
       return;
     }
     const newTask = {
@@ -1432,8 +1645,8 @@ class MutabaahApp {
   // Delete Task
   deleteTask(taskId) {
     const task = this.state.tasks.find(t => t.id === taskId);
-    if (task && (task.category === 'Shalat' || task.category === 'Tilawah')) {
-      this.showToast('Amalan kategori Shalat dan Tilawah tidak dapat dihapus.', 'error');
+    if (task && (task.category === 'Shalat' || task.category === 'Tilawah' || task.category === 'Puasa')) {
+      this.showToast('Amalan kategori Shalat, Tilawah, dan Puasa tidak dapat dihapus.', 'error');
       return;
     }
     const title = task ? task.title : 'amalan ini';
@@ -1631,10 +1844,15 @@ class MutabaahApp {
   openDayDetail(dateStr) {
     const modal = document.getElementById('modalDayDetail');
     const title = document.getElementById('dayDetailTitle');
+    const masehiEl = document.getElementById('dayDetailMasehi');
     const subtitle = document.getElementById('dayDetailSubtitle');
     const body = document.getElementById('dayDetailBody');
 
-    title.textContent = this.formatDisplayDate(dateStr);
+    const dual = this.formatDualDate(dateStr, false);
+    title.textContent = dual.hijriHeading;
+    if (masehiEl) {
+      masehiEl.textContent = dual.masehiSub;
+    }
     const completedSet = new Set(this.state.history[dateStr] || []);
     const progress = this.calculateDailyProgress(dateStr);
 
@@ -1706,7 +1924,21 @@ class MutabaahApp {
       });
     }
 
-    // 5. Target Amalan Lainnya
+    // 5. Puasa
+    const puasaDone = PUASA_CONFIG.filter(item => completedSet.has(item.id));
+    if (puasaDone.length > 0) {
+      listHtml += '<div class="day-detail-group-title" style="margin-top:10px;">Puasa:</div>';
+      puasaDone.forEach(item => {
+        listHtml += `
+          <div class="day-detail-row">
+            <span>${this.escapeHtml(item.title)}</span>
+            <span style="font-weight:700; color: var(--theme-primary);">✓ Ditunaikan</span>
+          </div>
+        `;
+      });
+    }
+
+    // 6. Target Amalan Lainnya
     listHtml += '<div class="day-detail-group-title" style="margin-top:10px;">Daftar Amalan Harian:</div>';
     this.state.tasks.forEach(t => {
       const isDone = completedSet.has(t.id);
@@ -1793,10 +2025,19 @@ class MutabaahApp {
     const startDateStr = this.formatDate(days[0]);
     const endDateStr = this.formatDate(days[6]);
 
-    // Subtitle rentang tanggal
+    // Subtitle rentang tanggal (Utamakan Hijriyah, Masehi di bawahnya miring non-bold lebih kecil)
     const subtitleEl = document.getElementById('reviewJujurSubtitle');
     if (subtitleEl) {
-      subtitleEl.textContent = `${this.formatDisplayDate(startDateStr)} – ${this.formatDisplayDate(endDateStr)}`;
+      const startHijri = this.getHijriDateParts(days[0]);
+      const endHijri = this.getHijriDateParts(days[6]);
+      const monthNamesMasehi = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+      const startMasehi = `${days[0].getDate()} ${monthNamesMasehi[days[0].getMonth()]}`;
+      const endMasehi = `${days[6].getDate()} ${monthNamesMasehi[days[6].getMonth()]} ${days[6].getFullYear()} M`;
+
+      subtitleEl.innerHTML = `
+        <span class="review-hijri-range">${startHijri.day} ${startHijri.monthName} – ${endHijri.day} ${endHijri.monthName} ${endHijri.year} H</span>
+        <span class="date-masehi-sub">${startMasehi} – ${endMasehi}</span>
+      `;
     }
 
     let totalPercentSum = 0;
@@ -1808,6 +2049,7 @@ class MutabaahApp {
     let rawatibCount = 0;
     let sunnahCount = 0;
     let tilawahCount = 0;
+    let puasaCount = 0;
     let dzikirCount = 0;
     let sosialCount = 0;
     let jasadiyahCount = 0;
@@ -1841,9 +2083,10 @@ class MutabaahApp {
         else if (mode === 'sendiri') { fardhuSendiri++; totalFardhu++; }
       });
 
-      // Hitung amalan lainnya
+      // Hitung amalan lainnya & puasa
       list.forEach(id => {
-        if (id.startsWith('rawatib-')) rawatibCount++;
+        if (id.startsWith('puasa-')) puasaCount++;
+        else if (id.startsWith('rawatib-')) rawatibCount++;
         else if (id.startsWith('sunnah-')) sunnahCount++;
         else if (id.startsWith('tilawah-')) tilawahCount++;
         else {
@@ -1874,18 +2117,19 @@ class MutabaahApp {
       rawatibCount,
       sunnahCount,
       tilawahCount,
+      puasaCount,
       dzikirCount,
       sosialCount,
       jasadiyahCount,
       fikriyahCount,
       berkaryaCount,
-      bestDay: bestDay ? this.formatDisplayDate(bestDay) : null,
+      bestDay: bestDay ? this.formatDualDate(bestDay).hijriHeading : null,
       bestDayPercent
     });
 
     this._cachedNarrative = narrative;
 
-    // Generate 7-Day Achievement Table HTML & Text Summary
+    // Generate 7-Day Achievement Table HTML & Text Summary (Fokus: Shalat, Tilawah, Puasa, Capaian)
     const dayNames = ['Ahad', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
     const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
 
@@ -1901,8 +2145,9 @@ class MutabaahApp {
       const dName = dayNames[dateObj.getDay()];
       const dNum = dateObj.getDate();
       const mName = monthNames[dateObj.getMonth()];
+      const hijri = this.getHijriDateParts(dateObj);
 
-      // Shalat breakdown
+      // 1. Shalat detail (fardhu, rawatib, sunnah)
       let shalatTW = 0;
       let shalatJ = 0;
       let shalatS = 0;
@@ -1913,22 +2158,37 @@ class MutabaahApp {
         else if (mode === 'sendiri') shalatS++;
       });
       const shalatDone = shalatTW + shalatJ + shalatS;
+      const rawatibDone = list.filter(id => id.startsWith('rawatib-')).length;
+      const sunnahShalatDone = list.filter(id => id.startsWith('sunnah-')).length;
 
-      // Sunnah & Rawatib count
-      const sunnahRawatib = list.filter(id => id.startsWith('rawatib-') || id.startsWith('sunnah-')).length;
+      const fardhuParts = [];
+      if (shalatTW + shalatJ > 0) fardhuParts.push(`${shalatTW + shalatJ} Jama'ah`);
+      if (shalatS > 0) fardhuParts.push(`${shalatS} Sendiri`);
 
-      // Tilawah
+      // 2. Tilawah
       const tilawahItems = list.filter(id => id.startsWith('tilawah-'));
       const tilawahText = tilawahItems.map(id => {
         const item = TILAWAH_LEMBAR_CONFIG.find(c => c.id === id) || TILAWAH_JUZ_CONFIG.find(c => c.id === id);
         return item ? item.label : id.replace('tilawah-', '');
       }).join(', ');
 
-      // Dzikir
-      const dzikirCount = list.filter(id => {
-        const t = this.state.tasks.find(tk => tk.id === id);
-        return t && t.category === 'Dzikir';
-      }).length;
+      // 3. Puasa
+      const puasaItems = list.filter(id => id.startsWith('puasa-'));
+      let puasaCellHtml = '<span class="text-muted">-</span>';
+      let puasaTextSummary = '-';
+      if (puasaItems.length > 0) {
+        const labels = puasaItems.map(id => {
+          const cfg = PUASA_CONFIG.find(c => c.id === id);
+          if (id === 'puasa-ayyamul-bidh') return '🌕 Ayyamul Bidh';
+          if (id === 'puasa-senin') return '🌾 Puasa Senin';
+          if (id === 'puasa-kamis') return '🌾 Puasa Kamis';
+          if (id === 'puasa-daud') return '🌾 Puasa Daud';
+          if (id === 'puasa-qadha') return '🌾 Puasa Qadha';
+          return cfg ? `🌾 ${cfg.badge}` : '🌾 Puasa';
+        });
+        puasaCellHtml = `<span class="review-puasa-badge">${this.escapeHtml(labels.join(', '))}</span>`;
+        puasaTextSummary = labels.join(', ');
+      }
 
       // Badge Pct class
       let pctClass = 'pct-zero';
@@ -1936,36 +2196,33 @@ class MutabaahApp {
       else if (progress.percent >= 50) pctClass = 'pct-mid';
       else if (progress.percent > 0) pctClass = 'pct-low';
 
-      // Ruhiyah badges
-      const ruhiyahBadges = [];
-      if (sunnahRawatib > 0) ruhiyahBadges.push(`${sunnahRawatib} Sunnah`);
-      if (tilawahText) ruhiyahBadges.push(`📖 ${this.escapeHtml(tilawahText)}`);
-      if (dzikirCount > 0) ruhiyahBadges.push(`📿 ${dzikirCount} Dzikir`);
-      const ruhiyahHtml = ruhiyahBadges.length > 0
-        ? `<div class="review-tags-list">${ruhiyahBadges.map(b => `<span>${b}</span>`).join('')}</div>`
-        : `<span class="text-muted">-</span>`;
-
-      // Shalat detail HTML
-      let shalatDetailHtml = `<span class="text-muted">0/5</span>`;
-      if (shalatDone > 0) {
-        const parts = [];
-        if (shalatTW + shalatJ > 0) parts.push(`${shalatTW + shalatJ} Jama'ah`);
-        if (shalatS > 0) parts.push(`${shalatS} Sendiri`);
-        shalatDetailHtml = `
-          <strong>${shalatDone}/5</strong>
-          <span class="review-sub-info">${parts.join(', ')}</span>
-        `;
-      }
-
       tableRowsHtml += `
         <tr class="${isToday ? 'is-today-row' : ''}">
           <td>
             <strong>${dName}</strong>
-            <span class="review-sub-info">${dNum} ${mName}</span>
+            <span class="review-hijri-date">${hijri.day} ${hijri.monthName}</span>
+            <span class="date-masehi-sub">${dNum} ${mName} ${dateObj.getFullYear()} M</span>
             ${isToday ? '<span class="review-today-pill">Hari ini</span>' : ''}
           </td>
-          <td>${shalatDetailHtml}</td>
-          <td>${ruhiyahHtml}</td>
+          <td>
+            <div class="review-shalat-group">
+              <div class="review-fardhu-summary">
+                <strong>${shalatDone}/5 Fardhu</strong>
+                ${shalatDone > 0 ? `<span class="review-sub-info">${fardhuParts.join(', ')}</span>` : '<span class="review-sub-info text-muted">0 waktu</span>'}
+              </div>
+              <div class="review-sunnah-summary">
+                ${rawatibDone > 0 ? `<span class="review-mini-pill">${rawatibDone} Rawatib</span>` : ''}
+                ${sunnahShalatDone > 0 ? `<span class="review-mini-pill">${sunnahShalatDone} Sunnah</span>` : ''}
+                ${rawatibDone === 0 && sunnahShalatDone === 0 ? '<span class="review-sub-info text-muted">Rawatib/Sunnah: -</span>' : ''}
+              </div>
+            </div>
+          </td>
+          <td>
+            ${tilawahText ? `<span class="review-tilawah-badge">📖 ${this.escapeHtml(tilawahText)}</span>` : '<span class="text-muted">-</span>'}
+          </td>
+          <td>
+            ${puasaCellHtml}
+          </td>
           <td style="text-align: right;">
             <span class="review-badge-pct ${pctClass}">${progress.percent}%</span>
           </td>
@@ -1973,8 +2230,8 @@ class MutabaahApp {
       `;
 
       // Text row for clipboard
-      const ruhiyahTxt = ruhiyahBadges.length > 0 ? ruhiyahBadges.join(' | ') : '-';
-      tableTextLines.push(`- ${dName} (${dNum} ${mName}): Shalat ${shalatDone}/5, ${ruhiyahTxt}, Capaian ${progress.percent}%`);
+      const shalatSummaryTxt = `Fardhu ${shalatDone}/5 (${fardhuParts.length > 0 ? fardhuParts.join(', ') : '0'}), Rawatib: ${rawatibDone}, Sunnah: ${sunnahShalatDone}`;
+      tableTextLines.push(`- ${dName}, ${hijri.day} ${hijri.monthName} (${dNum} ${mName} ${dateObj.getFullYear()} M): Shalat [${shalatSummaryTxt}] | Tilawah: ${tilawahText || '-'} | Puasa: ${puasaTextSummary} | Capaian: ${progress.percent}%`);
     });
 
     tableTextLines.push(`Rata-rata 7 Hari: ${avgPercent}% (Total ${totalAmalanDone} amalan)`);
@@ -1997,8 +2254,8 @@ class MutabaahApp {
             <div class="review-stat-label">Shalat Berjama'ah / TW</div>
           </div>
           <div class="review-stat-card">
-            <div class="review-stat-value">${tilawahCount + dzikirCount}x</div>
-            <div class="review-stat-label">Tilawah & Dzikir</div>
+            <div class="review-stat-value">${tilawahCount}x / ${puasaCount} hari</div>
+            <div class="review-stat-label">Tilawah & Puasa</div>
           </div>
         </div>
 
@@ -2019,7 +2276,7 @@ class MutabaahApp {
           </div>
         </div>
 
-        <!-- Tabel Pencapaian Selama 7 Hari -->
+        <!-- Tabel Pencapaian Selama 7 Hari (Fokus: Shalat, Tilawah, Puasa, Capaian) -->
         <div class="review-table-container">
           <div class="review-table-header">
             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
@@ -2034,8 +2291,9 @@ class MutabaahApp {
               <thead>
                 <tr>
                   <th>Hari / Tgl</th>
-                  <th>Shalat Fardhu</th>
-                  <th>Sunnah & Ruhiyah</th>
+                  <th>Shalat (Fardhu &amp; Sunnah)</th>
+                  <th>Tilawah</th>
+                  <th>Puasa</th>
                   <th style="text-align: right;">Capaian</th>
                 </tr>
               </thead>
@@ -2064,6 +2322,7 @@ class MutabaahApp {
       rawatibCount,
       sunnahCount,
       tilawahCount,
+      puasaCount,
       dzikirCount,
       sosialCount,
       jasadiyahCount,
@@ -2122,7 +2381,14 @@ class MutabaahApp {
       );
     }
 
-    // 4. Amal Sosial, Jasmani, & Karya Nyata dengan data tebal
+    // 4. Puasa Sunnah & Wajib
+    if (puasaCount > 0) {
+      paragraphs.push(
+        `Masya Allah, di antara kesibukan sepekan ini, tercatat **${puasaCount} hari** engkau ikhlas menahan lapar dan dahaga dalam ibadah puasa (seperti puasa sunnah Senin-Kamis atau Ayyamul Bidh). Puasa adalah rahasia cinta antara seorang hamba dengan Rabb-nya; tiada yang mengetahuinya selain Allah. Setiap detik keikhlasanmu adalah benteng perisai dari api neraka dan pembuka pintu kemuliaan Ar-Rayyan.`
+      );
+    }
+
+    // 5. Amal Sosial, Jasmani, & Karya Nyata dengan data tebal
     const muamalahTotal = sosialCount + jasadiyahCount + fikriyahCount + berkaryaCount;
     if (muamalahTotal > 0) {
       paragraphs.push(
@@ -2130,14 +2396,14 @@ class MutabaahApp {
       );
     }
 
-    // 5. Highlight Hari Terbaik jika ada
+    // 6. Highlight Hari Terbaik jika ada
     if (bestDay && bestDayPercent > 0) {
       paragraphs.push(
         `Catatan terbaikmu dalam sepekan ini terukir pada hari **${bestDay}** dengan capaian konsistensi mencapai **${bestDayPercent}%**. Jadikan momentum terbaik itu sebagai bukti pada dirimu sendiri bahwa engkau memiliki potensi istiqomah yang luar biasa dengan izin Allah.`
       );
     }
 
-    // 6. Nasihat Penuh Hikmah & Doa Penutup
+    // 7. Nasihat Penuh Hikmah & Doa Penutup
     paragraphs.push(
       `Duhai jiwa yang terus bertumbuh... Ingatlah selalu bahwa mutaba'ah ini bukanlah timbangan vonis, melainkan cermin kejujuran nurani untuk melihat di mana kaki kita sedang berpijak. Hakikat istiqomah bukanlah kesempurnaan tanpa cela, melainkan ketulusan untuk selalu bangkit bersujud setiap kali kita tersandung kelalaian.\n\n` +
       `Mari beristighfar atas segala kekurangan **7 hari** yang lalu, bersyukur tulus atas setiap hidayah yang dimudahkan, dan mari melangkah ke sepekan ke depan dengan bismillah: hati yang lebih lapang, niat yang lebih murni, dan cinta yang lebih mendalam kepada Allah Ta'ala.`
