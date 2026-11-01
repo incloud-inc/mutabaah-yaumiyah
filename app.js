@@ -4,6 +4,13 @@
  * Flexible Ruhiyah / Faith Status, 100% Offline with Internal Device Storage.
  */
 
+// Global capture for PWA Install Prompt (Shortcut Layar Utama)
+window.deferredInstallPrompt = null;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  window.deferredInstallPrompt = e;
+});
+
 // Open Color Palettes (13 Color Families from https://yeun.github.io/open-color/)
 // Each palette contains 10 sequential shades (0: lightest -> 9: darkest)
 const OPEN_COLOR_PALETTES = {
@@ -653,6 +660,7 @@ class MutabaahApp {
     this.renderChecklist();
     this.updateStats();
     this.setupHeatmapScrollGestures();
+    this.initPwaInstallPrompt();
   }
 
   // ===================================================================
@@ -2171,6 +2179,107 @@ class MutabaahApp {
       toast.style.transition = 'all 0.3s ease';
       setTimeout(() => toast.remove(), 320);
     }, 2800);
+  }
+
+  // ===================================================================
+  // PWA SHORTCUT / INSTALL BANNER (7-Detik Auto-Close)
+  // ===================================================================
+  initPwaInstallPrompt() {
+    // Jika aplikasi sudah dibuka dari shortcut / standalone PWA di HP atau Laptop
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+    if (isStandalone) return;
+
+    const btnInstall = document.getElementById('btnPwaInstall');
+    const btnClose = document.getElementById('btnPwaClose');
+
+    if (btnInstall) {
+      btnInstall.addEventListener('click', () => this.handlePwaInstall());
+    }
+
+    if (btnClose) {
+      btnClose.addEventListener('click', () => this.closePwaInstallBanner());
+    }
+
+    // Munculkan prompt setiap kali membuka aplikasi setelah 700ms
+    setTimeout(() => {
+      this.showPwaInstallBanner();
+    }, 700);
+  }
+
+  showPwaInstallBanner() {
+    const banner = document.getElementById('pwaInstallBanner');
+    if (!banner) return;
+
+    banner.classList.remove('hidden');
+    void banner.offsetWidth; // Force reflow
+    banner.classList.add('show');
+
+    const badge = document.getElementById('pwaTimerBadge');
+    const fill = document.getElementById('pwaTimerFill');
+
+    if (fill) {
+      fill.style.transition = 'none';
+      fill.style.width = '100%';
+      void fill.offsetWidth;
+      fill.style.transition = 'width 7s linear';
+      fill.style.width = '0%';
+    }
+
+    let seconds = 7;
+    if (badge) badge.textContent = `${seconds}s`;
+
+    if (this._pwaInterval) clearInterval(this._pwaInterval);
+    this._pwaInterval = setInterval(() => {
+      seconds--;
+      if (badge) badge.textContent = `${seconds}s`;
+      if (seconds <= 0) {
+        this.closePwaInstallBanner();
+      }
+    }, 1000);
+  }
+
+  closePwaInstallBanner() {
+    if (this._pwaInterval) {
+      clearInterval(this._pwaInterval);
+      this._pwaInterval = null;
+    }
+    const banner = document.getElementById('pwaInstallBanner');
+    if (banner) {
+      banner.classList.remove('show');
+      setTimeout(() => {
+        banner.classList.add('hidden');
+      }, 360);
+    }
+  }
+
+  async handlePwaInstall() {
+    if (this._pwaInterval) {
+      clearInterval(this._pwaInterval);
+      this._pwaInterval = null;
+    }
+
+    if (window.deferredInstallPrompt) {
+      window.deferredInstallPrompt.prompt();
+      try {
+        const choice = await window.deferredInstallPrompt.userChoice;
+        if (choice && choice.outcome === 'accepted') {
+          this.showToast('Alhamdulillah, aplikasi berhasil dipasang di layar Anda! 🎉');
+        }
+      } catch (err) {
+        console.error('Install prompt choice error:', err);
+      }
+      window.deferredInstallPrompt = null;
+      this.closePwaInstallBanner();
+    } else {
+      // Panduan jika browser belum/tidak mendukung prompt otomatis
+      const isIos = /iphone|ipad|ipod/.test(navigator.userAgent.toLowerCase());
+      if (isIos) {
+        this.showToast('📱 iPhone/iPad: Ketuk ikon Bagikan ⎋ di Safari, lalu pilih "Tambah ke Layar Utama".');
+      } else {
+        this.showToast('💡 Buka menu browser (titik 3 di kanan atas), lalu klik "Pasang Aplikasi" / "Install".');
+      }
+      this.closePwaInstallBanner();
+    }
   }
 
   // ===================================================================

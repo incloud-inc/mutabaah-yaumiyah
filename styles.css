@@ -2785,3 +2785,217 @@ body.mode-dark .btn-palestina {
   border-radius: 4px;
 }
 
+/* ===================================================================
+   PWA INSTALL BANNER (Floating Card with 7s Timer)
+   =================================================================== */
+.pwa-install-banner {
+  position: fixed;
+  bottom: calc(68px + env(safe-area-inset-bottom, 0px));
+  left: 50%;
+  transform: translateX(-50%) translateY(140%);
+  width: 94%;
+  max-width: 440px;
+  z-index: 10000;
+  pointer-events: none;
+  opacity: 0;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+}
+
+.pwa-install-banner.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.pwa-install-banner.hidden {
+  display: none;
+}
+
+.pwa-install-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  border: 2px solid var(--theme-primary);
+  padding: 14px 16px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+/* Light & Theme Modes: Solid pure white, dark crisp text */
+body.mode-light .pwa-install-card,
+body.mode-terang .pwa-install-card,
+body.mode-theme-light .pwa-install-card,
+body.mode-theme-dark .pwa-install-card {
+  background: #ffffff !important;
+  color: #1a1e24 !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.26), 0 0 20px var(--theme-glow);
+}
+
+body.mode-light .pwa-install-title,
+body.mode-terang .pwa-install-title,
+body.mode-theme-light .pwa-install-title,
+body.mode-theme-dark .pwa-install-title {
+  color: #111418 !important;
+}
+
+body.mode-light .pwa-install-desc,
+body.mode-terang .pwa-install-desc,
+body.mode-theme-light .pwa-install-desc,
+body.mode-theme-dark .pwa-install-desc {
+  color: #495057 !important;
+}
+
+/* Dark Mode: Solid deep dark (#15181e), high contrast white text */
+body.mode-dark .pwa-install-card,
+body.mode-gelap .pwa-install-card {
+  background: #15181e !important;
+  color: #f8f9fa !important;
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.8), 0 0 22px var(--theme-glow);
+}
+
+body.mode-dark .pwa-install-title,
+body.mode-gelap .pwa-install-title {
+  color: #f8f9fa !important;
+}
+
+body.mode-dark .pwa-install-desc,
+body.mode-gelap .pwa-install-desc {
+  color: #adb5bd !important;
+}
+
+.pwa-install-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pwa-install-icon-wrapper {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.pwa-install-logo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.pwa-install-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.pwa-install-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.pwa-install-title {
+  font-size: 0.92rem;
+  font-weight: 700;
+  margin: 0;
+  line-height: 1.25;
+}
+
+.pwa-timer-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  background: var(--theme-checked-bg, rgba(43, 138, 62, 0.15));
+  color: var(--theme-primary);
+  border: 1px solid var(--theme-primary);
+  padding: 1px 7px;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+}
+
+.pwa-install-desc {
+  font-size: 0.74rem;
+  margin: 3px 0 0 0;
+  line-height: 1.35;
+}
+
+.pwa-install-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-pwa-install {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 9px 16px;
+  background: var(--theme-primary);
+  color: var(--theme-btn-text, #ffffff);
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 12px var(--theme-glow);
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.btn-pwa-install:hover {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+}
+
+.btn-pwa-install:active {
+  transform: scale(0.97);
+}
+
+.btn-pwa-dismiss {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: var(--bg-surface, #e9ecef);
+  color: var(--text-muted);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.btn-pwa-dismiss:hover {
+  color: var(--text-primary);
+  border-color: var(--text-secondary);
+}
+
+.pwa-timer-track {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: rgba(0, 0, 0, 0.08);
+}
+
+body.mode-dark .pwa-timer-track {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.pwa-timer-fill {
+  height: 100%;
+  width: 100%;
+  background: var(--theme-primary);
+  transition: width 7s linear;
+}
+

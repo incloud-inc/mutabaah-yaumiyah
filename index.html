@@ -9,19 +9,20 @@
   
   <!-- Favicon & Icons -->
   <link rel="icon" type="image/svg+xml" href="icons/icon-512.svg">
+  <link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png">
   <link rel="shortcut icon" type="image/svg+xml" href="icons/icon-512.svg">
-  <link rel="apple-touch-icon" href="icons/icon-512.svg">
-  <link rel="image_src" href="https://mastatag.com/icons/icon-512.svg">
+  <link rel="apple-touch-icon" href="icons/icon-512.png">
+  <link rel="image_src" href="https://mastatag.com/og-image.png">
 
   <!-- Open Graph / Facebook / WhatsApp Preview -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Mutaba'ah Yaumiyah">
   <meta property="og:title" content="Mutaba'ah Yaumiyah">
   <meta property="og:description" content="To Do List calon member Firdaus.">
-  <meta property="og:url" content="https://mastatag.com">
-  <meta property="og:image" content="https://mastatag.com/icons/icon-512.svg">
-  <meta property="og:image:secure_url" content="https://mastatag.com/icons/icon-512.svg">
-  <meta property="og:image:type" content="image/svg+xml">
+  <meta property="og:url" content="https://mastatag.com/">
+  <meta property="og:image" content="https://mastatag.com/og-image.png">
+  <meta property="og:image:secure_url" content="https://mastatag.com/og-image.png">
+  <meta property="og:image:type" content="image/png">
   <meta property="og:image:width" content="512">
   <meta property="og:image:height" content="512">
   <meta property="og:image:alt" content="Logo Mutaba'ah Yaumiyah">
@@ -30,7 +31,7 @@
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Mutaba'ah Yaumiyah">
   <meta name="twitter:description" content="To Do List calon member Firdaus.">
-  <meta name="twitter:image" content="https://mastatag.com/icons/icon-512.svg">
+  <meta name="twitter:image" content="https://mastatag.com/og-image.png">
 
   <!-- Web App Manifest for PWA -->
   <link rel="manifest" href="manifest.json">
@@ -682,6 +683,43 @@
       </div>
     </div>
   </div>
+
+  <!-- Floating PWA Install Prompt Banner (Auto-close 7s) -->
+  <aside class="pwa-install-banner hidden" id="pwaInstallBanner" role="dialog" aria-modal="false" aria-labelledby="pwaInstallTitle" aria-describedby="pwaInstallDesc">
+    <div class="pwa-install-card">
+      <div class="pwa-install-content">
+        <div class="pwa-install-icon-wrapper">
+          <img src="./icons/icon-192.png" alt="Logo Mutaba'ah Yaumiyah" class="pwa-install-logo" width="44" height="44" />
+        </div>
+        <div class="pwa-install-details">
+          <div class="pwa-install-header-row">
+            <h4 class="pwa-install-title" id="pwaInstallTitle">Pasang Shortcut Aplikasi</h4>
+            <span class="pwa-timer-badge" id="pwaTimerBadge">7s</span>
+          </div>
+          <p class="pwa-install-desc" id="pwaInstallDesc">Buka langsung dari icon di layar HP atau Laptop tanpa browser.</p>
+        </div>
+      </div>
+
+      <div class="pwa-install-actions">
+        <button type="button" class="btn-pwa-install" id="btnPwaInstall" aria-label="Pasang shortcut aplikasi ke HP atau Laptop">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          <span>Pasang Sekarang</span>
+        </button>
+        <button type="button" class="btn-pwa-dismiss" id="btnPwaClose" aria-label="Tutup prompt pemasangan">
+          ✕
+        </button>
+      </div>
+
+      <!-- Animated timer progress track -->
+      <div class="pwa-timer-track" aria-hidden="true">
+        <div class="pwa-timer-fill" id="pwaTimerFill"></div>
+      </div>
+    </div>
+  </aside>
 
   <!-- Toast Notification Container -->
   <div class="toast-container" id="toastContainer"></div>
