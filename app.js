@@ -1023,48 +1023,111 @@ class MutabaahApp {
     this.updateStats();
   }
 
-  // Calculate daily progress with specialized prayer weights:
-  // Shalat: Sendiri = 1%, Jama'ah = 3%, Jama'ah Tepat Waktu = 5% (5 fardhu max = 25%)
-  // Other amalan: distributed evenly across remaining 75%
+  // Calculate daily progress with specialized prayer and tilawah weights:
+  // - SHALAT (5 Fardhu tepat waktu + 5 Rawatib + 4 Sunnah shalat) = 30%
+  //   * 5 Fardhu: Tepat Waktu = 4% (5x4%=20%), Jama'ah = 2.5% (5x2.5%=12.5%), Sendiri = 1% (5x1%=5%)
+  //   * 5 Rawatib: 1% per amalan (5x1%=5%)
+  //   * 4 Sunnah Shalat: 1.25% per amalan (4x1.25%=5%)
+  //   -> Total Shalat maksimal = 20% + 5% + 5% = 30%
+  // - TILAWAH: setiap 1 lembar bernilai 1%
+  //   -> Tilawah 20 lembar = 20%
+  //   -> Total SHALAT (30%) + TILAWAH 20 lembar (20%) = BERNILAI 50%
+  // - AMALAN LAINNYA (Puasa, Dzikir, Sosial, Jasadiyah, Fikriyah, Berkarya, Custom):
+  //   * Didistribusikan pada sisa 50%
   calculateDailyProgress(dateStr) {
     const list = this.state.history[dateStr] || [];
-    let shalatPercent = 0;
-    let shalatDoneCount = 0;
 
+    // 1. Shalat Fardhu (Maksimal 20%)
+    let fardhuPercent = 0;
+    let fardhuDoneCount = 0;
     const fardhuIds = ['subuh', 'zuhur', 'ashar', 'maghrib', 'isya'];
     fardhuIds.forEach(pId => {
       const mode = this.getPrayerMode(pId, dateStr);
       if (mode === 'tepat-waktu') {
-        shalatPercent += 5;
-        shalatDoneCount++;
+        fardhuPercent += 4;
+        fardhuDoneCount++;
       } else if (mode === 'jamaah') {
-        shalatPercent += 3;
-        shalatDoneCount++;
+        fardhuPercent += 2.5;
+        fardhuDoneCount++;
       } else if (mode === 'sendiri') {
-        shalatPercent += 1;
-        shalatDoneCount++;
+        fardhuPercent += 1;
+        fardhuDoneCount++;
       }
     });
 
-    // Other completed items (not starting with 'fardhu-')
-    const otherCompleted = list.filter(id => !id.startsWith('fardhu-'));
-    const otherDoneCount = otherCompleted.length;
+    // 2. Shalat Sunnah Rawatib (5 amalan x 1% = Maksimal 5%)
+    const rawatibIds = [
+      'rawatib-subuh-qabliyah',
+      'rawatib-zuhur-qabliyah',
+      'rawatib-zuhur-badiyah',
+      'rawatib-maghrib-badiyah',
+      'rawatib-isya-badiyah'
+    ];
+    let rawatibPercent = 0;
+    let rawatibDoneCount = 0;
+    rawatibIds.forEach(rId => {
+      if (list.includes(rId)) {
+        rawatibPercent += 1;
+        rawatibDoneCount++;
+      }
+    });
 
-    // Remaining 75% divided among 5 rawatib + 4 sunnah + 1 tilawah target + 1 puasa target + state.tasks.length (20 default + custom)
-    const totalOtherTarget = 5 + 4 + 1 + 1 + this.state.tasks.length;
-    const otherWeight = totalOtherTarget > 0 ? (75 / totalOtherTarget) : 0;
+    // 3. Shalat Sunnah Lainnya (4 amalan x 1.25% = Maksimal 5%)
+    const sunnahIds = [
+      'sunnah-qiyamul-lail',
+      'sunnah-witir',
+      'sunnah-dhuha',
+      'sunnah-taubat'
+    ];
+    let sunnahPercent = 0;
+    let sunnahDoneCount = 0;
+    sunnahIds.forEach(sId => {
+      if (list.includes(sId)) {
+        sunnahPercent += 1.25;
+        sunnahDoneCount++;
+      }
+    });
+
+    const shalatPercent = fardhuPercent + rawatibPercent + sunnahPercent;
+    const shalatDoneCount = fardhuDoneCount + rawatibDoneCount + sunnahDoneCount;
+
+    // 4. Tilawah: Setiap 1 lembar bernilai 1%
+    const tilawahSheets = this.getTilawahSheets(dateStr);
+    const tilawahPercent = tilawahSheets * 1;
+    const tilawahDoneCount = tilawahSheets > 0 ? 1 : 0;
+
+    // 5. Puasa & Target Amalan Lainnya (Maksimal 50%)
+    const hasPuasa = list.some(id => typeof id === 'string' && id.startsWith('puasa-'));
+    const puasaDoneCount = hasPuasa ? 1 : 0;
+
+    // Hitung seluruh item amalan umum non-shalat, non-tilawah, non-puasa
+    const otherCompletedCount = list.filter(id => 
+      !id.startsWith('fardhu-') && 
+      !id.startsWith('tilawah-') && 
+      !rawatibIds.includes(id) && 
+      !sunnahIds.includes(id) && 
+      !id.startsWith('puasa-')
+    ).length;
+
+    const otherDoneCount = puasaDoneCount + otherCompletedCount;
+
+    // Target pembagi: 1 Puasa + tasks aktif
+    const otherTargetCount = 1 + this.state.tasks.length;
+    const otherWeight = otherTargetCount > 0 ? (50 / otherTargetCount) : 0;
     const otherPercent = otherDoneCount * otherWeight;
 
-    const totalPercent = Math.min(100, Math.round(shalatPercent + otherPercent));
-    const totalDoneCount = shalatDoneCount + otherDoneCount;
-    const totalTargetCount = 5 + totalOtherTarget;
+    // Total persen harian (maksimal 100%)
+    const totalPercent = Math.min(100, Math.round(shalatPercent + tilawahPercent + otherPercent));
+    const totalDoneCount = shalatDoneCount + tilawahDoneCount + otherDoneCount;
+    const totalTargetCount = 5 + 5 + 4 + 1 + otherTargetCount;
 
     return {
       percent: totalPercent,
       doneCount: totalDoneCount,
       totalCount: totalTargetCount,
-      shalatPercent,
-      otherPercent: Math.round(otherPercent)
+      shalatPercent: Math.round(shalatPercent * 10) / 10,
+      tilawahPercent,
+      otherPercent: Math.round(otherPercent * 10) / 10
     };
   }
 
@@ -2700,7 +2763,7 @@ class MutabaahApp {
       ctx.fillText(kpi.label, kX + kpiW / 2, kpiY + 88);
     });
 
-    // 5. Table Header (BESAR & TEBAL)
+    // 5. Table Header (Rapi, Tegas & Proporsional)
     const thY = cardY + 314;
     const thH = 54;
     roundRect(tblX, thY, tblW, thH, 14);
@@ -2710,7 +2773,7 @@ class MutabaahApp {
     ctx.strokeStyle = borderCol;
     ctx.stroke();
 
-    ctx.font = '800 19px system-ui, -apple-system, sans-serif';
+    ctx.font = '600 18px system-ui, -apple-system, sans-serif';
     ctx.fillStyle = textPrimary;
     ctx.textAlign = 'left';
     ctx.fillText('HARI / TANGGAL', tblX + 22, thY + 34);
@@ -2720,7 +2783,7 @@ class MutabaahApp {
     ctx.textAlign = 'right';
     ctx.fillText('CAPAIAN', tblX + tblW - 24, thY + 34);
 
-    // 6. 7 Table Rows (Tinggi 108px, Font Besar)
+    // 6. 7 Table Rows (Tinggi 108px, Isi Tabel Bersih Tanpa Bold Berlebihan)
     let rowY = thY + thH + 12;
     const rowH = 108;
     const rowGap = 8;
@@ -2734,13 +2797,13 @@ class MutabaahApp {
       ctx.strokeStyle = day.isToday ? primaryCol : borderCol;
       ctx.stroke();
 
-      // Col 1: Hari & Tanggal (BESAR & TEBAL)
+      // Col 1: Hari & Tanggal (Regular / Medium, tidak Bold)
       ctx.textAlign = 'left';
-      ctx.font = '800 24px system-ui, -apple-system, sans-serif';
+      ctx.font = '500 24px system-ui, -apple-system, sans-serif';
       ctx.fillStyle = textPrimary;
       ctx.fillText(day.dName, tblX + 22, rowY + 36);
 
-      ctx.font = '700 18px system-ui, -apple-system, sans-serif';
+      ctx.font = '400 18px system-ui, -apple-system, sans-serif';
       ctx.fillStyle = primaryCol;
       ctx.fillText(day.hijriStr, tblX + 22, rowY + 66);
 
@@ -2748,33 +2811,33 @@ class MutabaahApp {
       ctx.fillStyle = textMuted;
       ctx.fillText(day.masehiStr, tblX + 22, rowY + 92);
 
-      // Col 2: Shalat (BESAR & TEBAL)
-      ctx.font = '800 23px system-ui, -apple-system, sans-serif';
+      // Col 2: Shalat (Regular / Medium, tidak Bold)
+      ctx.font = '500 23px system-ui, -apple-system, sans-serif';
       ctx.fillStyle = textPrimary;
       ctx.fillText(`${day.shalatDone}/5 Fardhu`, tblX + 250, rowY + 36);
 
-      ctx.font = '600 17px system-ui, -apple-system, sans-serif';
+      ctx.font = '400 17px system-ui, -apple-system, sans-serif';
       ctx.fillStyle = textSecondary;
       ctx.fillText(day.fardhuPartsText, tblX + 250, rowY + 66);
 
       let sunnahTxt = [];
       if (day.rawatibDone > 0) sunnahTxt.push(`${day.rawatibDone} Rawatib`);
       if (day.sunnahShalatDone > 0) sunnahTxt.push(`${day.sunnahShalatDone} Sunnah`);
-      ctx.font = '500 16px system-ui, -apple-system, sans-serif';
+      ctx.font = '400 16px system-ui, -apple-system, sans-serif';
       ctx.fillStyle = textMuted;
       ctx.fillText(sunnahTxt.length > 0 ? sunnahTxt.join(' • ') : 'Rawatib/Sunnah: -', tblX + 250, rowY + 92);
 
-      // Col 3: Tilawah (BESAR & TEBAL)
-      ctx.font = '700 21px system-ui, -apple-system, sans-serif';
+      // Col 3: Tilawah (Medium, tidak Bold)
+      ctx.font = '500 21px system-ui, -apple-system, sans-serif';
       ctx.fillStyle = day.tilawahText !== '-' ? primaryCol : textMuted;
       ctx.fillText(day.tilawahText !== '-' ? `📖 ${day.tilawahText}` : '-', tblX + 575, rowY + 60);
 
-      // Col 4: Puasa (BESAR & TEBAL)
-      ctx.font = '700 20px system-ui, -apple-system, sans-serif';
+      // Col 4: Puasa (Medium, tidak Bold)
+      ctx.font = '500 20px system-ui, -apple-system, sans-serif';
       ctx.fillStyle = day.puasaText !== '-' ? '#2b8a3e' : textMuted;
       ctx.fillText(day.puasaText !== '-' ? `🌾 ${day.puasaText}` : '-', tblX + 740, rowY + 60);
 
-      // Col 5: Capaian Badge Pill (BESAR & TEBAL)
+      // Col 5: Capaian Badge Pill (Medium, tidak Bold)
       const pctBadgeW = 104;
       const pctBadgeH = 46;
       const pctBadgeX = tblX + tblW - pctBadgeW - 20;
@@ -2793,7 +2856,7 @@ class MutabaahApp {
       ctx.fillStyle = pctBg;
       ctx.fill();
 
-      ctx.font = '800 23px system-ui, -apple-system, sans-serif';
+      ctx.font = '500 23px system-ui, -apple-system, sans-serif';
       ctx.fillStyle = pctColor;
       ctx.textAlign = 'center';
       ctx.fillText(`${day.percent}%`, pctBadgeX + pctBadgeW / 2, pctBadgeY + 31);
