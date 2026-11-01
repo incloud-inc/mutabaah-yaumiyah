@@ -514,6 +514,7 @@ class MutabaahApp {
       }
       
       localStorage.setItem(STORAGE_KEY, serialized);
+      this.triggerDebouncedGdriveSync();
     } catch (e) {
       console.error('Error saving data to local storage:', e);
       if (e.name === 'QuotaExceededError' || e.code === 22) {
@@ -673,6 +674,7 @@ class MutabaahApp {
     this.updateStats();
     this.setupHeatmapScrollGestures();
     this.initPwaInstallPrompt();
+    this.initGoogleDriveSync();
   }
 
   // ===================================================================
@@ -2343,6 +2345,502 @@ class MutabaahApp {
       }
       this.closePwaInstallBanner();
     }
+  }
+
+  // ===================================================================
+  // GOOGLE DRIVE CLOUD SYNC ENGINE (Bring Your Own Storage)
+  // ===================================================================
+  initGoogleDriveSync() {
+    this.gdrive = {
+      isConnected: false,
+      userEmail: '',
+      userName: '',
+      lastSync: null,
+      token: null,
+      tokenExpiresAt: 0
+    };
+
+    // Load saved configuration from localStorage
+    try {
+      const savedConfig = localStorage.getItem('mutabaah_gdrive_config');
+      if (savedConfig) {
+        const parsed = JSON.parse(savedConfig);
+        this.gdrive = { ...this.gdrive, ...parsed };
+      }
+    } catch (e) {
+      console.warn('Gdrive config parse error:', e);
+    }
+
+    // Set client ID value in config panel input if saved
+    const clientIdInput = document.getElementById('inputGdriveClientId');
+    if (clientIdInput) {
+      clientIdInput.value = this.getGoogleClientId();
+    }
+
+    // Bind UI element events
+    document.getElementById('btnGdriveConnect')?.addEventListener('click', () => {
+      this.connectGoogleDrive();
+    });
+
+    document.getElementById('btnGdriveSyncNow')?.addEventListener('click', () => {
+      this.syncGoogleDrive(true);
+    });
+
+    document.getElementById('btnGdriveDisconnect')?.addEventListener('click', () => {
+      this.disconnectGoogleDrive();
+    });
+
+    document.getElementById('btnToggleGdriveConfig')?.addEventListener('click', () => {
+      const panel = document.getElementById('gdriveConfigPanel');
+      if (panel) {
+        panel.classList.toggle('hidden');
+      }
+    });
+
+    document.getElementById('btnSaveGdriveClientId')?.addEventListener('click', () => {
+      const input = document.getElementById('inputGdriveClientId');
+      if (input) {
+        const val = input.value.trim();
+        if (val) {
+          localStorage.setItem('mutabaah_gdrive_client_id', val);
+          this.showToast('Google Client ID berhasil disimpan!');
+          document.getElementById('gdriveConfigPanel')?.classList.add('hidden');
+        } else {
+          localStorage.removeItem('mutabaah_gdrive_client_id');
+          this.showToast('Google Client ID dikosongkan.');
+        }
+      }
+    });
+
+    // Update Initial UI
+    this.updateGdriveUI();
+
+    // Auto-sync on app load if already connected
+    if (this.gdrive.isConnected && this.gdrive.token) {
+      setTimeout(() => {
+        this.syncGoogleDrive(false);
+      }, 1500);
+    }
+  }
+
+  getGoogleClientId() {
+    return localStorage.getItem('mutabaah_gdrive_client_id') || '';
+  }
+
+  saveGdriveConfig() {
+    try {
+      localStorage.setItem('mutabaah_gdrive_config', JSON.stringify({
+        isConnected: this.gdrive.isConnected,
+        userEmail: this.gdrive.userEmail,
+        userName: this.gdrive.userName,
+        lastSync: this.gdrive.lastSync,
+        token: this.gdrive.token,
+        tokenExpiresAt: this.gdrive.tokenExpiresAt
+      }));
+    } catch (e) {
+      console.error('Save gdrive config error:', e);
+    }
+  }
+
+  updateGdriveUI() {
+    const badge = document.getElementById('gdriveStatusBadge');
+    const connectedView = document.getElementById('gdriveConnectedView');
+    const disconnectedView = document.getElementById('gdriveDisconnectedView');
+    const emailEl = document.getElementById('gdriveEmail');
+    const syncTimeEl = document.getElementById('gdriveSyncTime');
+    const avatarEl = document.getElementById('gdriveAvatarPlaceholder');
+
+    if (this.gdrive.isConnected) {
+      if (badge) {
+        badge.textContent = '🟢 Tersambung';
+        badge.className = 'gdrive-badge badge-on';
+      }
+      if (connectedView) connectedView.classList.remove('hidden');
+      if (disconnectedView) disconnectedView.classList.add('hidden');
+
+      if (emailEl) emailEl.textContent = this.gdrive.userEmail || 'Akun Google Terhubung';
+      if (avatarEl) {
+        const initial = (this.gdrive.userName || this.gdrive.userEmail || 'G').charAt(0).toUpperCase();
+        avatarEl.textContent = initial;
+      }
+      if (syncTimeEl) {
+        if (this.gdrive.lastSync) {
+          const dt = new Date(this.gdrive.lastSync);
+          const timeStr = `${String(dt.getHours()).padStart(2, '0')}:${String(dt.getMinutes()).padStart(2, '0')}`;
+          syncTimeEl.textContent = `Terakhir sinkron: Hari ini ${timeStr}`;
+        } else {
+          syncTimeEl.textContent = 'Terakhir sinkron: Belum pernah';
+        }
+      }
+    } else {
+      if (badge) {
+        badge.textContent = 'Belum Terhubung';
+        badge.className = 'gdrive-badge badge-off';
+      }
+      if (connectedView) connectedView.classList.add('hidden');
+      if (disconnectedView) disconnectedView.classList.remove('hidden');
+    }
+  }
+
+  connectGoogleDrive() {
+    const clientId = this.getGoogleClientId();
+    if (!clientId) {
+      const panel = document.getElementById('gdriveConfigPanel');
+      if (panel) panel.classList.remove('hidden');
+      document.getElementById('inputGdriveClientId')?.focus();
+      this.showToast('Silakan isi Google Cloud OAuth Client ID di form pengaturan di bawah.', 'error');
+      return;
+    }
+
+    if (!window.google || !window.google.accounts || !window.google.accounts.oauth2) {
+      this.showToast('Modul Google Identity sedang dimuat. Coba beberapa saat lagi.', 'error');
+      return;
+    }
+
+    try {
+      const tokenClient = google.accounts.oauth2.initTokenClient({
+        client_id: clientId,
+        scope: 'https://www.googleapis.com/auth/drive.appdata https://www.googleapis.com/auth/drive.file',
+        callback: async (tokenResponse) => {
+          if (tokenResponse.error) {
+            console.error('Google Auth Error:', tokenResponse);
+            this.showToast('Gagal otorisasi Google: ' + (tokenResponse.error_description || tokenResponse.error), 'error');
+            return;
+          }
+
+          this.gdrive.token = tokenResponse.access_token;
+          const expiresIn = parseInt(tokenResponse.expires_in, 10) || 3600;
+          this.gdrive.tokenExpiresAt = Date.now() + (expiresIn * 1000);
+          this.gdrive.isConnected = true;
+
+          // Fetch user info from Google Drive About API
+          try {
+            const userRes = await fetch('https://www.googleapis.com/drive/v3/about?fields=user', {
+              headers: { Authorization: `Bearer ${tokenResponse.access_token}` }
+            });
+            if (userRes.ok) {
+              const userData = await userRes.json();
+              if (userData.user) {
+                this.gdrive.userEmail = userData.user.emailAddress || '';
+                this.gdrive.userName = userData.user.displayName || '';
+              }
+            }
+          } catch (e) {
+            console.log('Note: User info fetch skipped', e);
+          }
+
+          this.saveGdriveConfig();
+          this.updateGdriveUI();
+          this.showToast('Google Drive berhasil terhubung! Memulai sinkronisasi awal...');
+
+          // Initial sync
+          await this.syncGoogleDrive(true);
+        }
+      });
+
+      tokenClient.requestAccessToken({ prompt: 'consent' });
+    } catch (err) {
+      console.error('Init token client error:', err);
+      this.showToast('Gagal membuka login Google: ' + err.message, 'error');
+    }
+  }
+
+  async syncGoogleDrive(isManual = false) {
+    if (!this.gdrive.isConnected) return;
+
+    const token = this.gdrive.token;
+    if (!token) {
+      if (isManual) {
+        this.showToast('Sesi Google Drive belum aktif. Silakan hubungkan kembali.', 'error');
+      }
+      return;
+    }
+
+    const syncBtn = document.getElementById('btnGdriveSyncNow');
+    if (syncBtn && isManual) {
+      syncBtn.disabled = true;
+      syncBtn.style.opacity = '0.6';
+    }
+
+    try {
+      // 1. Search existing file in appDataFolder
+      const searchUrl = "https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q=name='mutabaah_yaumiyah_sync.json'&fields=files(id,name,modifiedTime)";
+      const searchRes = await fetch(searchUrl, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      if (!searchRes.ok) {
+        if (searchRes.status === 401) {
+          this.gdrive.token = null;
+          this.gdrive.isConnected = false;
+          this.saveGdriveConfig();
+          this.updateGdriveUI();
+          throw new Error('Sesi Google Drive telah berakhir. Silakan hubungkan kembali.');
+        }
+        throw new Error(`Gagal membaca Google Drive (HTTP ${searchRes.status})`);
+      }
+
+      const searchData = await searchRes.json();
+      const existingFile = searchData.files && searchData.files.length > 0 ? searchData.files[0] : null;
+
+      let remotePayload = null;
+      if (existingFile) {
+        // 2. Read remote content
+        const readRes = await fetch(`https://www.googleapis.com/drive/v3/files/${existingFile.id}?alt=media`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (readRes.ok) {
+          try {
+            remotePayload = await readRes.json();
+          } catch (e) {
+            console.warn('Remote file content parse error:', e);
+          }
+        }
+      }
+
+      // 3. Smart Merge if remote content exists
+      let payloadToUpload;
+      if (remotePayload) {
+        const mergedHistory = this.smartMergeHistory(this.state.history, remotePayload.history || {});
+        const mergedTasks = this.smartMergeTasks(this.state.tasks, remotePayload.tasks || []);
+        const mergedProfile = this.smartMergeProfile(this.state.profile, remotePayload.profile || {});
+
+        this.state.history = mergedHistory;
+        this.state.tasks = mergedTasks;
+        this.state.profile = mergedProfile;
+
+        // Persist locally
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(this.state));
+
+        // Re-render UI components
+        this.renderProfile();
+        this.renderHeatmap();
+        this.renderChecklist();
+        this.updateStats();
+
+        payloadToUpload = {
+          version: '2.0',
+          updatedAt: new Date().toISOString(),
+          profile: this.state.profile,
+          theme: this.state.theme,
+          tasks: this.state.tasks,
+          history: this.state.history
+        };
+      } else {
+        payloadToUpload = {
+          version: '2.0',
+          updatedAt: new Date().toISOString(),
+          profile: this.state.profile,
+          theme: this.state.theme,
+          tasks: this.state.tasks,
+          history: this.state.history
+        };
+      }
+
+      // 4. Save back to Google Drive
+      if (existingFile) {
+        // Update file
+        const updateRes = await fetch(`https://www.googleapis.com/upload/drive/v3/files/${existingFile.id}?uploadType=media`, {
+          method: 'PATCH',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payloadToUpload)
+        });
+        if (!updateRes.ok) {
+          throw new Error(`Gagal memperbarui file di Google Drive (HTTP ${updateRes.status})`);
+        }
+      } else {
+        // Create new file via multipart
+        const metadata = {
+          name: 'mutabaah_yaumiyah_sync.json',
+          parents: ['appDataFolder']
+        };
+        const boundary = '-------mutabaah' + Math.random().toString(36).substring(2);
+        const delimiter = "\r\n--" + boundary + "\r\n";
+        const closeDelimiter = "\r\n--" + boundary + "--";
+
+        const multipartBody =
+          delimiter +
+          'Content-Type: application/json; charset=UTF-8\r\n\r\n' +
+          JSON.stringify(metadata) +
+          delimiter +
+          'Content-Type: application/json\r\n\r\n' +
+          JSON.stringify(payloadToUpload) +
+          closeDelimiter;
+
+        const createRes = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': `multipart/related; boundary=${boundary}`
+          },
+          body: multipartBody
+        });
+        if (!createRes.ok) {
+          throw new Error(`Gagal membuat file di Google Drive (HTTP ${createRes.status})`);
+        }
+      }
+
+      // 5. Success status
+      this.gdrive.lastSync = Date.now();
+      this.saveGdriveConfig();
+      this.updateGdriveUI();
+
+      if (isManual) {
+        this.showToast('Alhamdulillah, sinkronisasi Google Drive berhasil! ☁️');
+      }
+    } catch (err) {
+      console.error('Google Drive Sync Error:', err);
+      if (isManual) {
+        this.showToast(err.message || 'Gagal menyinkronkan ke Google Drive', 'error');
+      }
+    } finally {
+      if (syncBtn && isManual) {
+        syncBtn.disabled = false;
+        syncBtn.style.opacity = '1';
+      }
+    }
+  }
+
+  triggerDebouncedGdriveSync() {
+    if (!this.gdrive || !this.gdrive.isConnected || !this.gdrive.token) return;
+
+    if (this._gdriveDebounceTimer) {
+      clearTimeout(this._gdriveDebounceTimer);
+    }
+
+    this._gdriveDebounceTimer = setTimeout(() => {
+      this.syncGoogleDrive(false);
+    }, 3500);
+  }
+
+  disconnectGoogleDrive() {
+    if (this.gdrive.token && window.google?.accounts?.oauth2?.revoke) {
+      try {
+        google.accounts.oauth2.revoke(this.gdrive.token, () => {});
+      } catch (e) {}
+    }
+
+    this.gdrive.isConnected = false;
+    this.gdrive.token = null;
+    this.gdrive.tokenExpiresAt = 0;
+    this.gdrive.userEmail = '';
+    this.gdrive.userName = '';
+    this.saveGdriveConfig();
+    this.updateGdriveUI();
+    this.showToast('Koneksi Google Drive telah diputuskan.');
+  }
+
+  // ===================================================================
+  // SMART MERGE UTILITIES (Lossless Multi-Device Conflict Resolution)
+  // ===================================================================
+  smartMergeHistory(localHist = {}, remoteHist = {}) {
+    const merged = { ...localHist };
+    for (const dateKey of Object.keys(remoteHist)) {
+      if (!merged[dateKey]) {
+        merged[dateKey] = [...remoteHist[dateKey]];
+      } else {
+        const localList = merged[dateKey] || [];
+        const remoteList = remoteHist[dateKey] || [];
+        const set = new Set([...localList, ...remoteList]);
+
+        // Fardhu mode resolution: pilih level tertinggi (tepat-waktu > jamaah > sendiri)
+        const fardhus = ['subuh', 'zuhur', 'ashar', 'maghrib', 'isya'];
+        fardhus.forEach(pId => {
+          const lMode = this.getPrayerModeFromList(pId, localList);
+          const rMode = this.getPrayerModeFromList(pId, remoteList);
+          const bestMode = this.getBetterPrayerMode(lMode, rMode);
+
+          set.delete(`fardhu-${pId}-sendiri`);
+          set.delete(`fardhu-${pId}-jamaah`);
+          set.delete(`fardhu-${pId}-tepat-waktu`);
+
+          if (bestMode) {
+            set.add(`fardhu-${pId}-${bestMode}`);
+          }
+        });
+
+        // Tilawah sheet count resolution: ambil nilai terbesar
+        const lTilawah = this.getTilawahSheetsFromList(localList);
+        const rTilawah = this.getTilawahSheetsFromList(remoteList);
+        const maxTilawah = Math.max(lTilawah, rTilawah);
+
+        for (const item of Array.from(set)) {
+          if (typeof item === 'string' && item.startsWith('tilawah-lembar-')) {
+            set.delete(item);
+          }
+        }
+        if (maxTilawah > 0) {
+          set.add(`tilawah-lembar-${maxTilawah}`);
+        }
+
+        merged[dateKey] = Array.from(set);
+      }
+    }
+    return merged;
+  }
+
+  getPrayerModeFromList(pId, list = []) {
+    if (list.includes(`fardhu-${pId}-tepat-waktu`)) return 'tepat-waktu';
+    if (list.includes(`fardhu-${pId}-jamaah`)) return 'jamaah';
+    if (list.includes(`fardhu-${pId}-sendiri`)) return 'sendiri';
+    return null;
+  }
+
+  getBetterPrayerMode(m1, m2) {
+    const rank = { 'tepat-waktu': 3, 'jamaah': 2, 'sendiri': 1 };
+    const r1 = rank[m1] || 0;
+    const r2 = rank[m2] || 0;
+    if (r1 === 0 && r2 === 0) return null;
+    return r1 >= r2 ? m1 : m2;
+  }
+
+  getTilawahSheetsFromList(list = []) {
+    for (const item of list) {
+      if (typeof item === 'string' && item.startsWith('tilawah-lembar-')) {
+        const num = parseInt(item.replace('tilawah-lembar-', ''), 10);
+        if (!isNaN(num)) return num;
+      }
+    }
+    return 0;
+  }
+
+  smartMergeTasks(localTasks = [], remoteTasks = []) {
+    const taskMap = new Map();
+    localTasks.forEach(t => taskMap.set(t.id, t));
+    remoteTasks.forEach(t => {
+      if (!taskMap.has(t.id)) {
+        taskMap.set(t.id, t);
+      }
+    });
+    return Array.from(taskMap.values());
+  }
+
+  smartMergeProfile(localProf = {}, remoteProf = {}) {
+    const merged = { ...localProf };
+    if (remoteProf.name && remoteProf.name !== 'Hamba Allah') {
+      merged.name = remoteProf.name;
+    }
+    if (remoteProf.handle && remoteProf.handle !== 'mutabaah_warrior') {
+      merged.handle = remoteProf.handle;
+    }
+    if (remoteProf.bio && (!merged.bio || merged.bio.includes('halo calon member FIRDAUS'))) {
+      merged.bio = remoteProf.bio;
+    }
+    if (remoteProf.status) {
+      merged.status = remoteProf.status;
+    }
+    if (remoteProf.hasCustomAvatar && remoteProf.avatar) {
+      merged.hasCustomAvatar = true;
+      merged.avatar = remoteProf.avatar;
+    }
+    if (remoteProf.hasCustomCover && remoteProf.cover) {
+      merged.hasCustomCover = true;
+      merged.cover = remoteProf.cover;
+    }
+    return merged;
   }
 
   // ===================================================================

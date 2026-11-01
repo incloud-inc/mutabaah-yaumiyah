@@ -43,6 +43,9 @@
   
   <!-- CSS Stylesheet -->
   <link rel="stylesheet" href="styles.css">
+
+  <!-- Google Identity Services (GIS) for Google Drive Cloud Sync -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body class="theme-orange mode-light">
 
@@ -542,8 +545,87 @@
 
       <div class="modal-body">
         <p class="modal-description">
-          Aplikasi ini berjalan 100% tanpa akun & server luar. Semua data tersimpan aman di HP kamu. Gunakan fitur ini untuk memindahkan data ke HP baru atau mengamankan catatan ibadahmu.
+          Aplikasi ini berjalan 100% tanpa akun & server luar. Gunakan sinkronisasi Google Drive pribadimu untuk menghubungkan 2 device atau lebih, atau ekspor file cadangan secara manual.
         </p>
+
+        <!-- Section 0: Google Drive Cloud Sync (Otomatis Antar-Device) -->
+        <div class="backup-card gdrive-card">
+          <div class="gdrive-top-row">
+            <div class="gdrive-title-box">
+              <div class="gdrive-icon-badge">
+                <svg viewBox="0 0 87.3 78" width="22" height="22">
+                  <path d="m6.6 66.85 3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3l13.75-23.8h-27.5c0 1.55.4 3.1 1.2 4.5z" fill="#0066da"/>
+                  <path d="m43.65 25-13.75-23.8c-1.35.8-2.5 1.9-3.3 3.3l-25.4 44c-.8 1.4-1.2 2.95-1.2 4.5h27.5z" fill="#00ac47"/>
+                  <path d="m73.55 76.8c1.35-.8 2.5-1.9 3.3-3.3l1.6-2.75 7.65-13.25c.8-1.4 1.2-2.95 1.2-4.5h-27.502l5.852 11.5z" fill="#ea4335"/>
+                  <path d="m43.65 25 13.75-23.8c-1.35-.8-2.9-1.2-4.5-1.2h-18.5c-1.6 0-3.15.45-4.5 1.2z" fill="#00832d"/>
+                  <path d="m59.8 53h-32.3l-13.75 23.8c1.35.8 2.9 1.2 4.5 1.2h50.8c1.6 0 3.15-.45 4.5-1.2z" fill="#2684fc"/>
+                  <path d="m73.4 26.5-12.7-22c-.8-1.4-1.95-2.5-3.3-3.3l-13.75 23.8 16.15 28h27.45c0-1.55-.4-3.1-1.2-4.5z" fill="#ffba00"/>
+                </svg>
+              </div>
+              <div>
+                <h4>Sinkronisasi Google Drive</h4>
+                <p>Sinkronkan amalan otomatis antar HP & Laptop via Drive pribadi.</p>
+              </div>
+            </div>
+            <span class="gdrive-badge badge-off" id="gdriveStatusBadge">Belum Terhubung</span>
+          </div>
+
+          <!-- Connected View -->
+          <div class="gdrive-connected-view hidden" id="gdriveConnectedView">
+            <div class="gdrive-user-card">
+              <div class="gdrive-avatar-placeholder" id="gdriveAvatarPlaceholder">G</div>
+              <div class="gdrive-user-meta">
+                <span class="gdrive-email" id="gdriveEmail">akun@gmail.com</span>
+                <span class="gdrive-sync-time" id="gdriveSyncTime">Terakhir sinkron: Belum pernah</span>
+              </div>
+            </div>
+            <div class="gdrive-btn-group">
+              <button type="button" class="btn-primary btn-sm btn-gdrive-sync" id="btnGdriveSyncNow">
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+                <span>Sinkronkan Sekarang</span>
+              </button>
+              <button type="button" class="btn-secondary btn-sm" id="btnGdriveDisconnect">Putuskan</button>
+            </div>
+          </div>
+
+          <!-- Disconnected View -->
+          <div class="gdrive-disconnected-view" id="gdriveDisconnectedView">
+            <button type="button" class="btn-gdrive-login btn-block" id="btnGdriveConnect">
+              <svg viewBox="0 0 87.3 78" width="18" height="18">
+                <path d="m6.6 66.85 3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3l13.75-23.8h-27.5c0 1.55.4 3.1 1.2 4.5z" fill="#0066da"/>
+                <path d="m43.65 25-13.75-23.8c-1.35.8-2.5 1.9-3.3 3.3l-25.4 44c-.8 1.4-1.2 2.95-1.2 4.5h27.5z" fill="#00ac47"/>
+                <path d="m73.55 76.8c1.35-.8 2.5-1.9 3.3-3.3l1.6-2.75 7.65-13.25c.8-1.4 1.2-2.95 1.2-4.5h-27.502l5.852 11.5z" fill="#ea4335"/>
+                <path d="m43.65 25 13.75-23.8c-1.35-.8-2.9-1.2-4.5-1.2h-18.5c-1.6 0-3.15.45-4.5 1.2z" fill="#00832d"/>
+                <path d="m59.8 53h-32.3l-13.75 23.8c1.35.8 2.9 1.2 4.5 1.2h50.8c1.6 0 3.15-.45 4.5-1.2z" fill="#2684fc"/>
+                <path d="m73.4 26.5-12.7-22c-.8-1.4-1.95-2.5-3.3-3.3l-13.75 23.8 16.15 28h27.45c0-1.55-.4-3.1-1.2-4.5z" fill="#ffba00"/>
+              </svg>
+              <span>Hubungkan Akun Google Drive</span>
+            </button>
+            <div class="gdrive-helper-row">
+              <button type="button" class="btn-text-link text-xs" id="btnToggleGdriveConfig">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                <span>Atur Google Client ID</span>
+              </button>
+            </div>
+            
+            <!-- Collapsible Google Client ID Config Box -->
+            <div class="gdrive-config-panel hidden" id="gdriveConfigPanel">
+              <label for="inputGdriveClientId" class="text-xs text-muted" style="display:block; margin-bottom:5px; font-weight:600;">Google Cloud OAuth Client ID:</label>
+              <input type="text" id="inputGdriveClientId" class="form-input text-xs" placeholder="Contoh: 12345-xxx.apps.googleusercontent.com" style="margin-bottom:8px; width:100%;" />
+              <div class="gdrive-guide-card">
+                <strong>Panduan Singkat Buat Client ID di Google Cloud:</strong>
+                <ol class="text-xs text-muted" style="margin:4px 0 0 16px; padding:0; line-height:1.45;">
+                  <li>Buka <a href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noopener" style="color:var(--text-link); text-decoration:underline;">Google Cloud Console</a>.</li>
+                  <li>Buat Project baru & aktifkan <strong>Google Drive API</strong> di Library.</li>
+                  <li>Pilih <strong>Credentials &rarr; Create Credentials &rarr; OAuth client ID</strong> (Web Application).</li>
+                  <li>Pada <em>Authorized JavaScript origins</em>, masukkan domain webmu (contoh: <code>https://mastatag.com</code>).</li>
+                  <li>Salin <em>Client ID</em> lalu simpan di form ini.</li>
+                </ol>
+              </div>
+              <button type="button" class="btn-primary btn-sm btn-block" id="btnSaveGdriveClientId" style="margin-top:8px;">Simpan Client ID</button>
+            </div>
+          </div>
+        </div>
 
         <!-- Section 1: Backup / Export -->
         <div class="backup-card">
