@@ -269,10 +269,92 @@ const DEFAULT_TASKS = [
   { id: 'task-berkarya-skill', title: 'Mengasah Keahlian / Skill Bermanfaat Baru', category: 'Berkarya', desc: 'Belajar teknologi, bahasa, atau keterampilan bernilai' }
 ];
 
+// ===================================================================
+// HARI BESAR ISLAM
+// ===================================================================
+const ISLAMIC_EVENTS = [
+  {
+    month: 1, // Muharram
+    day: 1,
+    name: 'Tahun Baru Islam (1 Muharram)',
+    shortName: '1 Muharram',
+    countdownLabel: 'MENUJU 1 MUHARRAM',
+    desc: 'Tahun Baru Islam, memperingati peristiwa hijrah Nabi Muhammad SAW dari Mekkah ke Madinah.'
+  },
+  {
+    month: 1, // Muharram
+    day: 10,
+    name: 'Hari Asyura (10 Muharram)',
+    shortName: 'Hari Asyura',
+    countdownLabel: 'MENUJU HARI ASYURA',
+    desc: 'Hari Asyura: Peringatan diselamatkannya Nabi Musa dari Firaun & dianjurkan puasa sunnah Asyura.'
+  },
+  {
+    month: 3, // Rabi'ul Awwal
+    day: 12,
+    name: 'Maulid Nabi Muhammad SAW (12 Rabiul Awal)',
+    shortName: 'Maulid Nabi',
+    countdownLabel: 'MENUJU MAULID NABI',
+    desc: 'Maulid Nabi Muhammad SAW, memperingati hari kelahiran Rasulullah SAW.'
+  },
+  {
+    month: 7, // Rajab
+    day: 27,
+    name: 'Isra Mi\'raj Nabi Muhammad SAW (27 Rajab)',
+    shortName: 'Isra Mi\'raj',
+    countdownLabel: 'MENUJU ISRA MI\'RAJ',
+    desc: 'Isra Mi\'raj Nabi Muhammad SAW, perjalanan malam dari Masjidil Haram ke Masjidil Aqsa dilanjutkan ke Sidratul Muntaha untuk menerima perintah salat lima waktu.'
+  },
+  {
+    month: 8, // Sya'ban
+    day: 15,
+    name: 'Nisfu Sya\'ban (15 Sya\'ban)',
+    shortName: 'Nisfu Sya\'ban',
+    countdownLabel: 'MENUJU NISFU SYA\'BAN',
+    desc: 'Malam Nisfu Sya\'ban: Malam pengampunan dosa, doa, dan persiapan rohani menyambut bulan Ramadan.'
+  },
+  {
+    month: 9, // Ramadhan
+    day: 1,
+    name: 'Awal Ramadan (1 Ramadan)',
+    shortName: 'Awal Ramadan',
+    countdownLabel: 'MENUJU RAMADHAN',
+    desc: '1 Ramadan: Awal mula kewajiban menjalankan ibadah puasa.'
+  },
+  {
+    month: 9, // Ramadhan
+    day: 17,
+    name: 'Nuzulul Qur\'an (17 Ramadan)',
+    shortName: 'Nuzulul Qur\'an',
+    countdownLabel: 'MENUJU NUZULUL QUR\'AN',
+    desc: '17 Ramadan: Nuzulul Qur\'an, peringatan turunnya wahyu Al-Qur\'an pertama kali kepada Nabi Muhammad SAW.'
+  },
+  {
+    month: 10, // Syawwal
+    day: 1,
+    name: 'Hari Raya Idul Fitri (1 Syawal)',
+    shortName: 'Idul Fitri',
+    countdownLabel: 'MENUJU IDUL FITRI',
+    desc: '1 Syawal: Hari Raya Idul Fitri, menandai berakhirnya puasa Ramadan dan kemenangan umat Islam.'
+  },
+  {
+    month: 12, // Dzulhijjah
+    day: 9,
+    name: 'Hari Arafah (9 Zulhijah)',
+    shortName: 'Hari Arafah',
+    countdownLabel: 'MENUJU HARI ARAFAH',
+    desc: '9 Zulhijah: Hari Arafah (jamaah haji wukuf di Arafah; disunnahkan puasa Arafah bagi yang tidak haji).'
+  }
+];
+
 const STORAGE_KEY = 'mutabaah_yaumiyah_data_v2';
 
 // Application State
 class MutabaahApp {
+  getIslamicEvent(day, month) {
+    return ISLAMIC_EVENTS.find(e => e.month === month && e.day === day) || null;
+  }
+
   constructor() {
     this.state = {
       profile: {
@@ -1279,37 +1361,68 @@ class MutabaahApp {
 
     document.getElementById('statStreak').textContent = streak;
 
-    // 4. Ramadhan Countdown (-XXX)
+    // 4. Hitung Mundur Hari Besar Islam (Menuju Ramadhan & Hari Besar Berikutnya)
+    const countdownInfo = this.getUpcomingIslamicCountdown();
     const ramadhanEl = document.getElementById('statRamadhanCountdown');
+    const labelEl = document.getElementById('statCountdownLabel');
+    const boxEl = document.getElementById('statCountdownBox');
+
     if (ramadhanEl) {
-      ramadhanEl.textContent = this.getRamadhanCountdown();
+      ramadhanEl.textContent = countdownInfo.countText;
+    }
+    if (labelEl) {
+      labelEl.textContent = countdownInfo.label;
+    }
+    if (boxEl && countdownInfo.event) {
+      boxEl.title = `${countdownInfo.event.name}: ${countdownInfo.event.desc}`;
     }
   }
 
-  // Hitung mundur hari menuju 1 Ramadhan (-XXX)
-  getRamadhanCountdown(fromDate = new Date()) {
+  // Hitung mundur hari besar Islam (Menuju Ramadhan & hari besar berikutnya)
+  getUpcomingIslamicCountdown(fromDate = new Date()) {
     try {
       const start = new Date(fromDate.getFullYear(), fromDate.getMonth(), fromDate.getDate());
-      const currentHijri = this.getHijriDateParts(start);
+      const curH = this.getHijriDateParts(start);
 
-      // Jika sedang berada di bulan Ramadhan (Bulan 9)
-      if (currentHijri.month === 9) {
-        return `H+${currentHijri.day}`;
+      // Sebelum 1 Ramadhan: fokus hitung mundur ke 1 Ramadhan (MENUJU RAMADHAN)
+      // Setelah 1 Ramadhan (atau sudah masuk Ramadhan & seterusnya): hitung mundur hari besar Islam berikutnya
+      const isPostRamadhan = (curH.month > 9) || (curH.month === 9 && curH.day > 1);
+
+      let targetEvents;
+      if (!isPostRamadhan) {
+        targetEvents = ISLAMIC_EVENTS.filter(e => e.month === 9 && e.day === 1);
+      } else {
+        targetEvents = ISLAMIC_EVENTS;
       }
 
-      // Hitung langkah hari ke depan hingga 1 Ramadhan
       const cursor = new Date(start.getTime());
-      for (let i = 1; i <= 365; i++) {
-        cursor.setDate(cursor.getDate() + 1);
+      for (let i = 0; i <= 400; i++) {
         const h = this.getHijriDateParts(cursor);
-        if (h.month === 9 && h.day === 1) {
-          return `-${i}`;
+        const match = targetEvents.find(e => e.month === h.month && e.day === h.day);
+        if (match) {
+          if (i === 0) {
+            return {
+              days: 0,
+              countText: 'HARI INI',
+              label: match.countdownLabel.replace('MENUJU ', ''),
+              event: match,
+              targetDate: cursor
+            };
+          }
+          return {
+            days: i,
+            countText: `-${i}`,
+            label: match.countdownLabel,
+            event: match,
+            targetDate: cursor
+          };
         }
+        cursor.setDate(cursor.getDate() + 1);
       }
-      return '-0';
+      return { days: 0, countText: '-0', label: 'MENUJU RAMADHAN', event: null };
     } catch (e) {
-      console.warn('Gagal kalkulasi hitung mundur Ramadhan:', e);
-      return '-0';
+      console.warn('Gagal kalkulasi hitung mundur hari besar Islam:', e);
+      return { days: 0, countText: '-0', label: 'MENUJU RAMADHAN', event: null };
     }
   }
 
@@ -1341,22 +1454,25 @@ class MutabaahApp {
     const currentSabtu = new Date(today);
     currentSabtu.setDate(today.getDate() + currentSabtuOffset);
 
-    // Number of recorded weeks from startDate to current Sabtu
-    const diffTime = currentSabtu.getTime() - startDate.getTime();
-    const diffDays = Math.round(diffTime / (24 * 3600 * 1000)) + 1;
-    const recordedWeeks = Math.max(1, Math.ceil(diffDays / 7));
+    // Buat grafik sampai tanggal 1 bulan Muharram tahun berikutnya agar countdown 1 Muharram berjalan
+    const currentHijri = this.getHijriDateParts(today);
+    const targetHijriYear = currentHijri.year + 1;
 
-    // Ensure it completely fills the screen width (now cells are 18px + 4px gap = 22px pitch)
+    let nextMuharramDate = new Date(today);
+    for (let i = 1; i <= 400; i++) {
+      nextMuharramDate.setDate(nextMuharramDate.getDate() + 1);
+      const h = this.getHijriDateParts(nextMuharramDate);
+      if (h.month === 1 && h.day === 1 && h.year >= targetHijriYear) {
+        break;
+      }
+    }
+
+    // Align endDate to Saturday (Sabtu: day 6 - penutup pekan kalender Islam)
+    const endSabtuOffset = 6 - nextMuharramDate.getDay();
+    const endDate = new Date(nextMuharramDate);
+    endDate.setDate(nextMuharramDate.getDate() + endSabtuOffset);
+
     const wrapper = document.getElementById('heatmapWrapper');
-    const wrapperWidth = wrapper && wrapper.clientWidth > 0 ? wrapper.clientWidth : 380;
-    const availableWidth = Math.max(240, wrapperWidth - 40);
-    const minWeeksToFill = Math.ceil(availableWidth / 22) + 2;
-
-    const totalWeeks = Math.max(recordedWeeks, minWeeksToFill);
-
-    // End date covers totalWeeks
-    const endDate = new Date(startDate);
-    endDate.setDate(startDate.getDate() + (totalWeeks * 7) - 1);
 
     let totalRecordedAmalan = 0;
 
@@ -1385,28 +1501,41 @@ class MutabaahApp {
 
       const hijri = this.getHijriDateParts(cur);
       const isAyyamulBidh = (hijri.day === 13 || hijri.day === 14 || hijri.day === 15);
+      const islamicEvent = this.getIslamicEvent(hijri.day, hijri.month);
 
       const cell = document.createElement('div');
-      cell.className = `heatmap-cell ${level} ${isSelected ? 'is-selected' : ''} ${isAyyamulBidh ? 'is-ayyamul-bidh' : ''}`;
+      cell.className = `heatmap-cell ${level} ${isSelected ? 'is-selected' : ''} ${isAyyamulBidh ? 'is-ayyamul-bidh' : ''} ${islamicEvent ? 'is-islamic-event' : ''}`;
       cell.dataset.date = dateStr;
       cell.dataset.count = count;
       cell.dataset.percent = percentage;
       cell.dataset.hijriDay = hijri.day;
 
-      const ayyamulBidhNote = isAyyamulBidh ? ` • Ayyamul Bidh (${hijri.day} ${hijri.monthName} H)` : '';
+      let eventNote = '';
+      if (islamicEvent) {
+        eventNote += ` • ✨ ${islamicEvent.name}`;
+      }
+      if (isAyyamulBidh) {
+        eventNote += ` • Ayyamul Bidh (${hijri.day} ${hijri.monthName} H)`;
+      }
+
       cell.title = isFuture
-        ? `${hijri.day} ${hijri.monthName} ${hijri.year} H (${dateStr}): Hari mendatang${ayyamulBidhNote}`
-        : `${hijri.day} ${hijri.monthName} ${hijri.year} H (${dateStr}): ${count} amalan selesai (${percentage}%)${ayyamulBidhNote}`;
-      cell.tabIndex = isFuture ? -1 : 0;
-      cell.setAttribute('role', isFuture ? 'presentation' : 'button');
+        ? `${hijri.day} ${hijri.monthName} ${hijri.year} H (${dateStr}): Hari mendatang${eventNote}`
+        : `${hijri.day} ${hijri.monthName} ${hijri.year} H (${dateStr}): ${count} amalan selesai (${percentage}%)${eventNote}`;
+      cell.tabIndex = 0;
+      cell.setAttribute('role', 'button');
       cell.setAttribute('aria-label', cell.title);
 
       if (isToday) {
         cell.style.borderColor = 'var(--text-primary)';
       }
 
-      // Tambahkan angka 13 14 15 di setiap bulan hijriyah pada kotak grafik, kecil saja
-      if (isAyyamulBidh) {
+      // Penanda Hari Besar Islam & Ayyamul Bidh pada kotak grafik
+      if (islamicEvent) {
+        const badge = document.createElement('span');
+        badge.className = 'heatmap-event-badge';
+        badge.textContent = String(hijri.day);
+        cell.appendChild(badge);
+      } else if (isAyyamulBidh) {
         const badge = document.createElement('span');
         badge.className = 'heatmap-hijri-badge';
         badge.textContent = String(hijri.day);
@@ -2074,12 +2203,32 @@ class MutabaahApp {
     if (masehiEl) {
       masehiEl.textContent = dual.masehiSub;
     }
+    const targetDateObj = this.parseDate(dateStr);
+    const today = new Date();
+    today.setHours(23, 59, 59, 999);
+    const isFuture = targetDateObj > today;
+
     const completedSet = new Set(this.state.history[dateStr] || []);
     const progress = this.calculateDailyProgress(dateStr);
 
-    subtitle.textContent = `Tingkat Capaian: ${progress.percent}% (${progress.doneCount} amalan selesai)`;
+    subtitle.textContent = isFuture
+      ? 'Hari mendatang (Belum ada amalan tercatat)'
+      : `Tingkat Capaian: ${progress.percent}% (${progress.doneCount} amalan selesai)`;
 
-    let listHtml = '<div class="day-detail-list">';
+    const hijri = this.getHijriDateParts(targetDateObj);
+    const islamicEvent = this.getIslamicEvent(hijri.day, hijri.month);
+
+    let listHtml = '';
+    if (islamicEvent) {
+      listHtml += `
+        <div class="day-detail-event-card">
+          <div class="day-detail-event-title">✨ ${this.escapeHtml(islamicEvent.name)}</div>
+          <div class="day-detail-event-desc">${this.escapeHtml(islamicEvent.desc)}</div>
+        </div>
+      `;
+    }
+
+    listHtml += '<div class="day-detail-list">';
 
     // 1. Shalat Fardhu & Pelaksanaan
     listHtml += '<div class="day-detail-group-title">Shalat Fardhu:</div>';
@@ -2176,6 +2325,7 @@ class MutabaahApp {
     body.innerHTML = listHtml;
 
     const btnGo = document.getElementById('btnGoToDay');
+    btnGo.textContent = isFuture ? 'Buka Tanggal Ini' : 'Buka & Edit Tanggal Ini';
     btnGo.onclick = () => {
       this.state.selectedDate = dateStr;
       this.renderChecklist();
@@ -3727,12 +3877,7 @@ class MutabaahApp {
     heatmapGrid?.addEventListener('click', (e) => {
       const cell = e.target.closest('.heatmap-cell');
       if (cell && cell.dataset.date) {
-        const curDate = this.parseDate(cell.dataset.date);
-        const today = new Date();
-        today.setHours(23, 59, 59, 999);
-        if (curDate <= today) {
-          this.openDayDetail(cell.dataset.date);
-        }
+        this.openDayDetail(cell.dataset.date);
       }
     });
 
@@ -3741,12 +3886,7 @@ class MutabaahApp {
         const cell = e.target.closest('.heatmap-cell');
         if (cell && cell.dataset.date) {
           e.preventDefault();
-          const curDate = this.parseDate(cell.dataset.date);
-          const today = new Date();
-          today.setHours(23, 59, 59, 999);
-          if (curDate <= today) {
-            this.openDayDetail(cell.dataset.date);
-          }
+          this.openDayDetail(cell.dataset.date);
         }
       }
     });
