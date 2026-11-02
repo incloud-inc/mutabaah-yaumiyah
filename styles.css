@@ -38,6 +38,11 @@
   --theme-checked-border: rgba(81, 207, 102, 0.45);
   --theme-check-icon-color: #0c0e12;
 
+  /* Tilawah Bersama Accent Variables */
+  --theme-bersama-color: #22b8cf;
+  --theme-bersama-bg: rgba(34, 184, 207, 0.15);
+  --theme-bersama-border: rgba(34, 184, 207, 0.45);
+
   /* Status Colors */
   --status-istiqomah-color: var(--theme-primary);
   --status-istiqomah-bg: rgba(81, 207, 102, 0.12);
@@ -311,6 +316,19 @@ textarea:focus-visible,
 .btn-sm {
   padding: 6px 10px;
   font-size: 0.78rem;
+}
+
+.btn-icon-square {
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  flex-shrink: 0;
 }
 
 .user-meta {
@@ -2441,9 +2459,9 @@ body.mode-dark .review-narrative-text strong {
 .review-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.76rem;
+  font-size: 0.74rem;
   text-align: left;
-  min-width: 320px;
+  min-width: 460px;
 }
 
 .review-table th {
@@ -2547,6 +2565,38 @@ body.mode-theme-dark .review-table tr.is-today-row {
   font-weight: 600;
   color: var(--theme-primary);
   display: inline-block;
+}
+
+.review-tilawah-puasa-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.review-tilawah-subrow,
+.review-puasa-subrow {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.review-dzikir-group,
+.review-sosial-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.review-dzikir-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.review-sosial-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-primary);
 }
 
 .review-puasa-badge {
@@ -2674,18 +2724,63 @@ body.mode-dark .pct-zero { color: #868e96; background: rgba(134, 142, 150, 0.18)
 }
 
 /* ===================================================================
-   TILAWAH SINGLE ROW CARD (Tombol -, Jumlah Lembar, Tombol +)
+   TILAWAH SECTION (TILAWAH MANDIRI & TILAWAH BERSAMA)
    =================================================================== */
+.tilawah-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.tilawah-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.tilawah-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.tilawah-type-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.badge-mandiri {
+  background: var(--theme-checked-bg);
+  color: var(--theme-primary);
+  border: 1px solid var(--theme-checked-border);
+}
+
+.badge-bersama {
+  background: var(--theme-bersama-bg);
+  color: var(--theme-bersama-color);
+  border: 1px solid var(--theme-bersama-border);
+}
+
 .tilawah-single-row-card {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 20px;
-  padding: 22px 16px;
-  background: var(--bg-surface);
+  gap: 18px;
+  padding: 16px 12px;
+  background: var(--bg-card);
   border: 1px solid var(--border-default);
-  border-radius: var(--radius-lg);
-  margin-top: 4px;
+  border-radius: var(--radius-md);
 }
 
 .tilawah-input-center {
@@ -2696,58 +2791,11 @@ body.mode-dark .pct-zero { color: #868e96; background: rgba(134, 142, 150, 0.18)
   gap: 4px;
 }
 
-.tilawah-card {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-lg);
-  padding: 16px 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.tilawah-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.tilawah-icon-title {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.tilawah-card-title {
-  display: block;
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: var(--text-primary);
-}
-
-.tilawah-card-desc {
-  display: block;
-  font-size: 0.75rem;
-  color: var(--text-muted);
-  margin-top: 2px;
-}
-
-.tilawah-stepper-box {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 18px;
-  padding: 14px 8px;
-  background: var(--bg-card);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-md);
-}
-
 .tilawah-stepper-btn {
-  width: 58px;
-  height: 58px;
+  width: 54px;
+  height: 54px;
   border-radius: 50%;
-  background: var(--bg-card);
+  background: var(--bg-surface);
   border: 2px solid var(--border-default);
   color: var(--text-primary);
   display: flex;
@@ -2760,36 +2808,40 @@ body.mode-dark .pct-zero { color: #868e96; background: rgba(134, 142, 150, 0.18)
   touch-action: manipulation;
 }
 
-.tilawah-stepper-btn:hover {
+.stepper-mandiri .tilawah-stepper-btn:hover {
   border-color: var(--theme-primary);
   color: var(--theme-primary);
   transform: scale(1.05);
 }
 
-.tilawah-stepper-btn:active {
+.stepper-mandiri .tilawah-stepper-btn:active {
   transform: scale(0.92);
   background: var(--theme-primary);
   color: var(--theme-btn-text);
   border-color: var(--theme-primary);
 }
 
-.tilawah-input-wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-width: 120px;
+.stepper-bersama .tilawah-stepper-btn:hover {
+  border-color: var(--theme-bersama-color);
+  color: var(--theme-bersama-color);
+  transform: scale(1.05);
+}
+
+.stepper-bersama .tilawah-stepper-btn:active {
+  transform: scale(0.92);
+  background: var(--theme-bersama-color);
+  color: #ffffff;
+  border-color: var(--theme-bersama-color);
 }
 
 .tilawah-number-input {
   width: 104px;
-  height: 58px;
+  height: 54px;
   text-align: center;
   font-family: var(--font-mono);
-  font-size: 2.2rem;
+  font-size: 2.1rem;
   font-weight: 800;
-  color: var(--theme-primary);
-  background: var(--bg-card);
+  background: var(--bg-surface);
   border: 2px solid var(--border-default);
   border-radius: var(--radius-md);
   outline: none;
@@ -2798,9 +2850,22 @@ body.mode-dark .pct-zero { color: #868e96; background: rgba(134, 142, 150, 0.18)
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.tilawah-number-input:focus {
+.stepper-mandiri .tilawah-number-input {
+  color: var(--theme-primary);
+}
+
+.stepper-mandiri .tilawah-number-input:focus {
   border-color: var(--theme-primary);
   box-shadow: 0 0 0 3px var(--theme-glow);
+}
+
+.stepper-bersama .tilawah-number-input {
+  color: var(--theme-bersama-color);
+}
+
+.stepper-bersama .tilawah-number-input:focus {
+  border-color: var(--theme-bersama-color);
+  box-shadow: 0 0 0 3px var(--theme-bersama-border);
 }
 
 .tilawah-number-input::-webkit-inner-spin-button,
