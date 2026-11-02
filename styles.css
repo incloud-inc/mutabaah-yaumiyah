@@ -406,12 +406,26 @@ textarea:focus-visible,
 /* Stats Grid */
 .github-stats-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
   background: var(--bg-canvas);
   border: 1px solid var(--border-default);
   border-radius: var(--radius-md);
-  padding: 10px 12px;
+  padding: 10px 8px;
+}
+
+@media (max-width: 480px) {
+  .github-stats-grid {
+    padding: 8px 4px;
+    gap: 4px;
+  }
+  .stat-number {
+    font-size: 1.05rem;
+  }
+  .stat-label {
+    font-size: 0.6rem;
+    letter-spacing: 0;
+  }
 }
 
 .stat-box {
@@ -2583,8 +2597,10 @@ body.mode-dark .pct-zero { color: #868e96; background: rgba(134, 142, 150, 0.18)
 
 .tilawah-input-center {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 4px;
 }
 
 .tilawah-card {
@@ -2701,9 +2717,12 @@ body.mode-dark .pct-zero { color: #868e96; background: rgba(134, 142, 150, 0.18)
 }
 
 .tilawah-unit-label {
-  font-size: 0.75rem;
-  font-weight: 600;
+  font-size: 0.72rem;
+  font-weight: 700;
   color: var(--text-muted);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-top: 2px;
 }
 
 /* ===================================================================
@@ -3125,34 +3144,77 @@ body.mode-dark .gdrive-badge.badge-on {
 
 .gdrive-btn-group {
   display: flex;
+  flex-direction: row;
+  align-items: center;
   gap: 8px;
+  width: 100%;
 }
 
-.btn-gdrive-sync {
+.gdrive-btn-group .btn-gdrive-login,
+.gdrive-btn-group .btn-gdrive-sync {
   flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px 10px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.gdrive-btn-group .btn-gdrive-login svg,
+.gdrive-btn-group .btn-gdrive-sync svg {
+  flex-shrink: 0;
 }
 
 .btn-gdrive-login {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding: 10px 16px;
   background: var(--bg-card);
   border: 1.5px solid var(--border-default);
-  border-radius: var(--radius-md);
   color: var(--text-primary);
-  font-size: 0.85rem;
-  font-weight: 700;
   cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
 }
 
 .btn-gdrive-login:hover {
   border-color: #4285f4;
   color: #4285f4;
   box-shadow: 0 4px 12px rgba(66, 133, 244, 0.15);
+}
+
+.gdrive-user-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  margin-bottom: 12px;
+}
+
+.btn-text-danger {
+  background: transparent;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  color: var(--accent-red, #e03131);
+  padding: 4px 10px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  margin-left: auto;
+}
+
+.btn-text-danger:hover {
+  background: rgba(224, 49, 49, 0.1);
+  border-color: var(--accent-red, #e03131);
 }
 
 

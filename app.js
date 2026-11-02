@@ -1278,6 +1278,39 @@ class MutabaahApp {
     }
 
     document.getElementById('statStreak').textContent = streak;
+
+    // 4. Ramadhan Countdown (-XXX)
+    const ramadhanEl = document.getElementById('statRamadhanCountdown');
+    if (ramadhanEl) {
+      ramadhanEl.textContent = this.getRamadhanCountdown();
+    }
+  }
+
+  // Hitung mundur hari menuju 1 Ramadhan (-XXX)
+  getRamadhanCountdown(fromDate = new Date()) {
+    try {
+      const start = new Date(fromDate.getFullYear(), fromDate.getMonth(), fromDate.getDate());
+      const currentHijri = this.getHijriDateParts(start);
+
+      // Jika sedang berada di bulan Ramadhan (Bulan 9)
+      if (currentHijri.month === 9) {
+        return `H+${currentHijri.day}`;
+      }
+
+      // Hitung langkah hari ke depan hingga 1 Ramadhan
+      const cursor = new Date(start.getTime());
+      for (let i = 1; i <= 365; i++) {
+        cursor.setDate(cursor.getDate() + 1);
+        const h = this.getHijriDateParts(cursor);
+        if (h.month === 9 && h.day === 1) {
+          return `-${i}`;
+        }
+      }
+      return '-0';
+    } catch (e) {
+      console.warn('Gagal kalkulasi hitung mundur Ramadhan:', e);
+      return '-0';
+    }
   }
 
   // ===================================================================
@@ -1601,6 +1634,7 @@ class MutabaahApp {
           
           <div class="tilawah-input-center">
             <input type="number" id="tilawahSheetsInput" class="tilawah-number-input" min="0" max="604" value="${sheets}" inputmode="numeric" placeholder="0" aria-label="Jumlah lembar" />
+            <span class="tilawah-unit-label">LEMBAR</span>
           </div>
 
           <button type="button" class="tilawah-stepper-btn btn-stepper-plus" id="btnTilawahPlus" aria-label="Tambah lembar" title="Tambah 1 lembar">
@@ -2455,6 +2489,10 @@ class MutabaahApp {
   }
 
   connectGoogleDrive() {
+    if (this.gdrive.isConnected && this.gdrive.userEmail) {
+      const confirmSwitch = confirm(`Google Drive saat ini terhubung dengan:\n${this.gdrive.userEmail}\n\nIngin menghubungkan ulang atau mengganti akun Google?`);
+      if (!confirmSwitch) return;
+    }
     const clientId = this.getGoogleClientId();
     if (!clientId) {
       this.showToast('Google OAuth Client ID belum dikonfigurasi.', 'error');
@@ -2519,7 +2557,12 @@ class MutabaahApp {
   }
 
   async syncGoogleDrive(isManual = false) {
-    if (!this.gdrive.isConnected) return;
+    if (!this.gdrive.isConnected) {
+      if (isManual) {
+        this.showToast('Silakan klik Hubungkan terlebih dahulu untuk menyambungkan Google Drive.', 'info');
+      }
+      return;
+    }
 
     const token = this.gdrive.token;
     if (!token) {
@@ -3929,14 +3972,14 @@ class MutabaahApp {
     document.getElementById('btnBackupModal')?.addEventListener('click', openBackup);
     document.getElementById('navBackup')?.addEventListener('click', openBackup);
 
-    // Export Data (Backup)
-    document.getElementById('btnExportData').addEventListener('click', () => {
+    // Export Data (Backup - jika tombol ada)
+    document.getElementById('btnExportData')?.addEventListener('click', () => {
       this.exportBackup();
     });
 
-    // Import Data
+    // Import Data (jika input ada)
     const importInput = document.getElementById('importFileInput');
-    importInput.addEventListener('change', (e) => {
+    importInput?.addEventListener('change', (e) => {
       if (e.target.files && e.target.files[0]) {
         this.importBackup(e.target.files[0]);
         importInput.value = '';
