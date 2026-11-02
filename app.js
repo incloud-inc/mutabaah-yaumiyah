@@ -278,7 +278,7 @@ class MutabaahApp {
       profile: {
         name: 'Hamba Allah',
         handle: 'mutabaah_warrior',
-        bio: "Assalamu'alaykum, halo calon member FIRDAUS. :-) Untuk mulai menggunakan, klik tombol BACKUP kemudian HAPUS SEMUA DATA. Jangan lupa lengkapi data diri.",
+        bio: "Assalamu'alaykum, halo calon member FIRDAUS. :-) [LANGSUNG PAKAI AJA] Jangan lupa lengkapi data diri.",
         status: 'Istiqomah', // 'Istiqomah', 'Iman lagi naik', 'Iman lagi turun', or custom
         hasCustomAvatar: false,
         hasCustomCover: false,
@@ -1981,7 +1981,7 @@ class MutabaahApp {
       this.state.profile = {
         name: 'Hamba Allah',
         handle: 'mutabaah_warrior',
-        bio: "Assalamu'alaykum, halo calon member FIRDAUS. :-) Untuk mulai menggunakan, klik tombol BACKUP kemudian HAPUS SEMUA DATA. Jangan lupa lengkapi data diri.",
+        bio: "Assalamu'alaykum, halo calon member FIRDAUS. :-) [LANGSUNG PAKAI AJA] Jangan lupa lengkapi data diri.",
         status: 'Istiqomah',
         hasCustomAvatar: false,
         hasCustomCover: false,

@@ -1,5 +1,5 @@
 // Mutaba'ah Yaumiyah Service Worker for 100% Offline Support
-const CACHE_NAME = 'mutabaah-cache-v25';
+const CACHE_NAME = 'mutabaah-cache-v26';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
