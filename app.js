@@ -3370,22 +3370,26 @@ class MutabaahApp {
         (tilawahParts.length > 1 ? `${tilawahTotalSheets} Lmb (${tilawahParts.join(', ')})` : `${tilawahTotalSheets} Lembar`) : '';
       const tilawahShortText = tilawahTotalSheets > 0 ? `${tilawahTotalSheets} Lmb` : '-';
 
-      // 3. Puasa
+      // 3. Puasa (Icon puasa 1 saja per hari)
       const puasaItems = list.filter(id => id.startsWith('puasa-'));
       let puasaCellHtml = '<span class="text-muted">-</span>';
       let puasaTextSummary = '-';
+      let puasaShortText = '-';
       if (puasaItems.length > 0) {
-        const labels = puasaItems.map(id => {
+        const rawNames = puasaItems.map(id => {
+          if (id === 'puasa-ayyamul-bidh') return 'Ayyamul Bidh';
+          if (id === 'puasa-senin') return 'Senin';
+          if (id === 'puasa-kamis') return 'Kamis';
+          if (id === 'puasa-daud') return 'Daud';
+          if (id === 'puasa-qadha') return 'Qadha';
+          if (id === 'puasa-ramadhan') return 'Ramadhan';
           const cfg = PUASA_CONFIG.find(c => c.id === id);
-          if (id === 'puasa-ayyamul-bidh') return '🌕 Ayyamul Bidh';
-          if (id === 'puasa-senin') return '🌾 Puasa Senin';
-          if (id === 'puasa-kamis') return '🌾 Puasa Kamis';
-          if (id === 'puasa-daud') return '🌾 Puasa Daud';
-          if (id === 'puasa-qadha') return '🌾 Puasa Qadha';
-          return cfg ? `🌾 ${cfg.badge}` : '🌾 Puasa';
+          return cfg ? cfg.badge.replace(/^[🌾🌕]\s*/, '') : 'Sunnah';
         });
-        puasaCellHtml = `<span class="review-puasa-badge">${this.escapeHtml(labels.join(', '))}</span>`;
-        puasaTextSummary = labels.join(', ');
+        const joinedNames = rawNames.join(', ');
+        puasaCellHtml = `<span class="review-puasa-badge">🌾 ${this.escapeHtml(joinedNames)}</span>`;
+        puasaTextSummary = `Puasa ${joinedNames}`;
+        puasaShortText = rawNames.length === 1 && !rawNames[0].startsWith('Puasa') ? `Puasa ${rawNames[0]}` : joinedNames;
       }
 
       // 4. Dzikir
@@ -3503,6 +3507,7 @@ class MutabaahApp {
         tilawahText: tilawahText || '-',
         tilawahShortText,
         puasaText: puasaTextSummary,
+        puasaShortText: puasaShortText || '-',
         dzikirDone,
         dzikirSummaryText,
         sosialDone,
@@ -3771,10 +3776,10 @@ class MutabaahApp {
     ctx.stroke();
 
     // 2.5 Draw User Profile Avatar at Top-Left (Cantik & Serasi dengan Header)
-    const avSize = 92;
+    const avSize = 84;
     const avR = avSize / 2;
     const avX = cardX + 32;
-    const avY = cardY + 38;
+    const avY = cardY + 30;
 
     let avatarImg = null;
     const avatarSrc = this.state.profile?.avatar || this.getThemeAvatarSvg(themeKey, mode);
@@ -3804,7 +3809,7 @@ class MutabaahApp {
       ctx.fillStyle = primaryCol;
       ctx.fillRect(avX, avY, avSize, avSize);
       ctx.fillStyle = '#ffffff';
-      ctx.font = '700 40px system-ui, -apple-system, sans-serif';
+      ctx.font = '700 36px system-ui, -apple-system, sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText((data.userName || 'M')[0].toUpperCase(), avX + avR, avY + avR);
@@ -3815,60 +3820,44 @@ class MutabaahApp {
     // Elegant ring border around avatar
     ctx.beginPath();
     ctx.arc(avX + avR, avY + avR, avR + 1.5, 0, Math.PI * 2);
-    ctx.lineWidth = 3;
+    ctx.lineWidth = 2.5;
     ctx.strokeStyle = primaryCol;
     ctx.stroke();
 
-    // Top Right Info Pill (Symmetry)
-    const rightPillW = 140;
-    const rightPillH = 38;
-    const rightPillX = cardX + cardW - rightPillW - 32;
-    const rightPillY = cardY + 42;
-    roundRect(rightPillX, rightPillY, rightPillW, rightPillH, 19);
-    ctx.fillStyle = bgSurface;
-    ctx.fill();
-    ctx.lineWidth = 1.5;
-    ctx.strokeStyle = borderCol;
-    ctx.stroke();
-
-    ctx.font = '700 16px system-ui, -apple-system, sans-serif';
-    ctx.fillStyle = primaryCol;
-    ctx.textAlign = 'center';
-    ctx.fillText(data.hijriYearText || '1447 H', rightPillX + rightPillW / 2, rightPillY + 24);
-
-    // 3. Top App Header / Badge (BESAR & JELAS)
-    const badgeW = 380;
-    const badgeH = 44;
+    // 3. Top App Header / Badge (Tengah, Rapi)
+    const badgeW = 320;
+    const badgeH = 36;
     const badgeX = cardX + (cardW - badgeW) / 2;
-    const badgeY = cardY + 28;
-    roundRect(badgeX, badgeY, badgeW, badgeH, 22);
+    const badgeY = cardY + 26;
+    roundRect(badgeX, badgeY, badgeW, badgeH, 18);
     ctx.fillStyle = bgSurface;
     ctx.fill();
     ctx.lineWidth = 1.5;
     ctx.strokeStyle = borderCol;
     ctx.stroke();
 
-    ctx.font = '700 18px system-ui, -apple-system, sans-serif';
+    ctx.font = '700 15px system-ui, -apple-system, sans-serif';
     ctx.fillStyle = primaryCol;
     ctx.textAlign = 'center';
-    ctx.fillText("MUTABA'AH YAUMIYAH • 7 HARI", badgeX + badgeW / 2, badgeY + 28);
+    ctx.fillText("MUTABA'AH YAUMIYAH • 7 HARI", badgeX + badgeW / 2, badgeY + 23);
 
-    // Title: Tabel Pencapaian 7 Hari (BESAR & BOLD)
-    ctx.font = '800 44px system-ui, -apple-system, sans-serif';
+    // Title: Tabel Pencapaian 7 Hari (Font Proporsional agar Tidak Menutup Foto Profil)
+    ctx.font = '800 28px system-ui, -apple-system, sans-serif';
     ctx.fillStyle = textPrimary;
     ctx.textAlign = 'center';
-    ctx.fillText(data.tableTitle || 'Tabel Pencapaian 7 Hari', 540, cardY + 116);
+    ctx.fillText(data.tableTitle || 'Tabel Pencapaian 7 Hari', 540, cardY + 102);
 
-    // Subtitle: User Name & Period (LEBIH BESAR & JELAS)
-    ctx.font = '600 22px system-ui, -apple-system, sans-serif';
+    // Subtitle: User Name & Period
+    ctx.font = '600 18px system-ui, -apple-system, sans-serif';
     ctx.fillStyle = textSecondary;
-    ctx.fillText(`Muhasabah ${data.userName} • Evaluasi Konsistensi Amalan`, 540, cardY + 154);
+    ctx.textAlign = 'center';
+    ctx.fillText(`Muhasabah ${data.userName} • Evaluasi Konsistensi Amalan`, 540, cardY + 138);
 
-    // 4. 4 KPI Stat Cards (BESAR: Angka 40px, Label 17px)
+    // 4. 4 KPI Stat Cards (Angka 38px, Label 16px)
     const tblX = cardX + 24;
     const tblW = cardW - 48; // 984px
-    const kpiY = cardY + 180;
-    const kpiH = 110;
+    const kpiY = cardY + 168;
+    const kpiH = 104;
     const kpiGap = 16;
     const kpiW = (tblW - (kpiGap * 3)) / 4; // 234px
     const kpis = [
@@ -3888,18 +3877,18 @@ class MutabaahApp {
       ctx.stroke();
 
       ctx.textAlign = 'center';
-      ctx.font = '800 40px system-ui, -apple-system, sans-serif';
+      ctx.font = '800 38px system-ui, -apple-system, sans-serif';
       ctx.fillStyle = primaryCol;
-      ctx.fillText(kpi.val, kX + kpiW / 2, kpiY + 52);
+      ctx.fillText(kpi.val, kX + kpiW / 2, kpiY + 48);
 
-      ctx.font = '600 17px system-ui, -apple-system, sans-serif';
+      ctx.font = '600 16px system-ui, -apple-system, sans-serif';
       ctx.fillStyle = textSecondary;
-      ctx.fillText(kpi.label, kX + kpiW / 2, kpiY + 88);
+      ctx.fillText(kpi.label, kX + kpiW / 2, kpiY + 82);
     });
 
-    // 5. Table Header (6 Kolom Rapi & Proporsional)
-    const thY = cardY + 314;
-    const thH = 54;
+    // 5. Table Header (6 Kolom: Tilawah & Puasa diperkecil, Sosial diperlebar)
+    const thY = cardY + 296;
+    const thH = 50;
     roundRect(tblX, thY, tblW, thH, 14);
     ctx.fillStyle = bgSurface;
     ctx.fill();
@@ -3907,19 +3896,45 @@ class MutabaahApp {
     ctx.strokeStyle = borderCol;
     ctx.stroke();
 
-    ctx.font = '600 17px system-ui, -apple-system, sans-serif';
+    ctx.font = '600 16px system-ui, -apple-system, sans-serif';
     ctx.fillStyle = textPrimary;
     ctx.textAlign = 'left';
-    ctx.fillText('HARI / TGL', tblX + 16, thY + 34);
-    ctx.fillText('SHALAT', tblX + 175, thY + 34);
-    ctx.fillText('TILAWAH & PUASA', tblX + 410, thY + 34);
-    ctx.fillText('DZIKIR', tblX + 630, thY + 34);
-    ctx.fillText('SOSIAL', tblX + 765, thY + 34);
+    ctx.fillText('HARI / TGL', tblX + 16, thY + 31);
+    ctx.fillText('SHALAT', tblX + 160, thY + 31);
+    ctx.fillText('TILAWAH & PUASA', tblX + 380, thY + 31);
+    ctx.fillText('DZIKIR', tblX + 535, thY + 31);
+    ctx.fillText('SOSIAL', tblX + 710, thY + 31);
     ctx.textAlign = 'right';
-    ctx.fillText('CAPAIAN', tblX + tblW - 16, thY + 34);
+    ctx.fillText('CAPAIAN', tblX + tblW - 14, thY + 31);
 
-    // 6. 7 Table Rows (Tinggi 108px, 6 Kolom Bersih & Proporsional)
-    let rowY = thY + thH + 12;
+    // Helper: Wrap text onto multiple lines so it never overflows into next column
+    const drawWrappedTags = (text, x, startY, maxWidth, lineHeight, maxLines = 2) => {
+      if (!text || text === '-') {
+        ctx.fillText('-', x, startY);
+        return;
+      }
+      const words = text.split(', ');
+      let currentLine = '';
+      const lines = [];
+      for (const word of words) {
+        const testLine = currentLine ? `${currentLine}, ${word}` : word;
+        if (ctx.measureText(testLine).width > maxWidth && currentLine) {
+          lines.push(currentLine);
+          currentLine = word;
+        } else {
+          currentLine = testLine;
+        }
+      }
+      if (currentLine) {
+        lines.push(currentLine);
+      }
+      lines.slice(0, maxLines).forEach((line, i) => {
+        ctx.fillText(line, x, startY + (i * lineHeight));
+      });
+    };
+
+    // 6. 7 Table Rows (Tinggi 108px, 6 Kolom Bersih & Multi-baris)
+    let rowY = thY + thH + 10;
     const rowH = 108;
     const rowGap = 8;
 
@@ -3932,72 +3947,72 @@ class MutabaahApp {
       ctx.strokeStyle = day.isToday ? primaryCol : borderCol;
       ctx.stroke();
 
-      // Col 1: Hari & Tanggal
+      // Col 1: Hari & Tanggal (tblX + 16)
       ctx.textAlign = 'left';
-      ctx.font = '500 23px system-ui, -apple-system, sans-serif';
-      ctx.fillStyle = textPrimary;
-      ctx.fillText(day.dName, tblX + 16, rowY + 34);
-
-      ctx.font = '400 17px system-ui, -apple-system, sans-serif';
-      ctx.fillStyle = primaryCol;
-      ctx.fillText(day.hijriStr, tblX + 16, rowY + 62);
-
-      ctx.font = 'italic 15px system-ui, -apple-system, sans-serif';
-      ctx.fillStyle = textMuted;
-      ctx.fillText(day.masehiStr, tblX + 16, rowY + 88);
-
-      // Col 2: Shalat
       ctx.font = '500 22px system-ui, -apple-system, sans-serif';
       ctx.fillStyle = textPrimary;
-      ctx.fillText(`${day.shalatDone}/5 Fardhu`, tblX + 175, rowY + 34);
+      ctx.fillText(day.dName, tblX + 16, rowY + 32);
 
       ctx.font = '400 16px system-ui, -apple-system, sans-serif';
+      ctx.fillStyle = primaryCol;
+      ctx.fillText(day.hijriStr, tblX + 16, rowY + 58);
+
+      ctx.font = 'italic 14px system-ui, -apple-system, sans-serif';
+      ctx.fillStyle = textMuted;
+      ctx.fillText(day.masehiStr, tblX + 16, rowY + 82);
+
+      // Col 2: Shalat (tblX + 160)
+      ctx.font = '500 21px system-ui, -apple-system, sans-serif';
+      ctx.fillStyle = textPrimary;
+      ctx.fillText(`${day.shalatDone}/5 Fardhu`, tblX + 160, rowY + 32);
+
+      ctx.font = '400 15px system-ui, -apple-system, sans-serif';
       ctx.fillStyle = textSecondary;
-      ctx.fillText(day.fardhuPartsText, tblX + 175, rowY + 62);
+      ctx.fillText(day.fardhuPartsText, tblX + 160, rowY + 58);
 
       let sunnahTxt = [];
       if (day.rawatibDone > 0) sunnahTxt.push(`${day.rawatibDone} Rawatib`);
       if (day.sunnahShalatDone > 0) sunnahTxt.push(`${day.sunnahShalatDone} Sunnah`);
-      ctx.font = '400 15px system-ui, -apple-system, sans-serif';
+      ctx.font = '400 14px system-ui, -apple-system, sans-serif';
       ctx.fillStyle = textMuted;
-      ctx.fillText(sunnahTxt.length > 0 ? sunnahTxt.join(' • ') : 'Rawatib/Sunnah: -', tblX + 175, rowY + 88);
+      ctx.fillText(sunnahTxt.length > 0 ? sunnahTxt.join(' • ') : 'Rawatib/Sunnah: -', tblX + 160, rowY + 82);
 
-      // Col 3: Tilawah & Puasa (Satu Kolom)
+      // Col 3: Tilawah & Puasa (tblX + 380, Ramping & 1 Icon Puasa Saja)
       const hasTilawah = day.tilawahShortText && day.tilawahShortText !== '-';
-      const hasPuasa = day.puasaText && day.puasaText !== '-';
+      const hasPuasa = day.puasaShortText && day.puasaShortText !== '-';
 
-      ctx.font = '500 19px system-ui, -apple-system, sans-serif';
+      ctx.font = '500 18px system-ui, -apple-system, sans-serif';
       ctx.fillStyle = hasTilawah ? primaryCol : textMuted;
-      ctx.fillText(hasTilawah ? `📖 ${day.tilawahShortText}` : '📖 -', tblX + 410, rowY + 42);
+      ctx.fillText(hasTilawah ? `📖 ${day.tilawahShortText}` : '📖 -', tblX + 380, rowY + 40);
 
-      ctx.font = '500 17px system-ui, -apple-system, sans-serif';
+      ctx.font = '500 16px system-ui, -apple-system, sans-serif';
       ctx.fillStyle = hasPuasa ? '#2b8a3e' : textMuted;
-      ctx.fillText(hasPuasa ? `🌾 ${day.puasaText}` : '🌾 -', tblX + 410, rowY + 74);
+      ctx.fillText(hasPuasa ? `🌾 ${day.puasaShortText}` : '🌾 -', tblX + 380, rowY + 74);
 
-      // Col 4: Dzikir
+      // Col 4: Dzikir (tblX + 535, Multi-baris rapi)
       ctx.font = '500 20px system-ui, -apple-system, sans-serif';
       ctx.fillStyle = day.dzikirDone > 0 ? textPrimary : textMuted;
-      ctx.fillText(`${day.dzikirDone} Dzikir`, tblX + 630, rowY + 44);
+      ctx.fillText(`${day.dzikirDone} Dzikir`, tblX + 535, rowY + 32);
 
-      ctx.font = '400 15px system-ui, -apple-system, sans-serif';
+      ctx.font = '400 13px system-ui, -apple-system, sans-serif';
       ctx.fillStyle = day.dzikirDone > 0 ? textSecondary : textMuted;
-      ctx.fillText(day.dzikirSummaryText || '-', tblX + 630, rowY + 74);
+      drawWrappedTags(day.dzikirSummaryText, tblX + 535, rowY + 58, 160, 22, 2);
 
-      // Col 5: Sosial
+      // Col 5: Sosial (tblX + 710, Diperlebar & Multi-baris)
       ctx.font = '500 20px system-ui, -apple-system, sans-serif';
       ctx.fillStyle = day.sosialDone > 0 ? textPrimary : textMuted;
-      ctx.fillText(`${day.sosialDone} Amal`, tblX + 765, rowY + 44);
+      ctx.fillText(`${day.sosialDone} Amal`, tblX + 710, rowY + 32);
 
-      ctx.font = '400 15px system-ui, -apple-system, sans-serif';
+      ctx.font = '400 13px system-ui, -apple-system, sans-serif';
       ctx.fillStyle = day.sosialDone > 0 ? textSecondary : textMuted;
-      ctx.fillText(day.sosialSummaryText || '-', tblX + 765, rowY + 74);
+      drawWrappedTags(day.sosialSummaryText, tblX + 710, rowY + 58, 175, 22, 2);
 
-      // Col 6: Capaian Badge Pill
-      const pctBadgeW = 86;
-      const pctBadgeH = 44;
+      // Col 6: Capaian Badge Pill (tblX + tblW - 14)
+      const pctBadgeW = 80;
+      const pctBadgeH = 42;
       const pctBadgeX = tblX + tblW - pctBadgeW - 12;
       const pctBadgeY = rowY + (rowH - pctBadgeH) / 2;
-      roundRect(pctBadgeX, pctBadgeY, pctBadgeW, pctBadgeH, 22);
+      roundRect(pctBadgeX, pctBadgeY, pctBadgeW, pctBadgeH, 21);
 
       let pctBg = isLightMode ? '#e9ecef' : '#2b313b';
       let pctColor = textSecondary;
@@ -4011,16 +4026,16 @@ class MutabaahApp {
       ctx.fillStyle = pctBg;
       ctx.fill();
 
-      ctx.font = '600 22px system-ui, -apple-system, sans-serif';
+      ctx.font = '600 21px system-ui, -apple-system, sans-serif';
       ctx.fillStyle = pctColor;
       ctx.textAlign = 'center';
-      ctx.fillText(`${day.percent}%`, pctBadgeX + pctBadgeW / 2, pctBadgeY + 29);
+      ctx.fillText(`${day.percent}%`, pctBadgeX + pctBadgeW / 2, pctBadgeY + 28);
 
       rowY += rowH + rowGap;
     });
 
-    // 7. Footer Divider & Quote
-    const footerY = cardY + cardH - 85;
+    // 7. Footer Divider & Quote (Diperkecil & Ramping)
+    const footerY = cardY + cardH - 52;
     ctx.strokeStyle = borderCol;
     ctx.lineWidth = 1.5;
     ctx.beginPath();
@@ -4029,9 +4044,9 @@ class MutabaahApp {
     ctx.stroke();
 
     ctx.textAlign = 'center';
-    ctx.font = 'italic 19px system-ui, -apple-system, sans-serif';
+    ctx.font = 'italic 15px system-ui, -apple-system, sans-serif';
     ctx.fillStyle = textMuted;
-    ctx.fillText('“Amalan yang paling dicintai Allah adalah yang terus-menerus walau sedikit.” (HR. Bukhari)', 540, footerY + 44);
+    ctx.fillText('“Amalan yang paling dicintai Allah adalah yang terus-menerus walau sedikit.” (HR. Bukhari)', 540, footerY + 28);
 
     // 8. Trigger PNG Download
     try {
