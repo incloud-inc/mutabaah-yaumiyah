@@ -1473,6 +1473,34 @@ body.mode-dark .prayer-pill-points {
   border-radius: 50%;
 }
 
+.footer-domain-wrapper {
+  display: block;
+}
+
+.footer-domain-indicator {
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  margin-bottom: 0;
+}
+
+.footer-domain-indicator:hover,
+.footer-domain-indicator:focus-visible {
+  color: var(--text-primary);
+  border-color: var(--theme-primary);
+  background: var(--bg-surface-hover);
+  transform: translateY(-1px);
+}
+
+.footer-domain-indicator:active {
+  transform: translateY(0);
+}
+
+.footer-domain-indicator .footer-wa-icon {
+  color: #25d366;
+  flex-shrink: 0;
+}
+
 .copyright-note {
   font-size: 0.68rem;
   color: var(--text-muted);
